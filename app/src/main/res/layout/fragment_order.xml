@@ -23,7 +23,8 @@
                 android:gravity="center"
                 android:textSize="18sp"
                 android:textColor="@color/colorPrimaryDark"
-                android:fontFamily="sans-serif-medium"/>
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_bottom_border_btn"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -33,7 +34,8 @@
                 android:gravity="center"
                 android:textSize="18sp"
                 android:textColor="@color/colorPrimaryDark"
-                android:fontFamily="sans-serif-medium"/>
+                android:fontFamily="sans-serif-medium"
+                android:background="@drawable/bg_bottom_border_btn"/>
         </LinearLayout>
         <androidx.viewpager2.widget.ViewPager2
             android:layout_width="match_parent"

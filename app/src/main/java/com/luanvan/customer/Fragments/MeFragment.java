@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.button.MaterialButton;
 import com.luanvan.customer.LoginActivity;
 import com.luanvan.customer.PaymentActivity;
 import com.luanvan.customer.R;
@@ -34,7 +35,7 @@ public class MeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    private Button btnLogin, btnSignup;
+    private MaterialButton btnLogin, btnSignup;
     private TextView tvPayment, tvAddress;
 
     public MeFragment() {

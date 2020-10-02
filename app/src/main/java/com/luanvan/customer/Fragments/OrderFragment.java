@@ -1,5 +1,6 @@
 package com.luanvan.customer.Fragments;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
@@ -135,12 +136,16 @@ public class OrderFragment extends Fragment {
                 tvHistory.setTypeface(null, Typeface.NORMAL);
                 tvOngoing.setTextColor(ContextCompat.getColor(getActivity(),R.color.colorPrimaryDark));
                 tvHistory.setTextColor(ContextCompat.getColor(getActivity(),R.color.light_gray));
+                tvOngoing.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.bg_bottom_border_btn));
+                tvHistory.setBackgroundColor(Color.WHITE);
                 break;
             case R.id.tvHistory:
                 tvOngoing.setTypeface(null, Typeface.NORMAL);
                 tvHistory.setTypeface(null, Typeface.BOLD);
                 tvOngoing.setTextColor(ContextCompat.getColor(getActivity(),R.color.light_gray));
                 tvHistory.setTextColor(ContextCompat.getColor(getActivity(),R.color.colorPrimaryDark));
+                tvOngoing.setBackgroundColor(Color.WHITE);
+                tvHistory.setBackground(ContextCompat.getDrawable(getActivity(),R.drawable.bg_bottom_border_btn));
                 break;
         }
     }
