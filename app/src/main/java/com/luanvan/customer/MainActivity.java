@@ -13,9 +13,11 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.luanvan.customer.Adapter.ViewPagerFragmentAdapter;
 import com.luanvan.customer.Fragments.HomeFragment;
@@ -26,11 +28,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    ViewPager2 viewPager;
-    ViewPagerFragmentAdapter viewPagerFragmentAdapter;
-    ArrayList<Fragment> listFragment = new ArrayList<>();
-    TextView tvHome,tvOrder,tvMe;
-    ViewPager2.OnPageChangeCallback onPageChangeCallback;
+    private ViewPager2 viewPager;
+    private ViewPagerFragmentAdapter viewPagerFragmentAdapter;
+    private ArrayList<Fragment> listFragment = new ArrayList<>();
+    private TextView tvHome,tvOrder,tvMe;
+    private ViewPager2.OnPageChangeCallback onPageChangeCallback;
+    private boolean doubleBackToExitPressedOnce = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,5 +145,22 @@ public class MainActivity extends AppCompatActivity {
                 tvOrder.setTextColor(getResources().getColor(R.color.defaultIconColor));
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        viewPager.setCurrentItem(0,true);
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, getResources().getString(R.string.exit_confirm), Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }

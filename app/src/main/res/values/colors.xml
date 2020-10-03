@@ -5,4 +5,5 @@
     <color name="colorAccent">#FAA422</color>
     <color name="defaultIconColor">#333333</color>
     <color name="light_gray">#BDBDBD</color>
+    <color name="light_red">#EBF32222</color>
 </resources>

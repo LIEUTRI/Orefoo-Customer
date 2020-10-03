@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OraFood</string>
+    <string name="app_name">OreFoo</string>
     <string name="facebook_app_id">720537655462641</string>
     <string name="fb_login_protocol_scheme">fb720537655462641</string>
 
@@ -21,7 +21,7 @@
     <string name="test_email">test@test.com</string>
     <string name="test_password">testpassword</string>
     <string name="firebase_path">location</string>
-    <string name="large_text">Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products.Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful productsMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful productsMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful productsMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful productsMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful productsMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful productsMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products. Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products.Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products.Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products.Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products.Material is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. Backed by open-source code, Material streamlines collaboration between designers and developers, and helps teams quickly build beautiful products.</string>
+    <string name="large_text">Material is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. END</string>
     <string name="titleCategories">CHỌN THEO THỂ LOẠI</string>
     <string name="seemore">Xem thêm</string>
     <string name="mainmeal">Bữa ăn chính</string>
@@ -33,4 +33,9 @@
     <string name="titleFavourite">YÊU THÍCH</string>
     <string name="ongoing">Đang đến</string>
     <string name="history">Lịch sử</string>
+    <string name="setting">Cài đặt</string>
+    <string name="about">Thông tin về OreFoo</string>
+    <string name="appversion">Phiên bản 1.0.0</string>
+    <string name="managerprofile">Quản lý hồ sơ</string>
+    <string name="exit_confirm">Nhấn BACK lần nữa để thoát...</string>
 </resources>

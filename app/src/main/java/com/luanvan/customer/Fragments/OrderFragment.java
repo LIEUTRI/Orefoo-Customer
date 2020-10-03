@@ -100,7 +100,6 @@ public class OrderFragment extends Fragment {
         viewPager.setAdapter(viewPagerOrdersAdapter);
         viewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
         viewPager.setPageTransformer(new MarginPageTransformer(1000));
-        viewPager.setUserInputEnabled(false); //disable swipe
 
         tvOngoing.setOnClickListener(new View.OnClickListener() {
             @Override

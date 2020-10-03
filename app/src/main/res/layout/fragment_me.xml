@@ -6,69 +6,79 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="140dp"
         android:id="@+id/layoutAppBar"
         app:liftOnScroll="true"
         android:background="@color/colorPrimaryDark">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="128dp"
+            android:layout_height="match_parent"
             app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
             app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
             <com.google.android.material.appbar.MaterialToolbar
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                app:title="@string/me">
+                android:layout_height="70dp"
+                app:title="@string/me"
+                app:layout_collapseMode="pin">
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <RelativeLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:gravity="center"
-                android:id="@+id/layoutProfile">
-                <LinearLayout
+                android:layout_height="wrap_content"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/light_gray"
+                android:layout_margin="5dp">
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="20dp"
-                    android:paddingEnd="20dp"
-                    android:weightSum="5">
-                    <com.google.android.material.button.MaterialButton
-                        android:layout_width="0dp"
+                    android:layout_height="300dp"
+                    android:gravity="center"
+                    android:id="@+id/layoutProfile">
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="@string/login"
-                        android:id="@+id/btnLogin"/>
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/or"/>
-                    <com.google.android.material.button.MaterialButton
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:text="@string/logout"
-                        android:id="@+id/btnSignup"/>
-                </LinearLayout>
-            </RelativeLayout>
+                        android:orientation="horizontal"
+                        android:paddingStart="20dp"
+                        android:paddingEnd="20dp"
+                        android:weightSum="5">
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text="@string/login"
+                            android:id="@+id/btnLogin"/>
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:text="@string/or"/>
+                        <com.google.android.material.button.MaterialButton
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:text="@string/signup"
+                            android:id="@+id/btnSignup"/>
+                    </LinearLayout>
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
+                android:paddingBottom="10dp"
+                android:layout_marginTop="10dp"
                 android:orientation="vertical">
                 <TextView
                     android:layout_width="match_parent"
@@ -95,10 +105,63 @@
                     android:background="@drawable/bg_bottom_border"
                     android:id="@+id/tvAddress"/>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/managerprofile"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:drawablePadding="10dp"
+                    app:drawableStartCompat="@drawable/ic_edit"
+                    app:drawableEndCompat="@drawable/ic_arrow_right"
+                    android:id="@+id/tvManagerProfile"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/setting"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:drawablePadding="10dp"
+                    app:drawableStartCompat="@drawable/ic_setting"
+                    app:drawableEndCompat="@drawable/ic_arrow_right"
+                    android:id="@+id/tvSetting"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/bg_bottom_border"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/about"
+                    android:textColor="#000000"
+                    android:textSize="20sp"
+                    android:drawablePadding="10dp"
+                    app:drawableStartCompat="@drawable/ic_about"
+                    app:drawableEndCompat="@drawable/ic_arrow_right"
+                    android:id="@+id/tvAbout"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:text="@string/logout"
+                    android:id="@+id/btnLogout"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/light_red"
+                    android:background="@drawable/bg_btn_logout"
+                    android:layout_marginTop="30dp"/>
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/large_text"
-                    android:justificationMode="inter_word"/>
+                    android:text="@string/appversion"
+                    android:textSize="20sp"
+                    android:textColor="#000000"
+                    android:fontFamily="sans-serif-thin"
+                    android:gravity="center"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="100dp"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
