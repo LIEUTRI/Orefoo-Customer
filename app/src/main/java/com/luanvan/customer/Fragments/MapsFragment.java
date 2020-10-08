@@ -1,6 +1,5 @@
 package com.luanvan.customer.Fragments;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -52,7 +51,6 @@ import com.luanvan.customer.R;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback{
 
-    private FusedLocationProviderClient fusedLocationClient;
     public final String TAG = "MapsFragment";
     private GoogleMap map;
     private boolean moveCamera = true;
@@ -67,7 +65,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -76,7 +74,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            Toast.makeText(getActivity(), "Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -98,14 +96,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest);
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
         SettingsClient client = LocationServices.getSettingsClient(getActivity());
         Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
         task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                Log.i(TAG, "Create location request OK");
                 // All location settings are satisfied. The client can initialize
                 // location requests here.
                 // ...
@@ -115,6 +113,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
         task.addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Log.i(TAG, "Create location request FAILED");
                 if (e instanceof ResolvableApiException) {
                     // Location settings are not satisfied, but this can be fixed
                     // by showing the user a dialog.

@@ -7,10 +7,9 @@
     <string name="payment_momo">"Thanh toán qua MoMo"</string>
     <string name="not_receive_info">"Không nhận được thông tin"</string>
     <string name="not_receive_info_err">"Không gởi được yêu cầu vui lòng kiểm tra lại"</string>
-    <string name="searchbar">Tìm món ăn, quán ăn,...</string>
+    <string name="searchbar">Tìm món ăn, quán ăn,…</string>
     <string name="orders">Đơn hàng</string>
     <string name="me">Tôi</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="login">Đăng nhập</string>
     <string name="signup">Đăng ký</string>
@@ -21,7 +20,7 @@
     <string name="test_email">test@test.com</string>
     <string name="test_password">testpassword</string>
     <string name="firebase_path">location</string>
-    <string name="large_text">Material is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. END</string>
+    <string name="large_text">Material is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. END</string>
     <string name="titleCategories">CHỌN THEO THỂ LOẠI</string>
     <string name="seemore">Xem thêm</string>
     <string name="mainmeal">Bữa ăn chính</string>
@@ -37,5 +36,11 @@
     <string name="about">Thông tin về OreFoo</string>
     <string name="appversion">Phiên bản 1.0.0</string>
     <string name="managerprofile">Quản lý hồ sơ</string>
-    <string name="exit_confirm">Nhấn BACK lần nữa để thoát...</string>
+    <string name="exit_confirm">Nhấn BACK lần nữa để thoát…</string>
+    <string name="delivery_address">Địa chỉ giao hàng</string>
+    <string name="cancel">Hủy</string>
+    <string name="find_address">Tìm địa chỉ…</string>
+    <string name="check_internet_connection">Vui lòng kiểm tra kết nối internet!</string>
+    <string name="delivery_here">Giao hàng ở đây</string>
+    <string name="choose_delivery_location">Chọn vị trí giao hàng</string>
 </resources>

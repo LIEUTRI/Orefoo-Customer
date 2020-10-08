@@ -15,6 +15,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.material.appbar.MaterialToolbar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +33,7 @@ import java.util.Arrays;
 public class LoginActivity extends AppCompatActivity {
 
     LoginButton loginButton;
-    ImageButton ibBack;
+    MaterialToolbar toolbar;
 
     CallbackManager callbackManager;
     String token;
@@ -46,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         // Initialize Facebook Login button
         callbackManager = CallbackManager.Factory.create();
         loginButton = (LoginButton) findViewById(R.id.fb_login_button);
-        ibBack = findViewById(R.id.ibBack);
+        toolbar = findViewById(R.id.toolbarLogin);
         loginButton.setReadPermissions(Arrays.asList("email","public_profile"));
 
         // Callback registration
@@ -69,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
                 Log.d("TAG", "onError: "+exception.getMessage());
             }
         });
-        ibBack.setOnClickListener(new View.OnClickListener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

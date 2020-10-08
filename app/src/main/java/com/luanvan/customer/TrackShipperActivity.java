@@ -14,23 +14,12 @@ import android.widget.Toast;
 import com.luanvan.customer.Fragments.MapsFragment;
 
 public class TrackShipperActivity extends AppCompatActivity {
-    public static final int REQUEST_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_shipper);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            showMaps();
-//        } else if (shouldShowRequestPermissionRationale("android.permission.ACCESS_FINE_LOCATION")) {
-//            showInContextUI(this);
-        } else {
-            requestPermissions(new String[] { Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION }, REQUEST_CODE);
-        }
-    }
-
-    private void showInContextUI(Context context){
-        Toast.makeText(context, "shouldShowRequestPermissionRationale", Toast.LENGTH_LONG).show();
+        showMaps();
     }
 
     private void showMaps(){
