@@ -155,7 +155,7 @@ public class CalculateDistanceTime {
         protected void onPostExecute(List<HashMap<String, String>> result) {
             String duration_distance = "";
 
-            if (result.size() < 1) {
+            if (result == null || result.size() < 1) {
                 Log.e(TAG, "No Points found");
                 return;
             }

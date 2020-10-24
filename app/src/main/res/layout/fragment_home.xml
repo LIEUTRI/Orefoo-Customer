@@ -45,7 +45,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5dp"
+        android:padding="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <RelativeLayout
             android:layout_width="match_parent"
@@ -53,6 +53,7 @@
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:scrollbars="none"
                 android:id="@+id/layout_cardViews">
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -98,7 +99,7 @@
                 android:id="@+id/cardViewCategories"
                 android:layout_below="@+id/layout_cardViews"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/light_gray"
+                app:strokeColor="@color/extra_light_gray"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -130,6 +131,7 @@
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:scrollbars="none"
                         android:id="@+id/scrollViewCategories">
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -197,7 +199,7 @@
                 android:id="@+id/cardViewNearby"
                 android:layout_below="@+id/cardViewCategories"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/light_gray"
+                app:strokeColor="@color/extra_light_gray"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -247,7 +249,7 @@
                 android:id="@+id/cardViewFavourite"
                 android:layout_below="@+id/cardViewNearby"
                 app:strokeWidth="1dp"
-                app:strokeColor="@color/light_gray"
+                app:strokeColor="@color/extra_light_gray"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -290,12 +292,6 @@
                     </HorizontalScrollView>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/large_text"
-                android:layout_below="@+id/cardViewFavourite"/>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 

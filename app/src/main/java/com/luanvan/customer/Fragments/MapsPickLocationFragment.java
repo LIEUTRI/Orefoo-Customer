@@ -50,6 +50,7 @@ import com.luanvan.customer.Adapter.RecyclerViewAddressAdapter;
 import com.luanvan.customer.MainActivity;
 import com.luanvan.customer.R;
 import com.luanvan.customer.components.CalculateDistanceTime;
+import com.luanvan.customer.components.ConnectionStateMonitor;
 import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.UserLocation;
 
@@ -210,8 +211,8 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
         distance_task.setLoadListener(new CalculateDistanceTime.taskCompleteListener() {
             @Override
             public void taskCompleted(String[] distance) {
-                Log.i("Distance" , distance[0]);
-                Log.i("Distance" , distance[1]);
+                Log.i("Distance" , distance[0]+"");
+                Log.i("Distance" , distance[1]+"");
                 Toast.makeText(getActivity(), "Distance: "+distance[0]+"\nTime: "+distance[1], Toast.LENGTH_LONG).show();
             }
         });

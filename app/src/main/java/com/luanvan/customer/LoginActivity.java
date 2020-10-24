@@ -3,11 +3,17 @@ package com.luanvan.customer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -16,6 +22,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,55 +34,257 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
-    LoginButton loginButton;
-    MaterialToolbar toolbar;
+    private Button btnLogin;
+    private EditText etUsername, etPassword;
+    private LoginButton btnFBLogin;
+    private MaterialToolbar toolbar;
+    private TextView tvGotoSignup;
+    private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
 
     CallbackManager callbackManager;
     String token;
-    String bearer;
+
+    String username;
+    String password;
+
+    private final String loginURL = "https://orefoo.herokuapp.com/login";
+    private final String consumerURL = "https://orefoo.herokuapp.com/consumer";
+
+    private final String MY_PREF = "my_preferences";
+    private final String KEY_BEARER = "bearer";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        /////////////////////////////////////////////////////
-        // Initialize Facebook Login button
-        callbackManager = CallbackManager.Factory.create();
-        loginButton = (LoginButton) findViewById(R.id.fb_login_button);
+        btnLogin = findViewById(R.id.btn_login);
+        btnFBLogin = findViewById(R.id.fb_login);
         toolbar = findViewById(R.id.toolbarLogin);
-        loginButton.setReadPermissions(Arrays.asList("email","public_profile"));
+        etUsername = findViewById(R.id.etUsername);
+        etPassword = findViewById(R.id.etPassword);
+        tvGotoSignup = findViewById(R.id.tvGotoSignup);
+        layoutProgressBar = findViewById(R.id.layoutProgressBar);
 
-        // Callback registration
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.i("token", loginResult.getAccessToken().getToken()+"");
-                token = loginResult.getAccessToken().getToken();
-                GetTokenTask sendData = new GetTokenTask();
-                sendData.execute();
-            }
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(250, 250);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        layoutProgressBar.addView(progressBar, params);
+        progressBar.setVisibility(View.INVISIBLE);
 
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCancel() {
-                // App code
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                Log.d("TAG", "onError: "+exception.getMessage());
+            public void onClick(View v) {
+                username = etUsername.getText().toString();
+                password = etPassword.getText().toString();
+                LoginTask loginTask = new LoginTask();
+                loginTask.execute();
             }
         });
+
+        tvGotoSignup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, SignupActivity.class));
+            }
+        });
+        /////////////////////////////////////////////////////
+//        // Initialize Facebook Login button
+//        callbackManager = CallbackManager.Factory.create();
+//        fbLoginButton.setReadPermissions(Arrays.asList("email","public_profile"));
+//
+//        // Callback registration
+//        fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                Log.i("token", loginResult.getAccessToken().getToken()+"");
+//                token = loginResult.getAccessToken().getToken();
+//                GetTokenTask sendData = new GetTokenTask();
+//                sendData.execute();
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                // App code
+//            }
+//
+//            @Override
+//            public void onError(FacebookException exception) {
+//                Log.d("TAG", "onError: "+exception.getMessage());
+//            }
+//        });
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+    }
+
+    private class LoginTask extends AsyncTask<String,String,String> {
+
+        OutputStream os;
+        InputStream is;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            //http post
+            try {
+                URL url = new URL(loginURL);
+
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("username", username);
+                jsonObject.put("password", password);
+                String data = jsonObject.toString();
+
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+                connection.setRequestProperty("Authorization", "application/json;charset=utf-8");
+                connection.setDoOutput(true);
+                connection.setReadTimeout(10000);
+                connection.setConnectTimeout(15000);
+                connection.setFixedLengthStreamingMode(data.getBytes().length);
+                connection.connect();
+
+                os = new BufferedOutputStream(connection.getOutputStream());
+                os.write(data.getBytes());
+                os.flush();
+
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", statusCode+"");
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                } else {
+                    is = connection.getErrorStream();
+                }
+
+                JSONObject json = new JSONObject();
+                json.put("status", statusCode);
+
+                if (statusCode == HttpURLConnection.HTTP_OK){
+                    json.put("token", connection.getHeaderField("Authorization"));
+                    return json.toString();
+                } else if (statusCode == 403){
+                    return json.toString();
+                }
+                return null;
+
+            } catch (SocketTimeoutException e) {
+                Toast.makeText(LoginActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
+            } catch (IOException | JSONException e){
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (os!=null) os.close();
+                    if (is!=null) is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (connection != null) connection.disconnect();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            progressBar.setVisibility(View.INVISIBLE);
+
+            if (s == null) return;
+
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                if (jsonObject.getString("status").equals("200")){
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.login_success), Toast.LENGTH_LONG).show();
+                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREF, MODE_PRIVATE).edit();
+                    editor.putString(KEY_BEARER, jsonObject.getString("token"));
+                    editor.apply();
+
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } else if (jsonObject.getString("status").equals("403")){
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.incorrect_username_password), Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.login_failed), Toast.LENGTH_LONG).show();
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class GetUserDataTask extends AsyncTask<String, String, String> {
+
+        protected String doInBackground(String... params) {
+
+
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(consumerURL);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("Authorization", params[0]);
+                connection.connect();
+
+                InputStream stream = connection.getInputStream();
+
+                reader = new BufferedReader(new InputStreamReader(stream));
+
+                StringBuilder buffer = new StringBuilder();
+                String line = "";
+
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line).append("\n");
+                    Log.d("Response: ", "> " + line);
+
+                }
+                return buffer.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+
+//            try {
+//                JSONObject user = new JSONObject(result);
+//                Toast.makeText(LoginActivity.this, "Hello "+user.getString("firstname"), Toast.LENGTH_LONG).show();
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+        }
     }
 
     @Override
@@ -95,7 +304,7 @@ public class LoginActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
             //http post
             try {
-                URL url = new URL("https://fb-lieutri.herokuapp.com/api/auth/login/facebook");
+                URL url = new URL(loginURL);
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("authToken", token);
@@ -153,12 +362,11 @@ public class LoginActivity extends AppCompatActivity {
             if (s != null){
                 try {
                     JSONObject jsonObject = new JSONObject(s);
-                    bearer = jsonObject.getString("token");
+                    String bearer = jsonObject.getString("token");
+                    new GetData().execute(bearer);
                 }catch (JSONException err){
                     Log.d("Error", err.toString());
                 }
-
-                new GetData().execute();
             }
         }
     }
@@ -176,11 +384,11 @@ public class LoginActivity extends AppCompatActivity {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL("https://fb-lieutri.herokuapp.com/api/profile/userdetails");
+                URL url = new URL(loginURL);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Accept", "application/json;charset=utf-8");
-                connection.setRequestProperty("Authorization", bearer);
+                connection.setRequestProperty("Authorization", params[0]);
                 connection.connect();
 
                 InputStream stream = connection.getInputStream();

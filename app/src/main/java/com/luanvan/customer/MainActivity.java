@@ -11,12 +11,16 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -29,6 +33,7 @@ import com.luanvan.customer.Adapter.ViewPagerFragmentAdapter;
 import com.luanvan.customer.Fragments.HomeFragment;
 import com.luanvan.customer.Fragments.MeFragment;
 import com.luanvan.customer.Fragments.OrderFragment;
+import com.luanvan.customer.components.ConnectionStateMonitor;
 
 import java.util.ArrayList;
 
@@ -107,6 +112,13 @@ public class MainActivity extends AppCompatActivity {
                 updateIconUI(tvMe);
             }
         });
+
+        if (!isNetworkConnecting()){
+            Toast.makeText(this, getResources().getString(R.string.check_internet_connection), Toast.LENGTH_LONG).show();
+        }
+
+        ConnectionStateMonitor monitor = new ConnectionStateMonitor();
+        monitor.enable(this);
     }
 
     private void setTextViewDrawableColor(TextView textView, int color){
@@ -149,6 +161,19 @@ public class MainActivity extends AppCompatActivity {
                 tvOrder.setTextColor(getResources().getColor(R.color.defaultIconColor));
                 break;
         }
+    }
+
+    public boolean isNetworkConnecting(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network activeNetwork = connectivityManager.getActiveNetwork();
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork);
+        if (networkCapabilities != null) {
+            boolean cellular = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
+            boolean wifi = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+            return wifi || cellular;
+        }
+
+        return false;
     }
 
     @Override

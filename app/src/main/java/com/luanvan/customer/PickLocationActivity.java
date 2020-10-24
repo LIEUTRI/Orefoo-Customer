@@ -38,6 +38,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.luanvan.customer.Adapter.RecyclerViewAddressAdapter;
 import com.luanvan.customer.Fragments.MapsFragment;
 import com.luanvan.customer.Fragments.MapsPickLocationFragment;
+import com.luanvan.customer.components.ConnectionStateMonitor;
+import com.luanvan.customer.components.NetworkState;
 import com.luanvan.customer.components.UserLocation;
 
 import org.json.JSONArray;
@@ -88,30 +90,27 @@ public class PickLocationActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        if (!isNetworkConnecting()){
-            Toast.makeText(this, getResources().getString(R.string.check_internet_connection), Toast.LENGTH_SHORT).show();
-        } else {
-            etSearch.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (ConnectionStateMonitor.networkState != NetworkState.STATE_AVAILABLE) return;
+                if (count > 0){
+                    if (task != null) task.cancel(true);
+                    task = new SearchLocation(PickLocationActivity.this, s.toString());
+                    task.execute();
                 }
+            }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (count > 0){
-                        if (task != null) task.cancel(true);
-                        task = new SearchLocation(PickLocationActivity.this, s.toString());
-                        task.execute();
-                    }
-                }
+            @Override
+            public void afterTextChanged(Editable s) {
 
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
-        }
+            }
+        });
 
     }
 
@@ -124,11 +123,11 @@ public class PickLocationActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private class SearchLocation extends AsyncTask<List<Address>, String, List<Address>>{
+    private class SearchLocation extends AsyncTask<List<Address>, String, List<Address>> {
         private Context context;
         private String address;
 
-        public SearchLocation(Context context, String address){
+        public SearchLocation(Context context, String address) {
             this.context = context;
             this.address = address;
         }
@@ -138,13 +137,10 @@ public class PickLocationActivity extends AppCompatActivity {
         protected List<Address> doInBackground(List<Address>... lists) {
             Geocoder geoCoder = new Geocoder(context, Locale.getDefault());
             List<Address> addresses = null;
-            try
-            {
+            try {
                 addresses = geoCoder.getFromLocationName(address, 5);
 
-            }
-            catch (IOException e)
-            {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return addresses;
@@ -153,9 +149,9 @@ public class PickLocationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<Address> addresses) {
             super.onPostExecute(addresses);
-            if (addresses != null && addresses.size() > 0){
+            if (addresses != null && addresses.size() > 0) {
                 listUserLocation.clear();
-                for (Address address: addresses){
+                for (Address address : addresses) {
                     double lat = address.getLatitude();
                     double lng = address.getLongitude();
                     currentAddress = address.getFeatureName();
@@ -168,19 +164,6 @@ public class PickLocationActivity extends AppCompatActivity {
                 recyclerView.setAdapter(new RecyclerViewAddressAdapter(PickLocationActivity.this, listUserLocation));
             }
         }
-    }
-
-    public boolean isNetworkConnecting(){
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        Network activeNetwork = connectivityManager.getActiveNetwork();
-        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork);
-        if (networkCapabilities != null) {
-            boolean cellular = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
-            boolean wifi = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
-            return wifi || cellular;
-        }
-
-        return false;
     }
 
     @Override

@@ -40,7 +40,6 @@ public class DistanceTimeParser {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (Exception e) {
         }
 
         return routes;
