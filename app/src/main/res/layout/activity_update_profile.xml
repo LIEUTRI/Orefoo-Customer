@@ -4,20 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".LoginActivity"
-    android:id="@+id/layoutProgressBar">
+    tools:context=".LoginActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/layoutAppBar">
-        <com.google.android.material.appbar.MaterialToolbar
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:title="@string/info_and_contact"
-            app:titleTextColor="#FFFFFF"
-            android:id="@+id/toolbar" />
+            android:layout_height="match_parent">
+            <com.google.android.material.appbar.MaterialToolbar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="@string/info_and_contact"
+                app:titleTextColor="#FFFFFF"
+                android:id="@+id/toolbar"
+                android:layout_toStartOf="@+id/layoutProgressBar"
+                android:layout_alignParentStart="true"/>
+            <RelativeLayout
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/layoutProgressBar"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="10dp"/>
+        </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout

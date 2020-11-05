@@ -16,9 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".UpdateProfileActivity"></activity>
+        <activity android:name=".CheckoutActivity"></activity>
+        <activity android:name=".RestaurantActivity" />
+        <activity android:name=".UpdateProfileActivity" />
         <activity android:name=".ManagerProfileActivity" />
-        <activity android:name=".SignupActivity" />
+        <activity
+            android:name=".SignupActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -35,7 +39,9 @@
         <activity android:name=".TrackShipperActivity" />
         <activity android:name=".SearchActivity" />
         <activity android:name=".PaymentActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

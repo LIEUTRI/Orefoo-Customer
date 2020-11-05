@@ -135,6 +135,8 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RequestsCode.REQUEST_LOCATION_GPS && resultCode == Activity.RESULT_OK && data != null){
+
+            // refresh fragment to update UI
             Fragment fragment = Objects.requireNonNull(getActivity()).getSupportFragmentManager().findFragmentByTag("MapsPickLocationFragment");
             final FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
             if (fragment != null) {
@@ -200,7 +202,7 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
 
     public void markLocation(double latitude, double longitude, String title){
         if (map == null) return;
-
+        Log.i("toado", latitude+","+longitude);
         LatLng latLng = new LatLng(latitude, longitude);
         map.clear();
         map.addMarker(new MarkerOptions().position(latLng).title(title).icon(bitmapDescriptorFromVector(getActivity(), R.drawable.ic_mark_location)));

@@ -15,14 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.widget.Toolbar;
 
 import com.auth0.android.jwt.JWT;
 import com.google.android.material.button.MaterialButton;
@@ -30,6 +27,8 @@ import com.luanvan.customer.LoginActivity;
 import com.luanvan.customer.ManagerProfileActivity;
 import com.luanvan.customer.PaymentActivity;
 import com.luanvan.customer.R;
+import com.luanvan.customer.SignupActivity;
+import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,30 +41,12 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MeFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
     private MaterialButton btnLogin, btnSignup;
     private TextView tvPayment, tvAddress, tvManagerProfile, tvLogout;
     private RelativeLayout layoutProgressBar;
     private LinearLayout layoutNotLogin, layoutLogin;
     private TextView tvUsername, tvName;
-
-    private final String consumerURL = "https://orefoo.herokuapp.com/user/consumer";
-    private final String MY_PREF = "my_preferences";
-    private final String KEY_BEARER = "bearer";
     private String token = "";
     private String user = "";
 
@@ -80,31 +61,9 @@ public class MeFragment extends Fragment {
     private ProgressBar progressBar;
     public MeFragment() { }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MeFragment newInstance(String param1, String param2) {
-        MeFragment fragment = new MeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -123,6 +82,7 @@ public class MeFragment extends Fragment {
         tvName = view.findViewById(R.id.tvName);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -131,11 +91,10 @@ public class MeFragment extends Fragment {
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(250, 250);
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
         layoutProgressBar.addView(progressBar, params);
-        layoutProgressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MY_PREF, Context.MODE_PRIVATE);
-        token = sharedPreferences.getString(KEY_BEARER, "")+"";
-
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(Shared.KEY_BEARER, "")+"";
         if (!token.equals("")){
             // logged in
             String TOKEN_PREFIX = "Bearer ";
@@ -156,7 +115,7 @@ public class MeFragment extends Fragment {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                startActivity(new Intent(getActivity(), SignupActivity.class));
             }
         });
         tvPayment.setOnClickListener(new View.OnClickListener() {
@@ -183,8 +142,8 @@ public class MeFragment extends Fragment {
         tvLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = getActivity().getSharedPreferences(MY_PREF, Context.MODE_PRIVATE).edit();
-                editor.putString(KEY_BEARER, "");
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE).edit();
+                editor.putString(Shared.KEY_BEARER, "");
                 editor.apply();
 
                 Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.logout_success), Toast.LENGTH_LONG).show();
@@ -204,10 +163,15 @@ public class MeFragment extends Fragment {
     }
 
     private class GetUserDataTask extends AsyncTask<String, String, String> {
+        private final String consumerURL = "https://orefoo.herokuapp.com/user/consumer";
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         protected String doInBackground(String... params) {
-
-
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
@@ -270,22 +234,26 @@ public class MeFragment extends Fragment {
                 consumerID = consumer.getString("id");
 
                 tvUsername.setText(username);
-                tvName.setText(lastName+" "+firstName);
+                tvName.setText(firstName.equals("empty")&&lastName.equals("empty") ? "(empty)":lastName+" "+firstName);
+
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE).edit();
+                editor.putString("firstName", firstName);
+                editor.putString("lastName", lastName);
+                editor.putString("username", username);
+                editor.apply();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onResume() {
-        layoutNotLogin.setVisibility(View.INVISIBLE);
-        layoutLogin.setVisibility(View.INVISIBLE);
-        progressBar.setVisibility(View.VISIBLE);
-
-        if (token != null){
-            new GetUserDataTask().execute(token, user);
-        }
+        if (getActivity()==null || tvName == null) return;
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE);
+        tvName.setText(sharedPreferences.getString("lastName", "")+" "+sharedPreferences.getString("firstName", ""));
+        tvUsername.setText(sharedPreferences.getString("username", ""));
         super.onResume();
     }
 }

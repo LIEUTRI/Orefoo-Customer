@@ -20,7 +20,7 @@
     <string name="test_email">test@test.com</string>
     <string name="test_password">testpassword</string>
     <string name="firebase_path">location</string>
-    <string name="large_text">Material is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. END</string>
+    <string name="large_text">Material is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the best Material is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable syMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the bestMaterial is an adaptable system of guidelines, components, and tools that support the best practices of user interface design. END</string>
     <string name="titleCategories">CHỌN THEO THỂ LOẠI</string>
     <string name="seemore">Xem thêm</string>
     <string name="mainmeal">Bữa ăn chính</string>
@@ -75,4 +75,24 @@
     <string name="logout_success">Đã đăng xuất!</string>
     <string name="conflict_phone">Số điện thoại đã được sử dụng!</string>
     <string name="conflict_email">Email đã được sử dụng!</string>
+    <string name="no_permission">Bạn không có quyền truy cập</string>
+    <string name="info">Thông tin</string>
+    <string name="comment">Bình luận</string>
+    <string name="titleSuggest">GỢI Ý CHO BẠN</string>
+    <string name="checkout">Đặt món</string>
+    <string name="confirm_order">Xác nhận đơn hàng</string>
+    <string name="delivery">Giao hàng</string>
+    <string name="cash">Tiền mặt</string>
+    <string name="cart">Giỏ hàng</string>
+    <string name="difference_branch_message">Nếu bạn đồng ý đổi cửa hàng, giỏ hàng hiện tại sẽ được dọn dẹp để thêm món mới.</string>
+    <string name="too_far">Khoảng cách quá xa</string>
+    <string name="difference_branch_title">Khác cửa hàng</string>
+    <string name="yes">Đồng ý</string>
+    <string name="see_cart">Xem giỏ hàng</string>
+    <string name="close">Đóng</string>
+    <string name="ok">OK</string>
+    <string name="too_far_message">Để đảm bảo chất lượng sản phẩm, chúng tôi không hổ trợ giao hàng trên 10km.\nCảm ơn bạn đã sử dụng Orefoo.</string>
+    <string name="add">Thêm</string>
+    <string name="sum">Tổng</string>
+    <string name="total">Tổng cộng</string>
 </resources>

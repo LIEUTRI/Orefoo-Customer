@@ -38,7 +38,7 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Email"
+                android:hint="@string/username"
                 android:imeOptions="actionNext"
                 android:id="@+id/etUsername"
                 android:inputType="textEmailAddress"/>

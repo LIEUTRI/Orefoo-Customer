@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/ivVictual"
+        android:layout_alignParentStart="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dish"
+        android:maxLines="2"
+        android:textSize="16sp"
+        android:textColor="#000000"
+        android:id="@+id/tvName"
+        android:layout_toEndOf="@+id/ivVictual"
+        android:layout_toStartOf="@+id/btnAdd"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvPrice"
+        android:text="10.000"
+        android:textSize="18sp"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:layout_below="@+id/tvName"
+        android:layout_toEndOf="@+id/ivVictual"
+        android:layout_toStartOf="@+id/btnAdd"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvPriceOrigin"
+        android:text="10.000"
+        android:textSize="16sp"
+        android:layout_below="@+id/tvPrice"
+        android:layout_toEndOf="@+id/ivVictual"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
+
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvQuantity"
+        android:text="0"
+        android:textSize="25sp"
+        android:textColor="#000000"
+        android:layout_alignBottom="@+id/ivVictual"
+        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"/>
+</RelativeLayout>

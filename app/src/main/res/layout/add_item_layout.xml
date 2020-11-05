@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layoutItem">
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/ivVictual"
+            android:layout_alignParentStart="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="2"
+            android:textSize="16sp"
+            android:textColor="#000000"
+            android:id="@+id/tvName"
+            android:layout_toEndOf="@+id/ivVictual"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvPrice"
+            android:text="10.000"
+            android:textSize="18sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_below="@+id/tvName"
+            android:layout_toEndOf="@+id/ivVictual"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvPriceOrigin"
+            android:text="10.000"
+            android:textSize="16sp"
+            android:layout_below="@+id/tvPrice"
+            android:layout_toEndOf="@+id/ivVictual"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutItem"
+        android:layout_marginTop="30dp"
+        android:id="@+id/layoutAdd">
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_remove_circle_outline_24"
+            android:id="@+id/btnRemove"
+            android:layout_alignParentStart="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvQuantity"
+            android:text="1"
+            android:textSize="25sp"
+            android:textColor="#000000"
+            android:layout_toEndOf="@id/btnRemove"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:layout_alignTop="@+id/btnRemove"
+            android:layout_alignBottom="@id/btnRemove"
+            android:gravity="center"/>
+        <ImageButton
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_add_circle_outline_24"
+            android:layout_toEndOf="@+id/tvQuantity"
+            android:id="@+id/btnAdd"
+            android:layout_marginEnd="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnAddItem"
+            android:layout_alignParentEnd="true"
+            android:text="Them 0d"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/bg_cart"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_below="@+id/btnAdd"/>
+    </RelativeLayout>
+    <ImageButton
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/btnClose"
+        android:background="@drawable/ic_close_24"
+        android:layout_below="@+id/layoutAdd"
+        android:layout_marginTop="10dp" />
+</RelativeLayout>

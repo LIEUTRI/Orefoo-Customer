@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/layoutProgressBar">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recyclerView"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/layoutBottomSheet"/>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/layoutBottomSheet"
+            android:overScrollMode="never">
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:id="@+id/bottomSheetCoordinatorLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:behavior_hideable="true"
+                app:behavior_peekHeight="60dp"
+                app:layout_behavior="@string/bottom_sheet_behavior">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:id="@+id/layoutTotal"
+                    android:layout_alignParentBottom="true">
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@id/btnCheckout"
+                        android:layout_alignParentStart="true"
+                        android:id="@+id/layoutTotalPrice">
+                        <ImageView
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:src="@drawable/ic_baseline_shopping_cart_24"
+                            android:id="@+id/ivCart"/>
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toEndOf="@id/ivCart"
+                            android:layout_alignTop="@+id/ivCart"
+                            android:layout_alignBottom="@id/ivCart"
+                            android:gravity="center_vertical|start"
+                            android:paddingStart="20dp"
+                            android:paddingEnd="20dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/tvTotal"
+                                android:text="0đ"
+                                android:textSize="20sp"
+                                android:textColor="#000000" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/tvTotalOrigin"
+                                android:textSize="16sp"
+                                android:layout_below="@id/tvTotal"/>
+                        </RelativeLayout>
+                    </RelativeLayout>
+
+                    <TextView
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/checkout"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignBottom="@id/layoutTotalPrice"
+                        android:layout_alignTop="@id/layoutTotalPrice"
+                        android:gravity="center"
+                        android:textSize="18sp"
+                        android:fontFamily="sans-serif-light"
+                        android:layout_marginEnd="10dp"
+                        android:id="@+id/btnCheckout"
+                        android:background="@drawable/bg_cart"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"/>
+                </RelativeLayout>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

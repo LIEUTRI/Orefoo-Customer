@@ -10,19 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.textfield.TextInputEditText;
+import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +32,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -54,11 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     String username;
     String password;
 
-    private final String loginURL = "https://orefoo.herokuapp.com/login";
-    private final String consumerURL = "https://orefoo.herokuapp.com/consumer";
-
-    private final String MY_PREF = "my_preferences";
-    private final String KEY_BEARER = "bearer";
+    private String loginURL = "https://orefoo.herokuapp.com/login";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 
         OutputStream os;
         InputStream is;
+        JSONObject json = new JSONObject();
 
         @Override
         protected void onPreExecute() {
@@ -172,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
                     is = connection.getErrorStream();
                 }
 
-                JSONObject json = new JSONObject();
+                json = new JSONObject();
                 json.put("status", statusCode);
 
                 if (statusCode == HttpURLConnection.HTTP_OK){
@@ -184,7 +176,12 @@ public class LoginActivity extends AppCompatActivity {
                 return null;
 
             } catch (SocketTimeoutException e) {
-                Toast.makeText(LoginActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
+                try {
+                    json.put("status", 0);
+                    return json.toString();
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
             } catch (IOException | JSONException e){
                 e.printStackTrace();
             } finally {
@@ -210,80 +207,26 @@ public class LoginActivity extends AppCompatActivity {
 
             try {
                 JSONObject jsonObject = new JSONObject(s);
-                if (jsonObject.getString("status").equals("200")){
+                int statusCode = jsonObject.getInt("status");
+                if (statusCode == 200){
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.login_success), Toast.LENGTH_LONG).show();
-                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREF, MODE_PRIVATE).edit();
-                    editor.putString(KEY_BEARER, jsonObject.getString("token"));
+                    SharedPreferences.Editor editor = getSharedPreferences(Shared.TOKEN, MODE_PRIVATE).edit();
+                    editor.putString(Shared.KEY_BEARER, jsonObject.getString("token"));
                     editor.apply();
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                } else if (jsonObject.getString("status").equals("403")){
+                } else if (statusCode == 403){
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.incorrect_username_password), Toast.LENGTH_LONG).show();
+                } else if(statusCode == 0){
+                    Toast.makeText(LoginActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.login_failed), Toast.LENGTH_LONG).show();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private class GetUserDataTask extends AsyncTask<String, String, String> {
-
-        protected String doInBackground(String... params) {
-
-
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-
-            try {
-                URL url = new URL(consumerURL);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("Authorization", params[0]);
-                connection.connect();
-
-                InputStream stream = connection.getInputStream();
-
-                reader = new BufferedReader(new InputStreamReader(stream));
-
-                StringBuilder buffer = new StringBuilder();
-                String line = "";
-
-                while ((line = reader.readLine()) != null) {
-                    buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
-
-                }
-                return buffer.toString();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-//            try {
-//                JSONObject user = new JSONObject(result);
-//                Toast.makeText(LoginActivity.this, "Hello "+user.getString("firstname"), Toast.LENGTH_LONG).show();
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
         }
     }
 

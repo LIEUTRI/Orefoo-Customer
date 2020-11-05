@@ -3,8 +3,11 @@ package com.luanvan.customer;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +20,7 @@ import android.widget.Toast;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.luanvan.customer.components.RequestsCode;
+import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,8 +44,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private final String consumerURL = "https://orefoo.herokuapp.com/consumer";
-    private final String MY_PREF = "my_preferences";
-    private final String KEY_BEARER = "bearer";
+
     String username = "";
     String firstName = "";
     String lastName = "";
@@ -68,9 +71,10 @@ public class UpdateProfileActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         layoutProgressBar = findViewById(R.id.layoutProgressBar);
 
-        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(250, 250);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
         params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
         layoutProgressBar.addView(progressBar, params);
         progressBar.setVisibility(View.INVISIBLE);
 
@@ -109,8 +113,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
         etMonth.setText(month);
         etYear.setText(year);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(MY_PREF, MODE_PRIVATE);
-        final String token = sharedPreferences.getString(KEY_BEARER, "")+"";
+        SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, MODE_PRIVATE);
+        final String token = sharedPreferences.getString(Shared.KEY_BEARER, "");
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,6 +239,12 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 intent.putExtra("gender", gender);
                 intent.putExtra("dayOfBirth", dayOfBirth);
                 setResult(Activity.RESULT_OK, intent);
+
+                SharedPreferences.Editor editor = getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE).edit();
+                editor.putString("firstName", firstName);
+                editor.putString("lastName", lastName);
+                editor.putString("username", username);
+                editor.apply();
             } else {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
