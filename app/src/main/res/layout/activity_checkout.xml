@@ -161,7 +161,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Phí giao hàng (0 km)"
+                                android:text="@string/shipping_fee"
                                 android:textColor="#000000"
                                 android:textSize="20sp"
                                 android:textStyle="bold"
@@ -235,7 +235,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/payment"
+                android:text="@string/confirm_order"
                 android:textSize="25sp"
                 android:textColor="#FFFFFF"
                 android:background="@color/com_facebook_blue"
@@ -243,7 +243,7 @@
                 android:gravity="center"
                 android:layout_margin="10dp"
                 android:padding="10dp"
-                android:id="@+id/tvPay"/>
+                android:id="@+id/btnConfirmOrder"/>
         </LinearLayout>
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

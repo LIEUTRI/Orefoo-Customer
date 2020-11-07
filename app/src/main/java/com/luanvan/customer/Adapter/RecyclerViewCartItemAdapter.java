@@ -64,7 +64,7 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerViewCartItemAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerViewCartItemAdapter.ViewHolder holder, final int position) {
         final CartItem cartItem = list.get(position);
         RequestOptions options = new RequestOptions()
                                     .centerCrop()
@@ -107,6 +107,11 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
                     new UpdateQuantityTask().execute(cartItem.getId()+"", quantity+"");
                 } else {
                     new DeleteCartItemTask().execute(cartItem.getId()+"");
+                    removeAt(position);
+                    // finish activity
+                    if (activity.getClass().getSimpleName().equals("CheckoutActivity")){
+                        activity.finish();
+                    }
                 }
             }
         });
@@ -117,6 +122,9 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
         if ("CheckoutActivity".equals(context.getClass().getSimpleName())) {
             CheckoutActivity.totalPriceVictuals += price - discount;
             CheckoutActivity.tvTotal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals) + "đ");
+            CheckoutActivity.tvTotalFinal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals-CheckoutActivity.shippingFee) + "đ");
+            CheckoutActivity.portion += 1;
+            CheckoutActivity.tvTotalVictuals.setText(activity.getResources().getString(R.string.sum)+" ("+CheckoutActivity.portion+" "+activity.getResources().getString(R.string.portion)+")");
         } else {
             CartDialog.totalPriceVictuals += price - discount;
             CartDialog.totalPriceVictualsOrigin += price;
@@ -129,6 +137,9 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
         if ("CheckoutActivity".equals(context.getClass().getSimpleName())) {
             CheckoutActivity.totalPriceVictuals -= price - discount;
             CheckoutActivity.tvTotal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals) + "đ");
+            CheckoutActivity.tvTotalFinal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals-CheckoutActivity.shippingFee) + "đ");
+            CheckoutActivity.portion -= 1;
+            CheckoutActivity.tvTotalVictuals.setText(activity.getResources().getString(R.string.sum)+" ("+CheckoutActivity.portion+" "+activity.getResources().getString(R.string.portion)+")");
         } else {
             CartDialog.totalPriceVictuals -= price - discount;
             CartDialog.totalPriceVictualsOrigin -= price;
@@ -161,6 +172,11 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
         return list.size();
     }
 
+    public void removeAt(int position) {
+        list.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, list.size());
+    }
     // Update & Delete////////////////////////////////////////
     @SuppressLint("StaticFieldLeak")
     class UpdateQuantityTask extends AsyncTask<String,String,String> {

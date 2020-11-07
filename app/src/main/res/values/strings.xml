@@ -80,7 +80,7 @@
     <string name="comment">Bình luận</string>
     <string name="titleSuggest">GỢI Ý CHO BẠN</string>
     <string name="checkout">Đặt món</string>
-    <string name="confirm_order">Xác nhận đơn hàng</string>
+    <string name="confirm_orders">Xác nhận đơn hàng</string>
     <string name="delivery">Giao hàng</string>
     <string name="cash">Tiền mặt</string>
     <string name="cart">Giỏ hàng</string>
@@ -95,4 +95,10 @@
     <string name="add">Thêm</string>
     <string name="sum">Tổng</string>
     <string name="total">Tổng cộng</string>
+    <string name="shipping_fee">Phí giao hàng</string>
+    <string name="portion">phần</string>
+    <string name="cart_empty">Giỏ hàng trống</string>
+    <string name="confirm_order">Xác nhận đặt hàng</string>
+    <string name="order_success">Đặng hàng thành công</string>
+    <string name="order_failed">Đặt hàng không thành công</string>
 </resources>

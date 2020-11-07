@@ -2,6 +2,7 @@ package com.luanvan.customer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -118,6 +119,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class LoginTask extends AsyncTask<String,String,String> {
 
         OutputStream os;

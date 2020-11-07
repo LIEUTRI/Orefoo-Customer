@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -39,7 +40,7 @@ public class RestaurantActivity extends AppCompatActivity {
     private String openTime, closeTime;
     private String address;
     private Boolean isSell;
-    private String id;
+    private int id;
     private double latitude, longitude;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +60,12 @@ public class RestaurantActivity extends AppCompatActivity {
         closeTime = getIntent().getStringExtra("closeTime");
         address = getIntent().getStringExtra("address");
         isSell = getIntent().getBooleanExtra("isSell", true);
-        id = getIntent().getStringExtra("id");
+        id = getIntent().getIntExtra("id", -1);
         latitude = getIntent().getDoubleExtra("lat", 0);
         longitude = getIntent().getDoubleExtra("lng", 0);
 
         SharedPreferences.Editor editor = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
-        editor.putString(Shared.KEY_LATITUDE, latitude+"");
-        editor.putString(Shared.KEY_LONGITUDE, longitude+"");
+        editor.putString(Shared.KEY_BRANCH_NAME, name);
         editor.apply();
 
         // default fragment
@@ -117,6 +117,7 @@ public class RestaurantActivity extends AppCompatActivity {
         new GetCartTask().execute(token, sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1)+"");
     }
 
+    @SuppressLint("StaticFieldLeak")
     class GetCartTask extends AsyncTask<String,String,String> {
         private InputStream is;
         private final String victualsURL = "https://orefoo.herokuapp.com/cart?consumer-id=";
@@ -146,7 +147,7 @@ public class RestaurantActivity extends AppCompatActivity {
                 String line = "";
                 while ((line = reader.readLine()) != null){
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseGetCartTask: ", "> " + line);
                 }
 
                 return buffer.toString();

@@ -46,10 +46,13 @@ import com.luanvan.customer.PickLocationActivity;
 import com.luanvan.customer.R;
 import com.luanvan.customer.RestaurantActivity;
 import com.luanvan.customer.SearchActivity;
+import com.luanvan.customer.components.Branch;
 import com.luanvan.customer.components.CartDialog;
+import com.luanvan.customer.components.CustomSwipeToRefresh;
 import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
+import com.luanvan.customer.components.SortPlaces;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,6 +67,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -85,24 +90,13 @@ public class HomeFragment extends Fragment {
     private String consumerLocation = "";
     private String token = "";
     private int cartId;
+    private ArrayList<Branch> branches = new ArrayList<>();
 
     public static LatLng currentLocation;
     private String addressLine = "";
 
-    private String name1, name2, name3, name4, name5;
-    private String address1, address2, address3, address4, address5;
-    private String id1, id2, id3, id4, id5;
-    private String imgURL1, imgURL2, imgURL3, imgURL4, imgURL5;
-    private String phone1, phone2, phone3, phone4, phone5;
-    private Boolean isSell1, isSell2, isSell3, isSell4, isSell5;
-    private String openTime1, openTime2, openTime3, openTime4, openTime5;
-    private String closeTime1, closeTime2, closeTime3, closeTime4, closeTime5;
-    private LatLng latLng1, latLng2, latLng3, latLng4, latLng5;
-
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
-
-    private RequestOptions options;
 
     public HomeFragment() { }
 
@@ -180,16 +174,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-                intent.putExtra("name", name1);
-                intent.putExtra("address", address1);
-                intent.putExtra("id", id1);
-                intent.putExtra("openTime", openTime1);
-                intent.putExtra("closeTime", closeTime1);
-                intent.putExtra("isSell", isSell1);
-                intent.putExtra("phone", phone1);
-                intent.putExtra("imgURL", imgURL1);
-                intent.putExtra("lat", latLng1.latitude);
-                intent.putExtra("lng", latLng1.longitude);
+                intent.putExtra("id", branches.get(0).getId());
+                intent.putExtra("name", branches.get(0).getName());
+                intent.putExtra("phone", branches.get(0).getPhoneNumber());
+                intent.putExtra("address", branches.get(0).getAddress());
+                intent.putExtra("imgURL", branches.get(0).getImageUrl());
+                intent.putExtra("openTime", branches.get(0).getOpeningTime());
+                intent.putExtra("closeTime", branches.get(0).getClosingTime());
+                intent.putExtra("isSell", branches.get(0).isSell());
+                intent.putExtra("lat", branches.get(0).getLatLng().latitude);
+                intent.putExtra("lng", branches.get(0).getLatLng().longitude);
                 startActivity(intent);
             }
         });
@@ -197,16 +191,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-                intent.putExtra("name", name2);
-                intent.putExtra("address", address2);
-                intent.putExtra("id", id2);
-                intent.putExtra("openTime", openTime2);
-                intent.putExtra("closeTime", closeTime2);
-                intent.putExtra("isSell", isSell2);
-                intent.putExtra("phone", phone2);
-                intent.putExtra("imgURL", imgURL2);
-                intent.putExtra("lat", latLng2.latitude);
-                intent.putExtra("lng", latLng2.longitude);
+                intent.putExtra("id", branches.get(1).getId());
+                intent.putExtra("name", branches.get(1).getName());
+                intent.putExtra("phone", branches.get(1).getPhoneNumber());
+                intent.putExtra("address", branches.get(1).getAddress());
+                intent.putExtra("imgURL", branches.get(1).getImageUrl());
+                intent.putExtra("openTime", branches.get(1).getOpeningTime());
+                intent.putExtra("closeTime", branches.get(1).getClosingTime());
+                intent.putExtra("isSell", branches.get(1).isSell());
+                intent.putExtra("lat", branches.get(1).getLatLng().latitude);
+                intent.putExtra("lng", branches.get(1).getLatLng().longitude);
                 startActivity(intent);
             }
         });
@@ -214,16 +208,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-                intent.putExtra("name", name3);
-                intent.putExtra("address", address3);
-                intent.putExtra("id", id3);
-                intent.putExtra("openTime", openTime3);
-                intent.putExtra("closeTime", closeTime3);
-                intent.putExtra("isSell", isSell3);
-                intent.putExtra("phone", phone3);
-                intent.putExtra("imgURL", imgURL3);
-                intent.putExtra("lat", latLng3.latitude);
-                intent.putExtra("lng", latLng3.longitude);
+                intent.putExtra("id", branches.get(2).getId());
+                intent.putExtra("name", branches.get(2).getName());
+                intent.putExtra("phone", branches.get(2).getPhoneNumber());
+                intent.putExtra("address", branches.get(2).getAddress());
+                intent.putExtra("imgURL", branches.get(2).getImageUrl());
+                intent.putExtra("openTime", branches.get(2).getOpeningTime());
+                intent.putExtra("closeTime", branches.get(2).getClosingTime());
+                intent.putExtra("isSell", branches.get(2).isSell());
+                intent.putExtra("lat", branches.get(2).getLatLng().latitude);
+                intent.putExtra("lng", branches.get(2).getLatLng().longitude);
                 startActivity(intent);
             }
         });
@@ -231,16 +225,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-                intent.putExtra("name", name4);
-                intent.putExtra("address", address4);
-                intent.putExtra("id", id4);
-                intent.putExtra("openTime", openTime4);
-                intent.putExtra("closeTime", closeTime4);
-                intent.putExtra("isSell", isSell4);
-                intent.putExtra("phone", phone4);
-                intent.putExtra("imgURL", imgURL4);
-                intent.putExtra("lat", latLng4.latitude);
-                intent.putExtra("lng", latLng4.longitude);
+                intent.putExtra("id", branches.get(3).getId());
+                intent.putExtra("name", branches.get(3).getName());
+                intent.putExtra("phone", branches.get(3).getPhoneNumber());
+                intent.putExtra("address", branches.get(3).getAddress());
+                intent.putExtra("imgURL", branches.get(3).getImageUrl());
+                intent.putExtra("openTime", branches.get(3).getOpeningTime());
+                intent.putExtra("closeTime", branches.get(3).getClosingTime());
+                intent.putExtra("isSell", branches.get(3).isSell());
+                intent.putExtra("lat", branches.get(3).getLatLng().latitude);
+                intent.putExtra("lng", branches.get(3).getLatLng().longitude);
                 startActivity(intent);
             }
         });
@@ -248,25 +242,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), RestaurantActivity.class);
-                intent.putExtra("name", name5);
-                intent.putExtra("address", address5);
-                intent.putExtra("id", id5);
-                intent.putExtra("openTime", openTime5);
-                intent.putExtra("closeTime", closeTime5);
-                intent.putExtra("isSell", isSell5);
-                intent.putExtra("phone", phone5);
-                intent.putExtra("imgURL", imgURL5);
-                intent.putExtra("lat", latLng5.latitude);
-                intent.putExtra("lng", latLng5.longitude);
+                intent.putExtra("id", branches.get(4).getId());
+                intent.putExtra("name", branches.get(4).getName());
+                intent.putExtra("phone", branches.get(4).getPhoneNumber());
+                intent.putExtra("address", branches.get(4).getAddress());
+                intent.putExtra("imgURL", branches.get(4).getImageUrl());
+                intent.putExtra("openTime", branches.get(4).getOpeningTime());
+                intent.putExtra("closeTime", branches.get(4).getClosingTime());
+                intent.putExtra("isSell", branches.get(4).isSell());
+                intent.putExtra("lat", branches.get(4).getLatLng().latitude);
+                intent.putExtra("lng", branches.get(4).getLatLng().longitude);
                 startActivity(intent);
             }
         });
-
-        // Glide - load image from url
-        options = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.drawable.loading)
-                .error(R.drawable.image_not_found);
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "")+"";
@@ -280,23 +268,12 @@ public class HomeFragment extends Fragment {
         layoutProgressBar.addView(progressBar, params);
         progressBar.setVisibility(View.VISIBLE);
 
-        final SwipeRefreshLayout pullToRefresh = getActivity().findViewById(R.id.pullToRefresh);
-        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                showCurrentLocation();
-                pullToRefresh.setRefreshing(false);
-            }
-        });
-
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new CartDialog(Objects.requireNonNull(getActivity()), R.style.CartDialog).show();
             }
         });
-
-        new CartItemTask().getAllItem(cartId);
     }
 
     @Override
@@ -305,8 +282,18 @@ public class HomeFragment extends Fragment {
         if (requestCode == RequestsCode.REQUEST_ADDRESS && resultCode == Activity.RESULT_OK && data != null){
             tvAddress.setText(data.getStringExtra("ADDRESS"));
             // update location
-            if (!token.equals(""))
-                new UpdateLocationTask(getActivity(), data.getDoubleExtra("latitude", 0), data.getDoubleExtra("longitude", 0), data.getStringExtra("ADDRESS"), consumerID).execute();
+            if (!token.equals("")) {
+                double lat = data.getDoubleExtra("latitude", 0);
+                double lng = data.getDoubleExtra("longitude", 0);
+                String address = data.getStringExtra("ADDRESS");
+                new UpdateLocationTask(getActivity(), lat, lng, address, consumerID).execute();
+                // store consumer address info
+                SharedPreferences.Editor editor = Objects.requireNonNull(getActivity()).getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE).edit();
+                editor.putString(Shared.KEY_ADDRESS, address);
+                editor.putString(Shared.KEY_LATITUDE, lat+"");
+                editor.putString(Shared.KEY_LONGITUDE, lng+"");
+                editor.apply();
+            }
         }
     }
 
@@ -340,9 +327,6 @@ public class HomeFragment extends Fragment {
                                 if (!token.equals("")){
                                     new GetConsumerID().execute();
                                 }
-
-                                // show branch
-                                new GetBranch().execute();
                             } catch (IOException e) {
                                 Log.i("HomeFragment", "error: "+e.getMessage());
                             }
@@ -361,6 +345,7 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
+    @SuppressLint("StaticFieldLeak")
     class GetConsumerID extends AsyncTask<String, String, String> {
         private InputStream is;
         private String user;
@@ -621,6 +606,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     class GetBranch extends AsyncTask<String,String,String> {
         private InputStream is;
         private final String branchURL = "https://orefoo.herokuapp.com/branch?page=1";
@@ -657,7 +643,7 @@ public class HomeFragment extends Fragment {
                 String line = "";
                 while ((line = reader.readLine()) != null){
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseGetBranch: ", "> " + line);
                 }
 
                 return buffer.toString();
@@ -696,104 +682,46 @@ public class HomeFragment extends Fragment {
             cvItem5.setEnabled(true);
 
             try {
+                branches.clear();
+                // add branches
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i = 0; i < Math.min(jsonArray.length(), 5); i++){
                     final JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    branches.add(new Branch(jsonObject.getInt("id"), jsonObject.getString("name"), jsonObject.getString("phoneNumber"),
+                            jsonObject.getString("imageUrl"), jsonObject.getString("openingTime"), jsonObject.getString("closingTime"),
+                            jsonObject.getString("address"), new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude")),
+                            jsonObject.getBoolean("isSell"), jsonObject.getInt("merchant"), jsonObject.getString("branchStatus")));
+                }
 
-                    switch (i){
+                // sort branch following distance
+                Collections.sort(branches, new SortPlaces(currentLocation));
+
+                // show branch
+                for (int index = 0; index<(Math.min(jsonArray.length(), 5)); index++){
+                    switch (index){
                         case 0:
-                            Glide.with(getActivity()).load(jsonObject.getString("imageUrl")).apply(options).into(ivItem1);
-                            try {
-                                id1 = jsonObject.getString("id");
-                                name1 = jsonObject.getString("name");
-                                address1 = jsonObject.getString("address");
-                                imgURL1 = jsonObject.getString("imageUrl");
-                                phone1 = jsonObject.getString("phoneNumber");
-                                isSell1 = jsonObject.getBoolean("isSell");
-                                openTime1 = jsonObject.getString("openingTime");
-                                closeTime1 = jsonObject.getString("closingTime");
-                                tvItemName1.setText(name1);
-                                latLng1 = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
-                                tvKm1.setText(GetDistanceInKmString(currentLocation, latLng1));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateUIBranchSuggest(getActivity(), ivItem1, tvItemName1, tvKm1,
+                                    branches.get(0).getImageUrl(), branches.get(0).getName(), GetDistanceInKmString(currentLocation, branches.get(0).getLatLng()));
                             break;
 
                         case 1:
-                            Glide.with(getActivity()).load(jsonObject.getString("imageUrl")).apply(options).into(ivItem2);
-                            try {
-                                id2 = jsonObject.getString("id");
-                                name2 = jsonObject.getString("name");
-                                address2 = jsonObject.getString("address");
-                                imgURL2 = jsonObject.getString("imageUrl");
-                                phone2 = jsonObject.getString("phoneNumber");
-                                isSell2 = jsonObject.getBoolean("isSell");
-                                openTime2 = jsonObject.getString("openingTime");
-                                closeTime2 = jsonObject.getString("closingTime");
-                                tvItemName2.setText(jsonObject.getString("name"));
-                                latLng2 = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
-                                tvKm2.setText(GetDistanceInKmString(currentLocation, latLng2));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateUIBranchSuggest(getActivity(), ivItem2, tvItemName2, tvKm2,
+                                    branches.get(1).getImageUrl(), branches.get(1).getName(), GetDistanceInKmString(currentLocation, branches.get(1).getLatLng()));
                             break;
 
                         case 2:
-                            Glide.with(getActivity()).load(jsonObject.getString("imageUrl")).apply(options).into(ivItem3);
-                            try {
-                                id3 = jsonObject.getString("id");
-                                name3 = jsonObject.getString("name");
-                                address3 = jsonObject.getString("address");
-                                imgURL3 = jsonObject.getString("imageUrl");
-                                phone3 = jsonObject.getString("phoneNumber");
-                                isSell3 = jsonObject.getBoolean("isSell");
-                                openTime3 = jsonObject.getString("openingTime");
-                                closeTime3 = jsonObject.getString("closingTime");
-                                tvItemName3.setText(jsonObject.getString("name"));
-                                latLng3 = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
-                                tvKm3.setText(GetDistanceInKmString(currentLocation, latLng3));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateUIBranchSuggest(getActivity(), ivItem3, tvItemName3, tvKm3,
+                                    branches.get(2).getImageUrl(), branches.get(2).getName(), GetDistanceInKmString(currentLocation, branches.get(2).getLatLng()));
                             break;
 
                         case 3:
-                            Glide.with(getActivity()).load(jsonObject.getString("imageUrl")).apply(options).into(ivItem4);
-                            try {
-                                id4 = jsonObject.getString("id");
-                                name4 = jsonObject.getString("name");
-                                address4 = jsonObject.getString("address");
-                                imgURL4 = jsonObject.getString("imageUrl");
-                                phone4 = jsonObject.getString("phoneNumber");
-                                isSell4 = jsonObject.getBoolean("isSell");
-                                openTime4 = jsonObject.getString("openingTime");
-                                closeTime4 = jsonObject.getString("closingTime");
-                                tvItemName4.setText(jsonObject.getString("name"));
-                                latLng4 = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
-                                tvKm4.setText(GetDistanceInKmString(currentLocation, latLng4));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateUIBranchSuggest(getActivity(), ivItem4, tvItemName4, tvKm4,
+                                    branches.get(3).getImageUrl(), branches.get(3).getName(), GetDistanceInKmString(currentLocation, branches.get(3).getLatLng()));
                             break;
 
                         case 4:
-                            Glide.with(getActivity()).load(jsonObject.getString("imageUrl")).apply(options).into(ivItem5);
-                            try {
-                                id5 = jsonObject.getString("id");
-                                name5 = jsonObject.getString("name");
-                                address5 = jsonObject.getString("address");
-                                imgURL5 = jsonObject.getString("imageUrl");
-                                phone5 = jsonObject.getString("phoneNumber");
-                                isSell5 = jsonObject.getBoolean("isSell");
-                                openTime5 = jsonObject.getString("openingTime");
-                                closeTime5 = jsonObject.getString("closingTime");
-                                tvItemName5.setText(jsonObject.getString("name"));
-                                latLng5 = new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude"));
-                                tvKm5.setText(GetDistanceInKmString(currentLocation, latLng5));
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            updateUIBranchSuggest(getActivity(), ivItem5, tvItemName5, tvKm5,
+                                    branches.get(4).getImageUrl(), branches.get(4).getName(), GetDistanceInKmString(currentLocation, branches.get(4).getLatLng()));
                             break;
                     }
                 }
@@ -802,6 +730,22 @@ public class HomeFragment extends Fragment {
             }
         }
     }
+
+    private void updateUIBranchSuggest(Context context, ImageView branchImage, TextView branchName, TextView branchDistance, String imageUrl, String name, String distance){
+        // Branch image
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.loading)
+                .error(R.drawable.image_not_found);
+        Glide.with(context).load(imageUrl).apply(options).into(branchImage);
+
+        // Branch name
+        branchName.setText(name);
+
+        // Distance from Branch to Consumer location
+        branchDistance.setText(distance);
+    }
+
     public double rad(double x){
         return x * Math.PI / 180;
     }
@@ -899,6 +843,8 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
+            progressBar.setVisibility(View.INVISIBLE);
+
             String sizeCart = "0";
 
             if (s == null) return;
@@ -932,6 +878,10 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // show branch
+        new GetBranch().execute();
+
+        // show size cart to Cart Button
         new CartItemTask().getAllItem(cartId);
     }
 }

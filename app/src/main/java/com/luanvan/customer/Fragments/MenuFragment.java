@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +52,7 @@ import java.util.Objects;
 public class MenuFragment extends Fragment {
 
     private String token = "";
-    private String id;
+    private int id;
     private int cartId;
     private ArrayList<Victual> victuals;
     private RecyclerView recyclerView;
@@ -66,6 +65,7 @@ public class MenuFragment extends Fragment {
     public static MutableLiveData<Double> totalPriceOrigin = new MutableLiveData<>();
 
     private RelativeLayout layoutProgressBar;
+    @SuppressLint("StaticFieldLeak")
     public static ProgressBar progressBar;
     public MenuFragment() { }
     @Override
@@ -100,7 +100,7 @@ public class MenuFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences(Shared.CART, Context.MODE_PRIVATE);
         cartId = sharedPreferences.getInt(Shared.KEY_CART_ID, -1);
 
-        id = getActivity().getIntent().getStringExtra("id");
+        id = getActivity().getIntent().getIntExtra("id", -1);
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -175,11 +175,12 @@ public class MenuFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (id != null){
+        if (id != -1){
             new GetVictuals().execute();
         }
     }
 
+    @SuppressLint("StaticFieldLeak")
     class GetVictuals extends AsyncTask<String,String,String> {
         private InputStream is;
         private final String victualsURL = "https://orefoo.herokuapp.com/victuals?branch-id=" + id;
@@ -216,12 +217,12 @@ public class MenuFragment extends Fragment {
                 String line = "";
                 while ((line = reader.readLine()) != null){
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseGetVictuals: ", "> " + line);
                 }
 
                 return buffer.toString();
             } catch (SocketTimeoutException e) {
-                Log.i("MenuFragment", e.getMessage());
+                Log.i("MenuFragment", Objects.requireNonNull(e.getMessage()));
             } catch (IOException e){
                 e.printStackTrace();
             } finally {
@@ -368,9 +369,9 @@ public class MenuFragment extends Fragment {
                         totalPriceOrigin.setValue(totalPriceVictualsOrigin);
 
                         @SuppressLint("DefaultLocale")
-                        String p1 = String.format("%,.0f", totalPriceVictuals);
+                        String p1 = String.format("%,.0f", totalPriceVictuals)+"đ";
                         @SuppressLint("DefaultLocale")
-                        String p2 = totalPriceVictuals==totalPriceVictualsOrigin ? "":String.format("%,.0f", totalPriceVictualsOrigin);
+                        String p2 = totalPriceVictuals==totalPriceVictualsOrigin ? "":String.format("%,.0f", totalPriceVictualsOrigin)+"đ";
                         tvTotal.setText(p1);
                         tvTotalOrigin.setPaintFlags(tvTotalOrigin.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                         tvTotalOrigin.setText(p2);

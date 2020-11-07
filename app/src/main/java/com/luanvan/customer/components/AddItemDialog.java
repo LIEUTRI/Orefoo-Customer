@@ -187,6 +187,7 @@ public class AddItemDialog extends Dialog {
                                     showDialogDistance();
                                 } else {
                                     new AddToCartTask().execute(json.toString());
+                                    new DistanceTask().postDistance(cartId, Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" "))));
                                 }
                             }
                         });
@@ -545,5 +546,99 @@ public class AddItemDialog extends Dialog {
 
         dialogDistance = builder.create();
         dialogDistance.show();
+    }
+
+    // send distance to server
+    @SuppressLint("StaticFieldLeak")
+    class DistanceTask extends AsyncTask<String,String,String> {
+        private InputStream is;
+        private int cartID;
+        private double km;
+        private final String cartItemURL = "https://orefoo.herokuapp.com/cart/";
+        private int resultCode;
+
+        public void postDistance(int cartID, double km){
+            this.cartID = cartID;
+            this.km = km;
+            execute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+            try {
+                URL url = new URL(cartItemURL + cartID + "/ship?km="+km);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("PATCH");
+                connection.setRequestProperty("Authorization", token);
+                connection.connect();
+
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", statusCode+"");
+
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                    resultCode = ResultsCode.SUCCESS;
+                    Log.i("result", "post distance success");
+                } else {
+                    Log.i("result", "post distance failed");
+                    is = connection.getErrorStream();
+                    if (statusCode == 406) {
+                        resultCode = ResultsCode.DIFFERENCE_BRANCH;
+                    } else resultCode = ResultsCode.FAILED;
+                }
+
+                reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder buffer = new StringBuilder();
+                String line = "";
+                while ((line = reader.readLine()) != null){
+                    buffer.append(line).append("\n");
+                    Log.d("ResponseDistance: ", "> " + line);
+                }
+
+                return buffer.toString();
+            } catch (SocketTimeoutException e) {
+                resultCode = ResultsCode.SOCKET_TIMEOUT;
+            } catch (IOException e){
+                resultCode = ResultsCode.IO_EXCEPTION;
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s == null) return;
+
+            switch (resultCode) {
+                case ResultsCode.SUCCESS:
+                    Log.i("result", "post distance success");
+                    break;
+                case ResultsCode.DIFFERENCE_BRANCH:
+                    break;
+                case ResultsCode.FAILED:
+                    Log.i("result", "get failed");
+                    break;
+                case ResultsCode.SOCKET_TIMEOUT:
+                    Toast.makeText(activity, activity.getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();
+                    break;
+                case ResultsCode.IO_EXCEPTION:
+                    Toast.makeText(activity, "IO Exception", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
     }
 }

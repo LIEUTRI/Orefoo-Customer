@@ -39,13 +39,10 @@ public class OrderFragment extends Fragment {
     private ViewPager2.OnPageChangeCallback onPageChangeCallback;
     private TextView tvOngoing, tvHistory;
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public OrderFragment() {
-        // Required empty public constructor
-    }
+    public OrderFragment() { }
 
     /**
      * Use this factory method to create a new instance of
@@ -77,7 +74,6 @@ public class OrderFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_order, container, false);
     }
 

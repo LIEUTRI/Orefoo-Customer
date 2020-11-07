@@ -16,4 +16,5 @@ public class Shared {
     public static final String KEY_LONGITUDE = "longitude";
     public static final String KEY_PHONE = "phoneNumber";
     public static final String KEY_CART_ITEM = "cartItem";
+    public static final String KEY_BRANCH_NAME = "branchName";
 }

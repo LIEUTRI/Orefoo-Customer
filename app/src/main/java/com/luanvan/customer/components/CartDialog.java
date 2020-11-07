@@ -97,6 +97,10 @@ public class CartDialog extends Dialog {
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (tvTotal.getText().toString().equals("0đ")) {
+                    Toast.makeText(activity, activity.getResources().getString(R.string.cart_empty), Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 activity.startActivity(new Intent(activity, CheckoutActivity.class));
                 cancel();
             }
@@ -233,7 +237,6 @@ public class CartDialog extends Dialog {
                     Toast.makeText(getContext(), "IO Exception", Toast.LENGTH_SHORT).show();
                     break;
             }
-
         }
     }
 }
