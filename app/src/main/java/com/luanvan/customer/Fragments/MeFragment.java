@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
 import com.google.android.material.button.MaterialButton;
 import com.luanvan.customer.LoginActivity;
@@ -28,6 +29,7 @@ import com.luanvan.customer.ManagerProfileActivity;
 import com.luanvan.customer.PaymentActivity;
 import com.luanvan.customer.R;
 import com.luanvan.customer.SignupActivity;
+import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
@@ -48,7 +50,8 @@ public class MeFragment extends Fragment {
     private LinearLayout layoutNotLogin, layoutLogin;
     private TextView tvUsername, tvName;
     private String token = "";
-    private String user = "";
+    private int consumerID = -1;
+    private int userId;
 
     String username = "";
     String firstName = "";
@@ -57,7 +60,6 @@ public class MeFragment extends Fragment {
     String dayOfBirth = "";
     String gender = "";
     String email = "";
-    String consumerID = "";
     private ProgressBar progressBar;
     public MeFragment() { }
 
@@ -97,11 +99,11 @@ public class MeFragment extends Fragment {
         token = sharedPreferences.getString(Shared.KEY_BEARER, "")+"";
         if (!token.equals("")){
             // logged in
-            String TOKEN_PREFIX = "Bearer ";
-            JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
-            user = jwt.getSubject();
-
-            new GetUserDataTask().execute(token, user);
+            userId = getUserId(token);
+            username = getUsername(token);
+            sharedPreferences = getActivity().getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
+            consumerID = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
+            new GetUserDataTask().get(consumerID);
         } else {
             layoutNotLogin.setVisibility(View.VISIBLE);
         }
@@ -162,9 +164,25 @@ public class MeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_me, container, false);
     }
 
-    private class GetUserDataTask extends AsyncTask<String, String, String> {
-        private final String consumerURL = "https://orefoo.herokuapp.com/user/consumer";
+    public int getUserId(String token){
+        String TOKEN_PREFIX = "Bearer ";
+        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
+        Claim claim = jwt.getClaim("userId");
+        return claim.asInt();
+    }
+    public String getUsername(String token){
+        String TOKEN_PREFIX = "Bearer ";
+        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
+        return jwt.getSubject();
+    }
 
+    @SuppressLint("StaticFieldLeak")
+    private class GetUserDataTask extends AsyncTask<String, String, String> {
+        private int consumerId;
+        public void get(int consumerId){
+            this.consumerId = consumerId;
+            execute();
+        }
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -176,14 +194,20 @@ public class MeFragment extends Fragment {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(consumerURL+"?username="+params[1]);
+                URL url = new URL(RequestUrl.CONSUMER +"user/"+userId);
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("Authorization", params[0]);
+                connection.setRequestProperty("Authorization", token);
                 connection.connect();
 
-                InputStream stream = connection.getInputStream();
+                InputStream is = null;
+                int statusCode = connection.getResponseCode();
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                } else {
+                    is = connection.getErrorStream();
+                }
 
-                reader = new BufferedReader(new InputStreamReader(stream));
+                reader = new BufferedReader(new InputStreamReader(is));
 
                 StringBuilder buffer = new StringBuilder();
                 String line = "";
@@ -222,24 +246,21 @@ public class MeFragment extends Fragment {
 
             if (result == null) return;
             try {
-                JSONObject user = new JSONObject(result);
-                username = user.getString("username");
-                JSONObject consumer = user.getJSONObject("consumer");
+                JSONObject consumer = new JSONObject(result);
                 firstName = consumer.getString("firstName").equals("null") ? "empty":consumer.getString("firstName");
                 lastName = consumer.getString("lastName").equals("null") ? "empty":consumer.getString("lastName");
                 phoneNumber = consumer.getString("phoneNumber").equals("null") ? "empty":consumer.getString("phoneNumber");
                 dayOfBirth = consumer.getString("dayOfBirth").equals("null") ? "empty":consumer.getString("dayOfBirth");
                 gender = consumer.getString("gender").equals("null") ? "empty":consumer.getString("gender");
                 email = consumer.getString("email").equals("null") ? "empty":consumer.getString("email");
-                consumerID = consumer.getString("id");
 
                 tvUsername.setText(username);
                 tvName.setText(firstName.equals("empty")&&lastName.equals("empty") ? "(empty)":lastName+" "+firstName);
 
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE).edit();
-                editor.putString("firstName", firstName);
-                editor.putString("lastName", lastName);
-                editor.putString("username", username);
+                editor.putString(Shared.KEY_FIRST_NAME, firstName);
+                editor.putString(Shared.KEY_LAST_NAME, lastName);
+                editor.putString(Shared.KEY_USERNAME, username);
                 editor.apply();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -252,8 +273,8 @@ public class MeFragment extends Fragment {
     public void onResume() {
         if (getActivity()==null || tvName == null) return;
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE);
-        tvName.setText(sharedPreferences.getString("lastName", "")+" "+sharedPreferences.getString("firstName", ""));
-        tvUsername.setText(sharedPreferences.getString("username", ""));
+        tvName.setText(sharedPreferences.getString(Shared.KEY_LAST_NAME, "")+" "+sharedPreferences.getString(Shared.KEY_FIRST_NAME, ""));
+        tvUsername.setText(sharedPreferences.getString(Shared.KEY_USERNAME, ""));
         super.onResume();
     }
 }

@@ -97,7 +97,7 @@ public class AddItemDialog extends Dialog {
 
         totalPrice = price;
         totalPrice = priceOrigin;
-        String add = activity.getResources().getString(R.string.add)+" "+String.format("%,.0f", price);
+        String add = activity.getResources().getString(R.string.add)+" "+String.format("%,.0f", price)+"đ";
         btnAddItem.setText(add);
 
 
@@ -115,6 +115,7 @@ public class AddItemDialog extends Dialog {
         //////////////////////////////////////////////////////
         SharedPreferences sharedPreferences = activity.getSharedPreferences(Shared.CART, Context.MODE_PRIVATE);
         cartId = sharedPreferences.getInt(Shared.KEY_CART_ID, -1);
+        Log.i("cartidAddItemDialog", cartId+"");
 
         sharedPreferences = activity.getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -187,7 +188,12 @@ public class AddItemDialog extends Dialog {
                                     showDialogDistance();
                                 } else {
                                     new AddToCartTask().execute(json.toString());
-                                    new DistanceTask().postDistance(cartId, Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" "))));
+
+                                    double km = Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" ")));
+                                    SharedPreferences.Editor editor = activity.getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
+                                    editor.putFloat(Shared.KEY_BRANCH_DISTANCE, (float) km);
+                                    editor.apply();
+                                    new DistanceTask().postDistance(cartId, km);
                                 }
                             }
                         });

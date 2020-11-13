@@ -5,15 +5,19 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +27,18 @@ import com.luanvan.customer.Fragments.HomeFragment;
 import com.luanvan.customer.Fragments.MeFragment;
 import com.luanvan.customer.Fragments.OrderFragment;
 import com.luanvan.customer.components.ConnectionStateMonitor;
+import com.luanvan.customer.components.Shared;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -108,6 +123,13 @@ public class MainActivity extends AppCompatActivity {
 
         ConnectionStateMonitor monitor = new ConnectionStateMonitor();
         monitor.enable(this);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
+        String token = sharedPreferences.getString(Shared.KEY_BEARER, "");
+
+        sharedPreferences = getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
+        int consumerID = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
+        new GetCartTask().execute(token, consumerID+"");
     }
 
     private void setTextViewDrawableColor(TextView textView, int color){
@@ -180,5 +202,74 @@ public class MainActivity extends AppCompatActivity {
                 doubleBackToExitPressedOnce=false;
             }
         }, 2000);
+    }
+
+    ////////////////////
+    @SuppressLint("StaticFieldLeak")
+    class GetCartTask extends AsyncTask<String,String,String> {
+        private InputStream is;
+        private final String victualsURL = "https://orefoo.herokuapp.com/cart?consumer-id=";
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(victualsURL + strings[1]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Authorization", strings[0]);
+                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
+                connection.connect();
+
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", statusCode+"");
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                } else {
+                    is = connection.getErrorStream();
+                }
+
+                reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder buffer = new StringBuilder();
+                String line = "";
+                while ((line = reader.readLine()) != null){
+                    buffer.append(line).append("\n");
+                    Log.d("ResponseGetCartTask: ", "> " + line);
+                }
+
+                return buffer.toString();
+            } catch (SocketTimeoutException e) {
+                Log.i("MenuFragment", e.getMessage());
+            } catch (IOException e){
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s == null) return;
+            SharedPreferences.Editor editor = getSharedPreferences(Shared.CART, Context.MODE_PRIVATE).edit();
+            try {
+                JSONObject jsonObject = new JSONObject(s);
+                editor.putInt(Shared.KEY_CART_ID, jsonObject.getInt("id"));
+                editor.apply();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

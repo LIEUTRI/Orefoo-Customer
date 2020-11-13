@@ -25,7 +25,7 @@ public class ManagerProfileActivity extends AppCompatActivity {
     String dayOfBirth = "";
     String gender = "";
     String email = "";
-    String consumerID = "";
+    int consumerID;
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class ManagerProfileActivity extends AppCompatActivity {
         dayOfBirth = getIntent().getStringExtra("dayOfBirth");
         gender = getIntent().getStringExtra("gender");
         email = getIntent().getStringExtra("email");
-        consumerID = getIntent().getStringExtra("consumerID");
+        consumerID = getIntent().getIntExtra("consumerID", -1);
 
         tvUsername.setText(username);
         tvPhoneNumber.setText(phoneNumber);

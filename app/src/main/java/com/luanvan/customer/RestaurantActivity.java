@@ -14,10 +14,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.luanvan.customer.Fragments.CommentFragment;
 import com.luanvan.customer.Fragments.MenuFragment;
 import com.luanvan.customer.Fragments.RestaurantInfoFragment;
 import com.luanvan.customer.components.Shared;
+import com.luanvan.customer.components.UserData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +36,8 @@ public class RestaurantActivity extends AppCompatActivity {
 
     private TextView tvMenu, tvComment, tvInfo;
     private TextView tvName, tvAddress;
+    private AppBarLayout appBarLayout;
+
     private String name;
     private String phone;
     private String imgURL;
@@ -52,6 +56,7 @@ public class RestaurantActivity extends AppCompatActivity {
         tvInfo = findViewById(R.id.tvInfo);
         tvName = findViewById(R.id.tvName);
         tvAddress = findViewById(R.id.tvAddress);
+        appBarLayout = findViewById(R.id.layoutAppBar);
 
         name = getIntent().getStringExtra("name");
         phone = getIntent().getStringExtra("phone");
@@ -66,6 +71,8 @@ public class RestaurantActivity extends AppCompatActivity {
 
         SharedPreferences.Editor editor = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
         editor.putString(Shared.KEY_BRANCH_NAME, name);
+        editor.putString(Shared.KEY_LATITUDE, latitude+"");
+        editor.putString(Shared.KEY_LONGITUDE, longitude+"");
         editor.apply();
 
         // default fragment
@@ -108,80 +115,5 @@ public class RestaurantActivity extends AppCompatActivity {
 
         tvName.setText(name);
         tvAddress.setText(address);
-
-        SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
-        String token = sharedPreferences.getString(Shared.KEY_BEARER, "");
-
-        sharedPreferences = getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
-
-        new GetCartTask().execute(token, sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1)+"");
-    }
-
-    @SuppressLint("StaticFieldLeak")
-    class GetCartTask extends AsyncTask<String,String,String> {
-        private InputStream is;
-        private final String victualsURL = "https://orefoo.herokuapp.com/cart?consumer-id=";
-        @Override
-        protected String doInBackground(String... strings) {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-
-            try {
-                URL url = new URL(victualsURL + strings[1]);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Authorization", strings[0]);
-                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
-                connection.connect();
-
-                int statusCode = connection.getResponseCode();
-                Log.i("statusCode", statusCode+"");
-                if (statusCode >= 200 && statusCode < 400){
-                    is = connection.getInputStream();
-                } else {
-                    is = connection.getErrorStream();
-                }
-
-                reader = new BufferedReader(new InputStreamReader(is));
-                StringBuilder buffer = new StringBuilder();
-                String line = "";
-                while ((line = reader.readLine()) != null){
-                    buffer.append(line).append("\n");
-                    Log.d("ResponseGetCartTask: ", "> " + line);
-                }
-
-                return buffer.toString();
-            } catch (SocketTimeoutException e) {
-                Log.i("MenuFragment", e.getMessage());
-            } catch (IOException e){
-                e.printStackTrace();
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (s == null) return;
-            SharedPreferences.Editor editor = getSharedPreferences(Shared.CART, Context.MODE_PRIVATE).edit();
-            try {
-                JSONObject jsonObject = new JSONObject(s);
-                editor.putInt(Shared.KEY_CART_ID, jsonObject.getInt("id"));
-                editor.apply();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }

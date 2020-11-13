@@ -9,6 +9,7 @@ public class Shared {
     public static final String KEY_CART_ID = "cartId";
     public static final String KEY_BEARER = "bearer";
     public static final String KEY_CONSUMER_ID = "consumerId";
+    public static final String KEY_USERNAME = "username";
     public static final String KEY_FIRST_NAME = "firstName";
     public static final String KEY_LAST_NAME = "lastName";
     public static final String KEY_ADDRESS = "address";
@@ -17,4 +18,5 @@ public class Shared {
     public static final String KEY_PHONE = "phoneNumber";
     public static final String KEY_CART_ITEM = "cartItem";
     public static final String KEY_BRANCH_NAME = "branchName";
+    public static final String KEY_BRANCH_DISTANCE = "distance";
 }

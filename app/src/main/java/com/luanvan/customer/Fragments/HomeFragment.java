@@ -20,7 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -48,7 +48,7 @@ import com.luanvan.customer.RestaurantActivity;
 import com.luanvan.customer.SearchActivity;
 import com.luanvan.customer.components.Branch;
 import com.luanvan.customer.components.CartDialog;
-import com.luanvan.customer.components.CustomSwipeToRefresh;
+import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
@@ -86,7 +86,9 @@ public class HomeFragment extends Fragment {
     private ImageView ivItem1, ivItem2, ivItem3, ivItem4, ivItem5;
 
     private FusedLocationProviderClient fusedLocationClient;
-    private String consumerID = "";
+    private int consumerID = -1;
+    private int userId;
+    private String username;
     private String consumerLocation = "";
     private String token = "";
     private int cartId;
@@ -259,6 +261,12 @@ public class HomeFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "")+"";
 
+        String TOKEN_PREFIX = "Bearer ";
+        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
+        username = jwt.getSubject();
+        Claim claim = jwt.getClaim("userId");
+        userId = claim.asInt();
+
         showCurrentLocation();
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
@@ -316,6 +324,10 @@ public class HomeFragment extends Fragment {
                     public void onSuccess(Location location) {
                         if (location != null) {
                             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+
+                            // show branch
+                            new GetBranch().execute();
+
                             Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
                             try {
                                 List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
@@ -324,18 +336,18 @@ public class HomeFragment extends Fragment {
                                 tvAddress.setText(addressLine);
 
                                 // save location to DB
-                                if (!token.equals("")){
-                                    new GetConsumerID().execute();
+                                if (!token.equals("")) {
+                                    new ConsumerTask().execute();
                                 }
                             } catch (IOException e) {
-                                Log.i("HomeFragment", "error: "+e.getMessage());
+                                Log.i("HomeFragment", "error: " + e.getMessage());
                             }
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Log.i("HomeFragment", "error: "+e.getMessage());
+                Log.i("HomeFragment", "error: " + e.getMessage());
             }
         });
     }
@@ -346,27 +358,28 @@ public class HomeFragment extends Fragment {
     }
 
     @SuppressLint("StaticFieldLeak")
-    class GetConsumerID extends AsyncTask<String, String, String> {
+    class ConsumerTask extends AsyncTask<String, String, String> {
         private InputStream is;
-        private String user;
-        private final String consumerURL = "https://orefoo.herokuapp.com/user/consumer";
         @Override
         protected String doInBackground(String... strings) {
-
-            String TOKEN_PREFIX = "Bearer ";
-            JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
-            user = jwt.getSubject();
 
             HttpURLConnection connection = null;
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(consumerURL+"?username="+user);
+                URL url = new URL(RequestUrl.CONSUMER + "user/" +userId);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestProperty("Authorization", token);
+                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
                 connection.connect();
 
-                is = connection.getInputStream();
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", ""+statusCode);
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                } else {
+                    is = connection.getErrorStream();
+                }
 
                 reader = new BufferedReader(new InputStreamReader(is));
 
@@ -375,7 +388,7 @@ public class HomeFragment extends Fragment {
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseConsumer: ", "> " + line);
                 }
 
                 return buffer.toString();
@@ -404,28 +417,28 @@ public class HomeFragment extends Fragment {
             if (s == null) return;
 
             try {
-                JSONObject user = new JSONObject(s);
-                JSONObject consumer = user.getJSONObject("consumer");
-                consumerID = consumer.getString("id");
+                JSONObject consumer = new JSONObject(s);
+                consumerID = consumer.getInt("id");
                 consumerLocation = consumer.getString("consumerLocation");
                 if (consumerLocation.equals("null")){
-                    new SaveLocationTask(getActivity(), currentLocation.latitude, currentLocation.longitude, addressLine, consumerID)
-                            .execute();
+                    new SaveLocationTask(getActivity(), currentLocation.latitude, currentLocation.longitude, addressLine, consumerID).execute();
                 } else {
-                    new UpdateLocationTask(getActivity(), currentLocation.latitude, currentLocation.longitude, addressLine, consumerID)
-                            .execute();
+                    new UpdateLocationTask(getActivity(), currentLocation.latitude, currentLocation.longitude, addressLine, consumerID).execute();
                 }
 
                 // store some consumer info
                 SharedPreferences.Editor editor = Objects.requireNonNull(getActivity()).getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE).edit();
-                editor.putInt(Shared.KEY_CONSUMER_ID, consumer.getInt("id"));
+                editor.putInt(Shared.KEY_CONSUMER_ID, consumerID);
+                editor.putString(Shared.KEY_USERNAME, username);
                 editor.putString(Shared.KEY_FIRST_NAME, consumer.getString("firstName"));
                 editor.putString(Shared.KEY_LAST_NAME, consumer.getString("lastName"));
                 editor.putString(Shared.KEY_PHONE, consumer.getString("phoneNumber"));
-                JSONObject jsonLocation = new JSONObject(consumerLocation);
-                editor.putString(Shared.KEY_ADDRESS, jsonLocation.getString("address"));
-                editor.putString(Shared.KEY_LATITUDE, jsonLocation.getDouble("latitude")+"");
-                editor.putString(Shared.KEY_LONGITUDE, jsonLocation.getDouble("longitude")+"");
+                if (!consumerLocation.equals("null")){
+                    JSONObject jsonLocation = new JSONObject(consumerLocation);
+                    editor.putString(Shared.KEY_ADDRESS, jsonLocation.getString("address"));
+                    editor.putString(Shared.KEY_LATITUDE, jsonLocation.getDouble("latitude")+"");
+                    editor.putString(Shared.KEY_LONGITUDE, jsonLocation.getDouble("longitude")+"");
+                }
                 editor.apply();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -440,10 +453,10 @@ public class HomeFragment extends Fragment {
         private InputStream is;
         private double latitude, longitude;
         private String address;
-        private String consumerID;
+        private int consumerID;
         private final String locationURL = "https://orefoo.herokuapp.com/consumer-location";
 
-        public SaveLocationTask(Context context, double latitude, double longitude, String address, String consumerID){
+        public SaveLocationTask(Context context, double latitude, double longitude, String address, int consumerID){
             this.context = context;
             this.latitude = latitude;
             this.longitude = longitude;
@@ -493,7 +506,7 @@ public class HomeFragment extends Fragment {
                 String line = "";
                 while ((line = reader.readLine()) != null){
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseSaveLocation: ", "> " + line);
                 }
                 return buffer.toString();
 
@@ -528,10 +541,10 @@ public class HomeFragment extends Fragment {
         private InputStream is;
         private double latitude, longitude;
         private String address;
-        private String consumerID;
+        private int consumerID;
         private final String locationURL = "https://orefoo.herokuapp.com/consumer-location?consumer-id=";
 
-        public UpdateLocationTask(Context context, double latitude, double longitude, String address, String consumerID){
+        public UpdateLocationTask(Context context, double latitude, double longitude, String address, int consumerID){
             this.context = context;
             this.latitude = latitude;
             this.longitude = longitude;
@@ -578,7 +591,7 @@ public class HomeFragment extends Fragment {
                 String line = "";
                 while ((line = reader.readLine()) != null){
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseUpdateLocation", "> " + line);
                 }
                 return buffer.toString();
 
@@ -648,7 +661,6 @@ public class HomeFragment extends Fragment {
 
                 return buffer.toString();
             } catch (SocketTimeoutException e) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
             } catch (IOException e){
                 e.printStackTrace();
             } finally {
@@ -694,7 +706,11 @@ public class HomeFragment extends Fragment {
                 }
 
                 // sort branch following distance
-                Collections.sort(branches, new SortPlaces(currentLocation));
+                if (currentLocation != null) Collections.sort(branches, new SortPlaces(currentLocation));
+                else {
+                    Toast.makeText(getActivity(), "Cannot get current location, try again", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 // show branch
                 for (int index = 0; index<(Math.min(jsonArray.length(), 5)); index++){
@@ -774,7 +790,7 @@ public class HomeFragment extends Fragment {
 
         public void getAllItem(int cartID){
             this.cartID = cartID;
-            execute();
+            if (cartID != -1) execute();
         }
 
         @Override
@@ -878,8 +894,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        // show branch
-        new GetBranch().execute();
 
         // show size cart to Cart Button
         new CartItemTask().getAllItem(cartId);

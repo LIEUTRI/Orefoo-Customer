@@ -101,4 +101,7 @@
     <string name="confirm_order">Xác nhận đặt hàng</string>
     <string name="order_success">Đặng hàng thành công</string>
     <string name="order_failed">Đặt hàng không thành công</string>
+    <string name="payment_method">Phương thức thanh toán</string>
+    <string name="order_at">"Đặt hàng lúc: "</string>
+    <string name="dish">món</string>
 </resources>

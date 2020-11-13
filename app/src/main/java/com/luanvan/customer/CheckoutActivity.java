@@ -38,10 +38,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class CheckoutActivity extends AppCompatActivity {
@@ -50,6 +54,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextView tvPhone;
     private TextView tvAddress;
     private TextView tvBranchName;
+    private TextView tvDeliveryTime;
     private TextView btnConfirmOrder;
     private RecyclerView recyclerView;
     private String token;
@@ -57,6 +62,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private String branchName;
     private String consumerAddress;
     private double consumerLat, consumerLng;
+    private double distance;
 
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
@@ -76,6 +82,8 @@ public class CheckoutActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public static int portion = 0;
     @SuppressLint("SetTextI18n")
+    private TextView tvDeliveryFee;
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,6 +100,8 @@ public class CheckoutActivity extends AppCompatActivity {
         tvShipFee = findViewById(R.id.tvShipFee);
         tvTotal = findViewById(R.id.tvTotal);
         tvTotalVictuals = findViewById(R.id.tvTotalVictuals);
+        tvDeliveryTime = findViewById(R.id.tvDeliveryTime);
+        tvDeliveryFee = findViewById(R.id.tvDeliveryFee);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -116,7 +126,16 @@ public class CheckoutActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE);
         branchName = sharedPreferences.getString(Shared.KEY_BRANCH_NAME, "");
+        distance = sharedPreferences.getFloat(Shared.KEY_BRANCH_DISTANCE, 0);
+        distance = round(distance, 1);
         tvBranchName.setText(branchName);
+        tvDeliveryFee.setText(getResources().getString(R.string.shipping_fee)+" ("+distance+"km)");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MINUTE, (int)(5 * distance + 15));
+        String dateTime = calendar.getTime().toString();
+        tvDeliveryTime.setText(dateTime);
 
         sharedPreferences = getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
         int consumerId = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
@@ -143,6 +162,13 @@ public class CheckoutActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public static double round(double value, int places){
+        if (places < 0) throw new IllegalArgumentException();
+        BigDecimal bigDecimal = BigDecimal.valueOf(value);
+        bigDecimal = bigDecimal.setScale(places, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -187,7 +213,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
                 return buffer.toString();
             } catch (SocketTimeoutException e) {
-                Log.i("MenuFragment", Objects.requireNonNull(e.getMessage()));
+                Log.i("CheckoutActivity", Objects.requireNonNull(e.getMessage()));
             } catch (IOException e){
                 e.printStackTrace();
             } finally {
@@ -320,119 +346,6 @@ public class CheckoutActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(CheckoutActivity.this, getResources().getString(R.string.order_failed), Toast.LENGTH_LONG).show();
             }
-        }
-    }
-
-    class CartItemTask extends AsyncTask<String,String,String> {
-        private InputStream is;
-        private int cartID;
-        private final String cartItemURL = "https://orefoo.herokuapp.com/cart-item?cart-id=";
-        private int resultCode;
-
-        public void getAllItem(int cartID){
-            this.cartID = cartID;
-            execute();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-
-            try {
-                URL url = new URL(cartItemURL + cartID);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Authorization", token);
-                connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
-                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
-                connection.connect();
-
-                int statusCode = connection.getResponseCode();
-                Log.i("statusCode", statusCode+"");
-
-                if (statusCode >= 200 && statusCode < 400){
-                    is = connection.getInputStream();
-                    resultCode = ResultsCode.SUCCESS;
-                } else {
-                    is = connection.getErrorStream();
-                    if (statusCode == 406) {
-                        resultCode = ResultsCode.DIFFERENCE_BRANCH;
-                    } else resultCode = ResultsCode.FAILED;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(is));
-                StringBuilder buffer = new StringBuilder();
-                String line = "";
-                while ((line = reader.readLine()) != null){
-                    buffer.append(line).append("\n");
-                    Log.d("ResponseCartItem: ", "> " + line);
-                }
-
-                return buffer.toString();
-            } catch (SocketTimeoutException e) {
-                resultCode = ResultsCode.SOCKET_TIMEOUT;
-            } catch (IOException e){
-                resultCode = ResultsCode.IO_EXCEPTION;
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @SuppressLint({"SetTextI18n", "DefaultLocale"})
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-            progressBar.setVisibility(View.INVISIBLE);
-
-            if (s == null) return;
-
-            switch (resultCode) {
-                case ResultsCode.SUCCESS:
-                    Log.i("result", "get cart item success");
-                    try {
-                        totalPriceVictuals = 0.0;
-                        JSONArray jsonArray = new JSONArray(s);
-                        for (int i=0; i<jsonArray.length(); i++){
-                            JSONObject item = jsonArray.getJSONObject(i);
-                            totalPriceVictuals += item.getInt("price")-item.getInt("discount");
-                            cartItems.add(new CartItem(item.getInt("id"), item.getString("name"), item.getString("imageUrl"),
-                                    item.getDouble("price"), item.getDouble("discount"), item.getInt("quantity"), item.getInt("cart"),
-                                    item.getInt("victuals")));
-                        }
-
-                        tvTotal.setText(String.format("%,.0f", totalPriceVictuals)+"đ");
-
-                        recyclerView.setAdapter(new RecyclerViewCartItemAdapter(CheckoutActivity.this, cartItems));
-                        Log.i("jsonCartItem", jsonArray.toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-                case ResultsCode.DIFFERENCE_BRANCH:
-                    break;
-                case ResultsCode.FAILED:
-                    Log.i("result", "get failed");
-                    break;
-                case ResultsCode.SOCKET_TIMEOUT:
-                    Toast.makeText(CheckoutActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();
-                    break;
-                case ResultsCode.IO_EXCEPTION:
-                    Toast.makeText(CheckoutActivity.this, "IO Exception", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-
         }
     }
 }

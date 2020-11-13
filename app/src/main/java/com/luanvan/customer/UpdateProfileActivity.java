@@ -2,6 +2,7 @@ package com.luanvan.customer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,8 +18,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.Claim;
+import com.auth0.android.jwt.JWT;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
+import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.Shared;
 
@@ -43,8 +47,6 @@ public class UpdateProfileActivity extends AppCompatActivity {
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
 
-    private final String consumerURL = "https://orefoo.herokuapp.com/consumer";
-
     String username = "";
     String firstName = "";
     String lastName = "";
@@ -52,7 +54,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
     String dayOfBirth = "";
     String gender = "";
     String email = "";
-    String consumerID = "";
+    int consumerID = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +103,6 @@ public class UpdateProfileActivity extends AppCompatActivity {
             year = dayOfBirth.substring(0,4);
             dayOfBirth = year+"-"+month+"-"+day;
         }
-        consumerID = getIntent().getStringExtra("consumerID");
 
         etUsername.setText(username);
         etPhoneNumber.setText(phoneNumber.equals("empty") ? "":phoneNumber);
@@ -115,6 +116,9 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, MODE_PRIVATE);
         final String token = sharedPreferences.getString(Shared.KEY_BEARER, "");
+
+        sharedPreferences = getSharedPreferences(Shared.CONSUMER, MODE_PRIVATE);
+        consumerID = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,11 +141,19 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 email = etEmail.getText().toString();
 
                 UpdateProfileTask task = new UpdateProfileTask();
-                task.execute(consumerID, firstName, lastName, dayOfBirth, gender, phoneNumber, email, token);
+                task.execute(consumerID+"", firstName, lastName, dayOfBirth, gender, phoneNumber, email, token);
             }
         });
     }
 
+    public int getUserId(String token){
+        String TOKEN_PREFIX = "Bearer ";
+        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
+        Claim claim = jwt.getClaim("userId");
+        return claim.asInt();
+    }
+
+    @SuppressLint("StaticFieldLeak")
     private class UpdateProfileTask extends AsyncTask<String,String,String> {
 
         OutputStream os;
@@ -158,7 +170,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             Log.i("token", strings[7]);
             //http post
             try {
-                URL url = new URL(consumerURL + "/" + strings[0]);
+                URL url = new URL(RequestUrl.CONSUMER + strings[0]);
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("firstName", strings[1]);
@@ -200,7 +212,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 String line = "";
                 while ((line = reader.readLine()) != null){
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseUpdateProfile: ", "> " + line);
                 }
                 return buffer.toString();
 

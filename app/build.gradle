@@ -53,5 +53,5 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }
