@@ -3,6 +3,7 @@ package com.luanvan.customer.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.luanvan.customer.CheckoutActivity;
 import com.luanvan.customer.R;
+import com.luanvan.customer.TrackShipperActivity;
 import com.luanvan.customer.components.Branch;
 import com.luanvan.customer.components.CartDialog;
 import com.luanvan.customer.components.CartItem;
@@ -30,6 +32,7 @@ import com.luanvan.customer.components.Order;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 import com.luanvan.customer.components.SortPlaces;
+import com.luanvan.customer.components.Victual;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +48,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -82,6 +86,20 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
         calendar.add(Calendar.HOUR_OF_DAY, 7);
         holder.tvTime.setText(activity.getResources().getString(R.string.order_at)+calendar.getTime().toString().substring(0, calendar.getTime().toString().indexOf("GMT")-1));
         holder.tvVictualsSize.setText(order.getOrderItems().size()+" "+activity.getResources().getString(R.string.dish));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<Victual> victuals = new ArrayList<>();
+                for (int index=0; index<order.getOrderItems().size(); index++){
+                    victuals.add(new Victual(order.getOrderItems().get(index).getName(), order.getOrderItems().get(index).getImageUrl(),
+                            order.getOrderItems().get(index).getQuantity(), order.getOrderItems().get(index).getPrice()+"", order.getOrderItems().get(index).getDiscount()+""));
+                }
+                Intent intent = new Intent(activity, TrackShipperActivity.class);
+                intent.putExtra("victuals", victuals);
+                activity.startActivity(intent);
+            }
+        });
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

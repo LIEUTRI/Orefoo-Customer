@@ -1,25 +1,38 @@
 package com.luanvan.customer;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.widget.Toast;
 
+import com.luanvan.customer.Adapter.RecyclerViewVictualAdapter;
 import com.luanvan.customer.Fragments.MapsFragment;
+import com.luanvan.customer.components.Victual;
+
+import java.util.ArrayList;
 
 public class TrackShipperActivity extends AppCompatActivity {
+    private ArrayList<Victual> victuals = new ArrayList<>();
+    private RecyclerView recyclerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_shipper);
 
         showMaps();
+
+        victuals = (ArrayList<Victual>) getIntent().getSerializableExtra("victuals");
+
+        recyclerView = findViewById(R.id.recyclerView);
+
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        recyclerView.setAdapter(new RecyclerViewVictualAdapter(this, victuals));
     }
 
     private void showMaps(){

@@ -1,8 +1,9 @@
 package com.luanvan.customer.components;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Victual {
+public class Victual implements Serializable {
     private String id;
     private String name;
     private String price;
@@ -16,8 +17,12 @@ public class Victual {
     private int cartItemId;
     private ArrayList<Integer> victualsCategories;
     public Victual(){ }
-    public Victual(String id){
-        this.id = id;
+    public Victual(String name, String imageUrl, int quantity, String price, String discount){
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.quantity = quantity;
+        this.price = price;
+        this.discountPrice = discount;
     }
     public Victual(String id, String name, String price, String discountPrice, String createdAt, String updatedAt, String imageUrl, Boolean isSell, String branch, ArrayList<Integer> victualsCategories, int quantity, int cartItemId){
         this.id = id;

@@ -40,6 +40,7 @@ public class RecyclerViewVictualAdapter extends RecyclerView.Adapter<RecyclerVie
     @Override
     public void onBindViewHolder(@NonNull final RecyclerViewVictualAdapter.ViewHolder holder, final int position) {
         final Victual victual = list.get(position);
+
         final double price = Double.parseDouble(victual.getPrice().equals("null") ? "0":victual.getPrice());
         final double discount = Double.parseDouble(victual.getDiscountPrice().equals("null") ? "0":victual.getDiscountPrice());
         holder.tvName.setText(victual.getName());
@@ -60,8 +61,10 @@ public class RecyclerViewVictualAdapter extends RecyclerView.Adapter<RecyclerVie
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddItemDialog addItemDialog = new AddItemDialog(activity, R.style.CartDialog, victual.getImageUrl(), victual.getName(), (price-discount), price, victual.getId(), victual.getQuantity(), victual.getCartItemId());
-                addItemDialog.show();
+                if (!activity.getClass().getSimpleName().equals("TrackShipperActivity")){
+                    AddItemDialog addItemDialog = new AddItemDialog(activity, R.style.CartDialog, victual.getImageUrl(), victual.getName(), (price-discount), price, victual.getId(), victual.getQuantity(), victual.getCartItemId());
+                    addItemDialog.show();
+                }
             }
         });
     }

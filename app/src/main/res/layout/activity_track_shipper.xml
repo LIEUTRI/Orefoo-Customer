@@ -8,6 +8,13 @@
   <fragment
       android:name="com.luanvan.customer.Fragments.MapsFragment"
       android:layout_width="match_parent"
-      android:layout_height="500dp"
+      android:layout_height="300dp"
       android:id="@+id/fragment_maps_container"/>
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/recyclerView"
+      android:layout_below="@id/fragment_maps_container"
+      android:padding="10dp"/>
 </RelativeLayout>
