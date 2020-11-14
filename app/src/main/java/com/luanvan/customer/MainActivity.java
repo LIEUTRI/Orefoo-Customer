@@ -45,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
     private ViewPagerFragmentAdapter viewPagerFragmentAdapter;
+    private ViewPager2.OnPageChangeCallback onPageChangeCallback;
     private ArrayList<Fragment> listFragment = new ArrayList<>();
     private TextView tvHome,tvOrder,tvMe;
-    private ViewPager2.OnPageChangeCallback onPageChangeCallback;
     private boolean doubleBackToExitPressedOnce = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(0,true);
-                updateIconUI(tvHome);
             }
         });
 
@@ -106,14 +105,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(1,true);
-                updateIconUI(tvOrder);
             }
         });
         tvMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(2,true);
-                updateIconUI(tvMe);
             }
         });
 

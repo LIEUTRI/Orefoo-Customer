@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:layout_marginBottom="10dp">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/ivBranch"
+        android:layout_alignParentStart="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Branch name"
+        android:maxLines="2"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:id="@+id/tvBranchName"
+        android:layout_toEndOf="@+id/ivBranch"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:textSize="14sp"
+        android:drawableStart="@drawable/ic_location_on_18"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:drawablePadding="5dp"
+        android:layout_toEndOf="@id/ivBranch"
+        android:layout_below="@id/tvBranchName"
+        android:id="@+id/tvBranchAddress"/>
+
+    <TextView
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvDistance"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:text="0 km"
+        android:layout_alignBottom="@+id/ivBranch"
+        android:gravity="center"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"/>
+</RelativeLayout>

@@ -25,6 +25,7 @@ import com.luanvan.customer.R;
 
 import com.luanvan.customer.components.CartDialog;
 import com.luanvan.customer.components.CartItem;
+import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 import com.luanvan.customer.components.Victual;
@@ -182,7 +183,6 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
     class UpdateQuantityTask extends AsyncTask<String,String,String> {
         private InputStream is;
         private OutputStream os;
-        private final String cartItemURL = "https://orefoo.herokuapp.com/cart-item/";
         private int resultCode;
         @Override
         protected String doInBackground(String... strings) {
@@ -190,7 +190,7 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(cartItemURL + strings[0]);
+                URL url = new URL(RequestUrl.CART_ITEM + strings[0]);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("PUT");
                 connection.setRequestProperty("Authorization", token);
@@ -278,7 +278,6 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
     @SuppressLint("StaticFieldLeak")
     class DeleteCartItemTask extends AsyncTask<String,String,String> {
         private InputStream is;
-        private final String cartItemURL = "https://orefoo.herokuapp.com/cart-item/";
         private int resultCode;
         @Override
         protected String doInBackground(String... strings) {
@@ -286,7 +285,7 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(cartItemURL+strings[0]);
+                URL url = new URL(RequestUrl.CART_ITEM + strings[0]);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("DELETE");
                 connection.setRequestProperty("Authorization", token);

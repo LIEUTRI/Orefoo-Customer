@@ -11,24 +11,24 @@ import com.luanvan.customer.Fragments.MeFragment;
 import com.luanvan.customer.Fragments.OrderFragment;
 
 public class ViewPagerFragmentAdapter extends FragmentStateAdapter {
-    public ViewPagerFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
-        super(fragmentManager, lifecycle);
-    }
+  public ViewPagerFragmentAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+    super(fragmentManager, lifecycle);
+  }
 
-    @NonNull
-    @Override
-    public Fragment createFragment(int position) {
+  @NonNull
+  @Override
+  public Fragment createFragment(int position) {
 
-        switch (position){
-            case 0: return new HomeFragment();
-            case 1: return new OrderFragment();
-            case 2: return new MeFragment();
-        }
-        return null;
+    switch (position){
+      case 0: return new HomeFragment();
+      case 1: return new OrderFragment();
+      case 2: return new MeFragment();
     }
+    return null;
+  }
 
-    @Override
-    public int getItemCount() {
-        return 3;
-    }
+  @Override
+  public int getItemCount() {
+    return 3;
+  }
 }

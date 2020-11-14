@@ -104,4 +104,7 @@
     <string name="payment_method">Phương thức thanh toán</string>
     <string name="order_at">"Đặt hàng lúc: "</string>
     <string name="dish">món</string>
+    <string name="track_order">Theo dõi đơn hàng</string>
+    <string name="error">lỗi</string>
+    <string name="io_exception">IOException</string>
 </resources>

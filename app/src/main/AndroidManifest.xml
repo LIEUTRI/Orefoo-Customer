@@ -16,13 +16,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CheckoutActivity"></activity>
-        <activity android:name=".RestaurantActivity" />
-        <activity android:name=".UpdateProfileActivity" />
-        <activity android:name=".ManagerProfileActivity" />
+        <activity android:name=".BranchActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".CheckoutActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".RestaurantActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".UpdateProfileActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ManagerProfileActivity" android:screenOrientation="portrait"/>
         <activity
             android:name=".SignupActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize" />
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:screenOrientation="portrait"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -35,14 +37,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".PickLocationActivity" />
-        <activity android:name=".TrackShipperActivity" />
-        <activity android:name=".SearchActivity" />
+        <activity android:name=".PickLocationActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".TrackShipperActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".SearchActivity" android:screenOrientation="portrait"/>
         <activity android:name=".PaymentActivity" />
         <activity
             android:name=".LoginActivity"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

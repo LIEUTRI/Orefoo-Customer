@@ -8,9 +8,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,12 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.luanvan.customer.Adapter.RecyclerViewCartItemAdapter;
-import com.luanvan.customer.Adapter.RecyclerViewVictualAdapter;
-import com.luanvan.customer.components.CartDialog;
 import com.luanvan.customer.components.CartItem;
-import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
-import com.luanvan.customer.components.Victual;
 
 import org.json.JSONArray;
 import org.json.JSONException;

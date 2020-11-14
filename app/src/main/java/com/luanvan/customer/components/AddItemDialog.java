@@ -210,7 +210,6 @@ public class AddItemDialog extends Dialog {
     class AddToCartTask extends AsyncTask<String,String,String> {
         private InputStream is;
         private OutputStream os;
-        private final String cartURL = "https://orefoo.herokuapp.com/cart-item";
         private int resultCode;
 
         @Override
@@ -225,7 +224,7 @@ public class AddItemDialog extends Dialog {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(cartURL);
+                URL url = new URL(RequestUrl.CART_ITEM);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Authorization", token);
@@ -314,7 +313,6 @@ public class AddItemDialog extends Dialog {
     @SuppressLint("StaticFieldLeak")
     class DeleteAllCartItemTask extends AsyncTask<String,String,String> {
         private InputStream is;
-        private final String cartURL = "https://orefoo.herokuapp.com/cart/";
         private int resultCode;
         @Override
         protected String doInBackground(String... strings) {
@@ -322,7 +320,7 @@ public class AddItemDialog extends Dialog {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(cartURL+strings[0]+"/change-branch");
+                URL url = new URL(RequestUrl.CART+strings[0]+"/change-branch");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("DELETE");
                 connection.setRequestProperty("Authorization", token);
@@ -401,7 +399,6 @@ public class AddItemDialog extends Dialog {
     class UpdateQuantityTask extends AsyncTask<String,String,String> {
         private InputStream is;
         private OutputStream os;
-        private final String cartItemURL = "https://orefoo.herokuapp.com/cart-item/";
         private int resultCode;
         @Override
         protected String doInBackground(String... strings) {
@@ -409,7 +406,7 @@ public class AddItemDialog extends Dialog {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(cartItemURL + strings[0]);
+                URL url = new URL(RequestUrl.CART_ITEM + strings[0]);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("PUT");
                 connection.setRequestProperty("Authorization", token);
@@ -560,7 +557,6 @@ public class AddItemDialog extends Dialog {
         private InputStream is;
         private int cartID;
         private double km;
-        private final String cartItemURL = "https://orefoo.herokuapp.com/cart/";
         private int resultCode;
 
         public void postDistance(int cartID, double km){
@@ -574,7 +570,7 @@ public class AddItemDialog extends Dialog {
             HttpURLConnection connection = null;
             BufferedReader reader = null;
             try {
-                URL url = new URL(cartItemURL + cartID + "/ship?km="+km);
+                URL url = new URL(RequestUrl.CART + cartID + "/ship?km="+km);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("PATCH");
                 connection.setRequestProperty("Authorization", token);

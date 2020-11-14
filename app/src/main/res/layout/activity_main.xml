@@ -30,7 +30,7 @@
         android:gravity="center"
         android:text="Home"
         android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_home" />
+        app:drawableTopCompat="@drawable/ic_home_24" />
 
     <TextView
         android:id="@+id/tvOrder"
@@ -40,7 +40,7 @@
         android:gravity="center"
         android:text="@string/orders"
         android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_orders" />
+        app:drawableTopCompat="@drawable/ic_receipt_24" />
 
     <TextView
         android:id="@+id/tvMe"
@@ -50,6 +50,6 @@
         android:gravity="center"
         android:text="@string/me"
         android:textSize="14sp"
-        app:drawableTopCompat="@drawable/ic_user" />
+        app:drawableTopCompat="@drawable/ic_person_24" />
   </LinearLayout>
 </RelativeLayout>

@@ -170,16 +170,15 @@ public class OngoingFragment extends Fragment {
                                         item.getDouble("price"), item.getDouble("discount"), item.getInt("quantity"),
                                         item.getInt("order"), item.getInt("victuals")));
                             }
-                            if (!jsonObject.getString("orderStatus").equals("completed")){
+                            if (jsonObject.getString("orderStatus").equals("ordered")){
                                 orders.add(new Order(jsonObject.getInt("id"), jsonObject.getDouble("totalPay"), jsonObject.getDouble("victualsPrice"),
-                                        jsonObject.getDouble("shippingFee"), jsonObject.getString("shippingAddress"), jsonObject.getString("note"),
-                                        jsonObject.getString("time"), new Branch(jsonObject.getJSONObject("branch").getInt("id"),
-                                        jsonObject.getJSONObject("branch").getString("name")), jsonObject.getInt("consumer"), jsonObject.getString("shipper").equals("null") ? -1:jsonObject.getInt("shipper"),
+                                        jsonObject.getDouble("shippingFee"), jsonObject.getString("shippingAddress"), jsonObject.getString("note"), jsonObject.getString("time"),
+                                        new Branch(jsonObject.getJSONObject("branch").getInt("id"), jsonObject.getJSONObject("branch").getString("name"), "https://scontent-sin6-1.xx.fbcdn.net/v/t1.0-9/88984232_2271961409765205_4894528439710646272_o.jpg?_nc_cat=106&ccb=2&_nc_sid=09cbfe&_nc_ohc=7nV8bf6qwqoAX8QqcOz&_nc_ht=scontent-sin6-1.xx&oh=0f3f5f98e25febe797b8fddf617ded80&oe=5FD54155"),
+                                        jsonObject.getInt("consumer"), jsonObject.getString("shipper").equals("null") ? -1:jsonObject.getInt("shipper"),
                                         jsonObject.getString("orderStatus"), listOrderItems));
                             }
                         }
 
-                        Log.i("ordersSize", orders.size()+"");
                         recyclerView.setAdapter(new RecyclerViewOngoingAdapter(getActivity(), orders));
                     } catch (JSONException e) {
                         e.printStackTrace();

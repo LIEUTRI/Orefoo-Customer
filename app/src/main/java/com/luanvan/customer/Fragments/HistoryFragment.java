@@ -1,66 +1,200 @@
 package com.luanvan.customer.Fragments;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.luanvan.customer.Adapter.RecyclerViewHistoryAdapter;
+import com.luanvan.customer.Adapter.RecyclerViewOngoingAdapter;
 import com.luanvan.customer.R;
+import com.luanvan.customer.components.Branch;
+import com.luanvan.customer.components.CartItem;
+import com.luanvan.customer.components.Order;
+import com.luanvan.customer.components.RequestUrl;
+import com.luanvan.customer.components.ResultsCode;
+import com.luanvan.customer.components.Shared;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HistoryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.ArrayList;
+
 public class HistoryFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView recyclerView;
+    private ArrayList<Order> orders = new ArrayList<>();
+    private String token = "";
+    private int consumerId;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public HistoryFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HistoryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HistoryFragment newInstance(String param1, String param2) {
-        HistoryFragment fragment = new HistoryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public HistoryFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_history, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        recyclerView = view.findViewById(R.id.recyclerView);
+
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
+        token = sharedPreferences.getString(Shared.KEY_BEARER, "")+"";
+
+        sharedPreferences = getActivity().getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
+        consumerId = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
+        Log.i("token", token);
+        Log.i("consumerId", consumerId+"");
+
+        new OrderTask().get(consumerId);
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class OrderTask extends AsyncTask<String,String,String> {
+        private InputStream is;
+        private int resultCode;
+        private int consumerId;
+
+        public void get(int consumerId){
+            this.consumerId = consumerId;
+            execute();
+        }
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(RequestUrl.ORDER +"?consumer-id="+ consumerId);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Authorization", token);
+                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
+                connection.connect();
+
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", statusCode+"");
+
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                    resultCode = ResultsCode.SUCCESS;
+                } else {
+                    is = connection.getErrorStream();
+                    if (statusCode == 406) {
+                        resultCode = ResultsCode.DIFFERENCE_BRANCH;
+                    } else resultCode = ResultsCode.FAILED;
+                }
+
+                reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder buffer = new StringBuilder();
+                String line = "";
+                while ((line = reader.readLine()) != null){
+                    buffer.append(line).append("\n");
+                    Log.d("Response: ", "> " + line);
+                }
+
+                return buffer.toString();
+            } catch (SocketTimeoutException e) {
+                resultCode = ResultsCode.SOCKET_TIMEOUT;
+            } catch (IOException e){
+                resultCode = ResultsCode.IO_EXCEPTION;
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s == null) return;
+
+            switch (resultCode) {
+                case ResultsCode.SUCCESS:
+                    Log.i("result", "update success");
+
+                    orders.clear();
+                    try {
+                        JSONArray jsonArray = new JSONArray(s);
+                        for (int index=0; index < jsonArray.length(); index++){
+                            JSONObject jsonObject = jsonArray.getJSONObject(index);
+                            JSONArray orderItems = jsonObject.getJSONArray("orderItems");
+                            ArrayList<CartItem> listOrderItems = new ArrayList<>();
+                            for (int i=0; i<orderItems.length(); i++){
+                                JSONObject item = orderItems.getJSONObject(i);
+                                listOrderItems.add(new CartItem(item.getInt("id"), item.getString("name"), item.getString("imageUrl"),
+                                        item.getDouble("price"), item.getDouble("discount"), item.getInt("quantity"),
+                                        item.getInt("order"), item.getInt("victuals")));
+                            }
+                            orders.add(new Order(jsonObject.getInt("id"), jsonObject.getDouble("totalPay"), jsonObject.getDouble("victualsPrice"),
+                                    jsonObject.getDouble("shippingFee"), jsonObject.getString("shippingAddress"), jsonObject.getString("note"), jsonObject.getString("time"),
+                                    new Branch(jsonObject.getJSONObject("branch").getInt("id"), jsonObject.getJSONObject("branch").getString("name"), "https://scontent-sin6-1.xx.fbcdn.net/v/t1.0-9/88984232_2271961409765205_4894528439710646272_o.jpg?_nc_cat=106&ccb=2&_nc_sid=09cbfe&_nc_ohc=7nV8bf6qwqoAX8QqcOz&_nc_ht=scontent-sin6-1.xx&oh=0f3f5f98e25febe797b8fddf617ded80&oe=5FD54155"),
+                                    jsonObject.getInt("consumer"), jsonObject.getString("shipper").equals("null") ? -1:jsonObject.getInt("shipper"),
+                                    jsonObject.getString("orderStatus"), listOrderItems));
+                        }
+
+                        recyclerView.setAdapter(new RecyclerViewHistoryAdapter(getActivity(), orders));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+                case ResultsCode.DIFFERENCE_BRANCH:
+                    break;
+                case ResultsCode.FAILED:
+                    Log.i("result", "update failed");
+                    break;
+                case ResultsCode.SOCKET_TIMEOUT:
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();
+                    break;
+                case ResultsCode.IO_EXCEPTION:
+                    Toast.makeText(getActivity(), "IO Exception", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
     }
 }

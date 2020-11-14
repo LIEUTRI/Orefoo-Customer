@@ -17,9 +17,10 @@ public class Branch {
 
     public Branch() { }
 
-    public Branch(int id, String name) {
+    public Branch(int id, String name, String imageUrl) {
         this.id = id;
         this.name = name;
+        this.imageUrl = imageUrl;
     }
 
     public Branch(int id, String name, String phoneNumber, String imageUrl, String openingTime, String closingTime, String address, LatLng latLng, boolean isSell, int merchant, String branchStatus) {

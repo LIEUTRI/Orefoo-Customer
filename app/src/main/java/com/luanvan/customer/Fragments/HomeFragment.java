@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.luanvan.customer.BranchActivity;
 import com.luanvan.customer.PickLocationActivity;
 import com.luanvan.customer.R;
 import com.luanvan.customer.RestaurantActivity;
@@ -79,6 +80,7 @@ public class HomeFragment extends Fragment {
     private TextView tvAddress;
     private FloatingActionButton btnCart;
     private TextView tvSizeOfCart;
+    private TextView tvSeeAllSuggest;
 
     private MaterialCardView cvItem1, cvItem2, cvItem3, cvItem4, cvItem5;
     private TextView tvItemName1, tvItemName2, tvItemName3, tvItemName4, tvItemName5;
@@ -138,6 +140,7 @@ public class HomeFragment extends Fragment {
         layoutProgressBar = view.findViewById(R.id.layoutProgressBar);
         btnCart = view.findViewById(R.id.btnCart);
         tvSizeOfCart = view.findViewById(R.id.tvSizeOfCart);
+        tvSeeAllSuggest = view.findViewById(R.id.tvSeeAllSuggest);
     }
 
     @Override
@@ -158,6 +161,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(getActivity(), PickLocationActivity.class), RequestsCode.REQUEST_ADDRESS);
+            }
+        });
+        tvSeeAllSuggest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), BranchActivity.class));
             }
         });
 
@@ -261,11 +270,10 @@ public class HomeFragment extends Fragment {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "")+"";
 
-        String TOKEN_PREFIX = "Bearer ";
-        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
-        username = jwt.getSubject();
-        Claim claim = jwt.getClaim("userId");
-        userId = claim.asInt();
+        if (!token.equals("")){
+            username = getUsername(token);
+            userId = getUserId(token);
+        }
 
         showCurrentLocation();
 
@@ -284,6 +292,19 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    public int getUserId(String token){
+        String TOKEN_PREFIX = "Bearer ";
+        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
+        username = jwt.getSubject();
+        Claim claim = jwt.getClaim("userId");
+        return claim.asInt();
+    }
+    public String getUsername(String token){
+        String TOKEN_PREFIX = "Bearer ";
+        JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
+        return jwt.getSubject();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -293,6 +314,12 @@ public class HomeFragment extends Fragment {
             if (!token.equals("")) {
                 double lat = data.getDoubleExtra("latitude", 0);
                 double lng = data.getDoubleExtra("longitude", 0);
+
+                // update current location
+                currentLocation = new LatLng(lat, lng);
+                // show suggest branch for current location
+                new GetBranch().execute();
+
                 String address = data.getStringExtra("ADDRESS");
                 new UpdateLocationTask(getActivity(), lat, lng, address, consumerID).execute();
                 // store consumer address info
@@ -325,7 +352,7 @@ public class HomeFragment extends Fragment {
                         if (location != null) {
                             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
-                            // show branch
+                            // show suggest branch
                             new GetBranch().execute();
 
                             Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());

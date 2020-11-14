@@ -5,78 +5,50 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Paint;
-import android.os.AsyncTask;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.luanvan.customer.CheckoutActivity;
 import com.luanvan.customer.R;
 import com.luanvan.customer.TrackShipperActivity;
-import com.luanvan.customer.components.Branch;
-import com.luanvan.customer.components.CartDialog;
-import com.luanvan.customer.components.CartItem;
 import com.luanvan.customer.components.Order;
-import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
-import com.luanvan.customer.components.SortPlaces;
 import com.luanvan.customer.components.Victual;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
-public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerViewOngoingAdapter.ViewHolder>{
+public class RecyclerViewHistoryAdapter extends RecyclerView.Adapter<RecyclerViewHistoryAdapter.ViewHolder>{
     private List<Order> list;
     private Activity activity;
     private String token;
-    public RecyclerViewOngoingAdapter(Activity activity, List<Order> list){
+    public RecyclerViewHistoryAdapter(Activity activity, List<Order> list){
         this.activity = activity;
         this.list = list;
     }
     @NonNull
     @Override
-    public RecyclerViewOngoingAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerViewHistoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         SharedPreferences sharedPreferences = activity.getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
 
         View view = LayoutInflater.from(activity).inflate(R.layout.order, parent, false);
-        return new RecyclerViewOngoingAdapter.ViewHolder(view);
+        return new RecyclerViewHistoryAdapter.ViewHolder(view);
     }
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerViewOngoingAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerViewHistoryAdapter.ViewHolder holder, final int position) {
         final Order order = list.get(position);
 
         RequestOptions options = new RequestOptions()
@@ -86,26 +58,14 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
         Glide.with(activity).load(order.getBranch().getImageUrl()).apply(options).into(holder.ivBranch);
 
         holder.tvBranchName.setText(order.getBranch().getName());
+
         Calendar calendar = Calendar.getInstance();
         Timestamp timestamp = Timestamp.valueOf(order.getTime().substring(0, order.getTime().indexOf("+")).replace("T", " "));
         calendar.setTime(timestamp);
         calendar.add(Calendar.HOUR_OF_DAY, 7);
         holder.tvTime.setText(activity.getResources().getString(R.string.order_at)+calendar.getTime().toString().substring(0, calendar.getTime().toString().indexOf("GMT")-1));
-        holder.tvVictualsSize.setText(order.getOrderItems().size()+" "+activity.getResources().getString(R.string.dish));
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ArrayList<Victual> victuals = new ArrayList<>();
-                for (int index=0; index<order.getOrderItems().size(); index++){
-                    victuals.add(new Victual(order.getOrderItems().get(index).getName(), order.getOrderItems().get(index).getImageUrl(),
-                            order.getOrderItems().get(index).getQuantity(), order.getOrderItems().get(index).getPrice()+"", order.getOrderItems().get(index).getDiscount()+""));
-                }
-                Intent intent = new Intent(activity, TrackShipperActivity.class);
-                intent.putExtra("victuals", victuals);
-                activity.startActivity(intent);
-            }
-        });
+        holder.tvVictualsSize.setText(order.getOrderItems().size()+" "+activity.getResources().getString(R.string.dish));
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
