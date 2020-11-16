@@ -94,7 +94,7 @@
     <string name="too_far_message">Để đảm bảo chất lượng sản phẩm, chúng tôi không hổ trợ giao hàng trên 10km.\nCảm ơn bạn đã sử dụng Orefoo.</string>
     <string name="add">Thêm</string>
     <string name="sum">Tổng</string>
-    <string name="total">Tổng cộng</string>
+    <string name="total">Thành tiền</string>
     <string name="shipping_fee">Phí giao hàng</string>
     <string name="portion">phần</string>
     <string name="cart_empty">Giỏ hàng trống</string>
@@ -107,4 +107,9 @@
     <string name="track_order">Theo dõi đơn hàng</string>
     <string name="error">lỗi</string>
     <string name="io_exception">IOException</string>
+    <string name="edit_address"><![CDATA[Sửa đổi địa chỉ & Liên hệ]]></string>
+    <string name="hint_building_floor_number">Tòa nhà, số tầng, tên đường…</string>
+    <string name="hint_gate">Cổng</string>
+    <string name="contact_info">Thông tin liên hệ</string>
+    <string name="change_branch">Đổi cửa hàng</string>
 </resources>

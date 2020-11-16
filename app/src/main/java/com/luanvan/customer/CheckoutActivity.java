@@ -1,10 +1,12 @@
 package com.luanvan.customer;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,7 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.luanvan.customer.Adapter.RecyclerViewCartItemAdapter;
+import com.luanvan.customer.Fragments.HomeFragment;
 import com.luanvan.customer.components.CartItem;
+import com.luanvan.customer.components.RequestUrl;
+import com.luanvan.customer.components.RequestsCode;
+import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 
 import org.json.JSONArray;
@@ -50,6 +56,8 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextView tvDeliveryTime;
     private TextView btnConfirmOrder;
     private RecyclerView recyclerView;
+    private TextView tvEditAddress;
+
     private String token;
     private int cartId;
     private String branchName;
@@ -95,6 +103,7 @@ public class CheckoutActivity extends AppCompatActivity {
         tvTotalVictuals = findViewById(R.id.tvTotalVictuals);
         tvDeliveryTime = findViewById(R.id.tvDeliveryTime);
         tvDeliveryFee = findViewById(R.id.tvDeliveryFee);
+        tvEditAddress = findViewById(R.id.tvEditAddress);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -119,7 +128,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE);
         branchName = sharedPreferences.getString(Shared.KEY_BRANCH_NAME, "");
-        distance = sharedPreferences.getFloat(Shared.KEY_BRANCH_DISTANCE, 0);
+        distance = Double.parseDouble(sharedPreferences.getString(Shared.KEY_BRANCH_DISTANCE, "1"));
         distance = round(distance, 1);
         tvBranchName.setText(branchName);
         tvDeliveryFee.setText(getResources().getString(R.string.shipping_fee)+" ("+distance+"km)");
@@ -155,6 +164,24 @@ public class CheckoutActivity extends AppCompatActivity {
                 }
             }
         });
+
+        tvEditAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(new Intent(CheckoutActivity.this, EditAddressActivity.class), RequestsCode.REQUEST_UPDATE_ADDRESS);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // show info was edited
+        if (requestCode == RequestsCode.REQUEST_UPDATE_ADDRESS && resultCode == Activity.RESULT_OK && data != null){
+            tvConsumerName.setText(data.getStringExtra(Shared.KEY_FIRST_NAME));
+            tvPhone.setText(data.getStringExtra(Shared.KEY_PHONE));
+            tvAddress.setText(data.getStringExtra(Shared.KEY_ADDRESS));
+        }
     }
 
     public static double round(double value, int places){
@@ -239,9 +266,8 @@ public class CheckoutActivity extends AppCompatActivity {
                 double totalPrice = jsonObject.getDouble("totalPrice");
                 shippingFee = jsonObject.getDouble("shippingFee");
                 totalPriceVictuals = totalPrice;
-                int branchId = jsonObject.getInt("branch");
-                JSONArray jsonArray = jsonObject.getJSONArray("cartItemsCollection");
 
+                JSONArray jsonArray = jsonObject.getJSONArray("cartItemsCollection");
                 for (int i=0; i<jsonArray.length(); i++){
                     JSONObject item = jsonArray.getJSONObject(i);
                     quantity += item.getInt("quantity");
@@ -340,5 +366,115 @@ public class CheckoutActivity extends AppCompatActivity {
                 Toast.makeText(CheckoutActivity.this, getResources().getString(R.string.order_failed), Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    // send distance to server
+    @SuppressLint("StaticFieldLeak")
+    class DistanceTask extends AsyncTask<String,String,String> {
+        private InputStream is;
+        private int cartID;
+        private double km;
+        private int resultCode;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        public void postDistance(int cartID, double km){
+            this.cartID = cartID;
+            this.km = km;
+            execute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+            try {
+                URL url = new URL(RequestUrl.CART + cartID + "/ship?km="+km);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("PATCH");
+                connection.setRequestProperty("Authorization", token);
+                connection.connect();
+
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", statusCode+"");
+
+                if (statusCode >= 200 && statusCode < 400){
+                    is = connection.getInputStream();
+                    resultCode = ResultsCode.SUCCESS;
+                    Log.i("result", "post distance success");
+                } else {
+                    Log.i("result", "post distance failed");
+                    is = connection.getErrorStream();
+                    if (statusCode == 406) {
+                        resultCode = ResultsCode.DIFFERENCE_BRANCH;
+                    } else resultCode = ResultsCode.FAILED;
+                }
+
+                reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder buffer = new StringBuilder();
+                String line = "";
+                while ((line = reader.readLine()) != null){
+                    buffer.append(line).append("\n");
+                    Log.d("ResponseDistance: ", "> " + line);
+                }
+
+                return buffer.toString();
+            } catch (SocketTimeoutException e) {
+                resultCode = ResultsCode.SOCKET_TIMEOUT;
+            } catch (IOException e){
+                resultCode = ResultsCode.IO_EXCEPTION;
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (s == null) return;
+
+            switch (resultCode) {
+                case ResultsCode.SUCCESS:
+                    Log.i("result", "post distance success");
+                    break;
+                case ResultsCode.FAILED:
+                    Toast.makeText(CheckoutActivity.this, "Cannot send distance to server", Toast.LENGTH_LONG).show();
+                    break;
+                case ResultsCode.SOCKET_TIMEOUT:
+                    Toast.makeText(CheckoutActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();
+                    break;
+                case ResultsCode.IO_EXCEPTION:
+                    Toast.makeText(CheckoutActivity.this, "IO Exception", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        SharedPreferences sharedPreferences = getSharedPreferences(Shared.CART, Context.MODE_PRIVATE);
+//        cartId = sharedPreferences.getInt(Shared.KEY_CART_ID, -1);
+        Log.i("CheckoutActivity", "cartId: "+cartId);
+
+        // send branch's distance to server for calculate shipping fee
+        SharedPreferences sharedPreferences = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE);
+        double km = Double.parseDouble(sharedPreferences.getString(Shared.KEY_BRANCH_DISTANCE, "1"));
+        new DistanceTask().postDistance(cartId, km);
+        Log.i("CheckoutActivity", "distance: "+km);
     }
 }

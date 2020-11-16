@@ -3,6 +3,8 @@ package com.luanvan.customer.Fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -16,6 +18,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.luanvan.customer.Adapter.RecyclerViewOngoingAdapter;
@@ -48,6 +52,9 @@ public class OngoingFragment extends Fragment {
     private String token = "";
     private int consumerId;
 
+    private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
+
     public OngoingFragment() { }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,6 +77,11 @@ public class OngoingFragment extends Fragment {
         Log.i("token", token);
         Log.i("consumerId", consumerId+"");
 
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleSmall);
+        layoutProgressBar.addView(progressBar, params);
+
         new OrderTask().get(consumerId);
     }
 
@@ -78,6 +90,7 @@ public class OngoingFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.recyclerView);
+        layoutProgressBar = view.findViewById(R.id.layoutProgressBar);
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -94,6 +107,13 @@ public class OngoingFragment extends Fragment {
             this.consumerId = consumerId;
             execute();
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected String doInBackground(String... strings) {
             HttpURLConnection connection = null;
@@ -151,6 +171,7 @@ public class OngoingFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            progressBar.setVisibility(View.INVISIBLE);
             if (s == null) return;
 
             switch (resultCode) {

@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +26,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.luanvan.customer.Fragments.MenuFragment;
 import com.luanvan.customer.R;
+import com.luanvan.customer.RestaurantActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,9 +57,10 @@ public class AddItemDialog extends Dialog {
     private ImageButton btnAdd, btnRemove;
     private TextView tvQuantity;
     private TextView btnAddItem;
+    private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
 
     private double totalPrice = 0.0;
-    private double totalPriceOrigin = 0.0;
 
     private int quantity = 1;
     private int curQuantity;
@@ -94,12 +98,18 @@ public class AddItemDialog extends Dialog {
         btnRemove = findViewById(R.id.btnRemove);
         tvQuantity = findViewById(R.id.tvQuantity);
         btnAddItem = findViewById(R.id.btnAddItem);
+        layoutProgressBar = findViewById(R.id.layoutProgressBar);
 
         totalPrice = price;
         totalPrice = priceOrigin;
         String add = activity.getResources().getString(R.string.add)+" "+String.format("%,.0f", price)+"đ";
         btnAddItem.setText(add);
 
+        progressBar = new ProgressBar(activity, null, android.R.attr.progressBarStyleSmall);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        layoutProgressBar.addView(progressBar, params);
+        progressBar.setVisibility(View.INVISIBLE);
 
         RequestOptions options = new RequestOptions()
                 .centerCrop()
@@ -145,7 +155,6 @@ public class AddItemDialog extends Dialog {
                 quantity++;
                 tvQuantity.setText(quantity+"");
                 totalPrice += price;
-                totalPriceOrigin += priceOrigin;
                 String add = activity.getResources().getString(R.string.add)+" "+String.format("%,.0f", totalPrice)+"đ";
                 btnAddItem.setText(add);
             }
@@ -160,7 +169,6 @@ public class AddItemDialog extends Dialog {
                 quantity--;
                 tvQuantity.setText(quantity+"");
                 totalPrice -= price;
-                totalPriceOrigin -= priceOrigin;
                 String add = activity.getResources().getString(R.string.add)+" "+String.format("%,.0f", totalPrice)+"đ";
                 btnAddItem.setText(add);
             }
@@ -169,6 +177,7 @@ public class AddItemDialog extends Dialog {
         btnAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
                 // add to cart
                 if (curQuantity >= 1){
                     new UpdateQuantityTask().execute(itemId+"", (quantity+curQuantity)+"");
@@ -179,29 +188,45 @@ public class AddItemDialog extends Dialog {
                         json.put("cart", new JSONObject().put("id", cartId));
                         json.put("victuals", new JSONObject().put("id", id));
 
-                        CalculateDistanceTime distance_task = new CalculateDistanceTime(activity);
-                        distance_task.getDirectionsUrl(consumerLatLng, branchLatLng);
-                        distance_task.setLoadListener(new CalculateDistanceTime.taskCompleteListener() {
-                            @Override
-                            public void taskCompleted(String[] distance) {
-                                if (Float.parseFloat(distance[0].substring(0,distance[0].indexOf(" "))) > 10.0){
-                                    showDialogDistance();
-                                } else {
-                                    new AddToCartTask().execute(json.toString());
+                        // add victuals to cart
+                        if (!RestaurantActivity.tooFar){
+                            new AddToCartTask().execute(json.toString());
+                        } else {
+                            Toast.makeText(activity, activity.getResources().getString(R.string.too_far), Toast.LENGTH_SHORT).show();
+                        }
 
-                                    double km = Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" ")));
-                                    SharedPreferences.Editor editor = activity.getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
-                                    editor.putFloat(Shared.KEY_BRANCH_DISTANCE, (float) km);
-                                    editor.apply();
-                                    new DistanceTask().postDistance(cartId, km);
-                                }
-                            }
-                        });
+                        cancel();
+
+//                        CalculateDistanceTime distance_task = new CalculateDistanceTime(activity);
+//                        distance_task.getDirectionsUrl(consumerLatLng, branchLatLng);
+//                        distance_task.setLoadListener(new CalculateDistanceTime.taskCompleteListener() {
+//                            @Override
+//                            public void taskCompleted(String[] distance) {
+//                                progressBar.setVisibility(View.INVISIBLE);
+//                                cancel();
+//                                if (distance.length < 1) {
+//                                    Toast.makeText(activity, "cannot calculate distance, try again", Toast.LENGTH_LONG).show();
+//                                    return;
+//                                }
+//                                if (Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" "))) > 10.0){
+//                                    showDialogDistance();
+//                                } else {
+//                                    // add victuals to cart
+//                                    new AddToCartTask().execute(json.toString());
+//
+//                                    // save & send branch's distance to server for calculate shipping fee
+//                                    double km = Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" ")));
+//                                    SharedPreferences.Editor editor = activity.getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
+//                                    editor.putString(Shared.KEY_BRANCH_DISTANCE, km+"");
+//                                    editor.apply();
+//                                    new DistanceTask().postDistance(cartId, km);
+//                                }
+//                            }
+//                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-                cancel();
             }
         });
     }
@@ -294,7 +319,7 @@ public class AddItemDialog extends Dialog {
                     activity.overridePendingTransition(0,0);
                     break;
                 case ResultsCode.DIFFERENCE_BRANCH:
-                    showDialogBranch();
+                    showDialogBranch(activity);
                     break;
                 case ResultsCode.FAILED:
                     Log.i("result", "add failed");
@@ -492,9 +517,9 @@ public class AddItemDialog extends Dialog {
         }
     }
 
-    // dialogs/////////////////
-    private void showDialogBranch(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+    // dialog/////////////////
+    private void showDialogBranch(Context context){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle(activity.getResources().getString(R.string.difference_branch_title));
         builder.setMessage(activity.getResources().getString(R.string.difference_branch_message));
         builder.setCancelable(false);
@@ -520,7 +545,7 @@ public class AddItemDialog extends Dialog {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new CartDialog(Objects.requireNonNull(activity), R.style.CartDialog).show();
+                        new CartDialog(activity, R.style.CartDialog).show();
                     }
                 }
         );
@@ -549,98 +574,5 @@ public class AddItemDialog extends Dialog {
 
         dialogDistance = builder.create();
         dialogDistance.show();
-    }
-
-    // send distance to server
-    @SuppressLint("StaticFieldLeak")
-    class DistanceTask extends AsyncTask<String,String,String> {
-        private InputStream is;
-        private int cartID;
-        private double km;
-        private int resultCode;
-
-        public void postDistance(int cartID, double km){
-            this.cartID = cartID;
-            this.km = km;
-            execute();
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            HttpURLConnection connection = null;
-            BufferedReader reader = null;
-            try {
-                URL url = new URL(RequestUrl.CART + cartID + "/ship?km="+km);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("PATCH");
-                connection.setRequestProperty("Authorization", token);
-                connection.connect();
-
-                int statusCode = connection.getResponseCode();
-                Log.i("statusCode", statusCode+"");
-
-                if (statusCode >= 200 && statusCode < 400){
-                    is = connection.getInputStream();
-                    resultCode = ResultsCode.SUCCESS;
-                    Log.i("result", "post distance success");
-                } else {
-                    Log.i("result", "post distance failed");
-                    is = connection.getErrorStream();
-                    if (statusCode == 406) {
-                        resultCode = ResultsCode.DIFFERENCE_BRANCH;
-                    } else resultCode = ResultsCode.FAILED;
-                }
-
-                reader = new BufferedReader(new InputStreamReader(is));
-                StringBuilder buffer = new StringBuilder();
-                String line = "";
-                while ((line = reader.readLine()) != null){
-                    buffer.append(line).append("\n");
-                    Log.d("ResponseDistance: ", "> " + line);
-                }
-
-                return buffer.toString();
-            } catch (SocketTimeoutException e) {
-                resultCode = ResultsCode.SOCKET_TIMEOUT;
-            } catch (IOException e){
-                resultCode = ResultsCode.IO_EXCEPTION;
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
-                }
-                try {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
-        }
-
-        @SuppressLint("SetTextI18n")
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (s == null) return;
-
-            switch (resultCode) {
-                case ResultsCode.SUCCESS:
-                    Log.i("result", "post distance success");
-                    break;
-                case ResultsCode.DIFFERENCE_BRANCH:
-                    break;
-                case ResultsCode.FAILED:
-                    Log.i("result", "get failed");
-                    break;
-                case ResultsCode.SOCKET_TIMEOUT:
-                    Toast.makeText(activity, activity.getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();
-                    break;
-                case ResultsCode.IO_EXCEPTION:
-                    Toast.makeText(activity, "IO Exception", Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        }
     }
 }

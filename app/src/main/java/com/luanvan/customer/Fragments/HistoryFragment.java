@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.luanvan.customer.Adapter.RecyclerViewHistoryAdapter;
@@ -48,6 +50,9 @@ public class HistoryFragment extends Fragment {
     private String token = "";
     private int consumerId;
 
+    private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
+
     public HistoryFragment() { }
 
     @Override
@@ -64,6 +69,7 @@ public class HistoryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = view.findViewById(R.id.recyclerView);
+        layoutProgressBar = view.findViewById(R.id.layoutProgressBar);
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -81,6 +87,11 @@ public class HistoryFragment extends Fragment {
         Log.i("token", token);
         Log.i("consumerId", consumerId+"");
 
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleSmall);
+        layoutProgressBar.addView(progressBar, params);
+
         new OrderTask().get(consumerId);
     }
 
@@ -94,6 +105,13 @@ public class HistoryFragment extends Fragment {
             this.consumerId = consumerId;
             execute();
         }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected String doInBackground(String... strings) {
             HttpURLConnection connection = null;
@@ -151,6 +169,7 @@ public class HistoryFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            progressBar.setVisibility(View.INVISIBLE);
             if (s == null) return;
 
             switch (resultCode) {

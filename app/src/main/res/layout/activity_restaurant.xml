@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/extra_light_gray"
     tools:context=".RestaurantActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -52,7 +53,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/tvAddress"
-                android:text="@string/address"/>
+                android:drawablePadding="5dp"
+                android:text="@string/address"
+                app:drawableStartCompat="@drawable/ic_location_on_18" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvDistance"
+                    android:drawablePadding="5dp"
+                    android:text="..."
+                    app:drawableStartCompat="@drawable/ic_6_ft_apart_24" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvTime"
+                    android:layout_alignParentEnd="true"
+                    android:text="..."
+                    android:drawablePadding="5dp"
+                    app:drawableEndCompat="@drawable/ic_timer_18" />
+            </RelativeLayout>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

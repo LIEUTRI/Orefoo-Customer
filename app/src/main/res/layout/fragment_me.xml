@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/extra_light_gray">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="140dp"
@@ -142,6 +143,7 @@
                     android:text="@string/managerprofile"
                     android:textColor="#000000"
                     android:textSize="20sp"
+                    android:background="#FFFFFF"
                     android:drawablePadding="10dp"
                     app:drawableStartCompat="@drawable/ic_edit"
                     app:drawableEndCompat="@drawable/ic_arrow_right"
@@ -167,6 +169,7 @@
                     android:text="@string/about"
                     android:textColor="#000000"
                     android:textSize="20sp"
+                    android:background="#FFFFFF"
                     android:drawablePadding="10dp"
                     app:drawableStartCompat="@drawable/ic_about"
                     app:drawableEndCompat="@drawable/ic_arrow_right"

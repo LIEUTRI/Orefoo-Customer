@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/extra_light_gray"
     tools:context=".Fragments.HomeFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -77,6 +78,8 @@
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="230dp"
                         android:layout_height="140dp"
+                        app:cardCornerRadius="5dp"
+                        app:cardUseCompatPadding="true"
                         android:id="@+id/cardView1"
                         android:layout_marginEnd="8dp">
                         <ImageView
@@ -88,6 +91,8 @@
                         android:layout_width="230dp"
                         android:layout_height="140dp"
                         android:id="@+id/cardView2"
+                        app:cardCornerRadius="5dp"
+                        app:cardUseCompatPadding="true"
                         android:layout_marginEnd="8dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -98,6 +103,8 @@
                         android:layout_width="230dp"
                         android:layout_height="140dp"
                         android:id="@+id/cardView3"
+                        app:cardCornerRadius="5dp"
+                        app:cardUseCompatPadding="true"
                         android:layout_marginEnd="8dp">
                         <ImageView
                             android:layout_width="match_parent"
@@ -112,8 +119,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cardViewSuggest"
                 android:layout_below="@+id/layout_cardViews"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/extra_light_gray"
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -155,8 +162,8 @@
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="150dp"
                                 android:layout_height="200dp"
-                                app:strokeWidth="1dp"
-                                app:strokeColor="@color/extra_light_gray"
+                                app:cardCornerRadius="5dp"
+                                app:cardUseCompatPadding="true"
                                 android:id="@+id/cardViewItem1"
                                 android:layout_margin="8dp">
                                 <RelativeLayout
@@ -197,8 +204,8 @@
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="150dp"
                                 android:layout_height="200dp"
-                                app:strokeWidth="1dp"
-                                app:strokeColor="@color/extra_light_gray"
+                                app:cardCornerRadius="5dp"
+                                app:cardUseCompatPadding="true"
                                 android:id="@+id/cardViewItem2"
                                 android:layout_margin="8dp">
                                 <RelativeLayout
@@ -239,8 +246,8 @@
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="150dp"
                                 android:layout_height="200dp"
-                                app:strokeWidth="1dp"
-                                app:strokeColor="@color/extra_light_gray"
+                                app:cardCornerRadius="5dp"
+                                app:cardUseCompatPadding="true"
                                 android:id="@+id/cardViewItem3"
                                 android:layout_margin="8dp">
                                 <RelativeLayout
@@ -281,8 +288,8 @@
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="150dp"
                                 android:layout_height="200dp"
-                                app:strokeWidth="1dp"
-                                app:strokeColor="@color/extra_light_gray"
+                                app:cardCornerRadius="5dp"
+                                app:cardUseCompatPadding="true"
                                 android:id="@+id/cardViewItem4"
                                 android:layout_margin="8dp">
                                 <RelativeLayout
@@ -323,8 +330,8 @@
                             <com.google.android.material.card.MaterialCardView
                                 android:layout_width="150dp"
                                 android:layout_height="200dp"
-                                app:strokeWidth="1dp"
-                                app:strokeColor="@color/extra_light_gray"
+                                app:cardCornerRadius="5dp"
+                                app:cardUseCompatPadding="true"
                                 android:id="@+id/cardViewItem5"
                                 android:layout_margin="8dp">
                                 <RelativeLayout
@@ -371,8 +378,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cardViewCategories"
                 android:layout_below="@+id/cardViewSuggest"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/extra_light_gray"
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -471,8 +478,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cardViewNearby"
                 android:layout_below="@+id/cardViewCategories"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/extra_light_gray"
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -521,8 +528,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cardViewFavourite"
                 android:layout_below="@+id/cardViewNearby"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/extra_light_gray"
+                app:cardCornerRadius="5dp"
+                app:cardUseCompatPadding="true"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -153,6 +153,7 @@ public class MenuFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
         layoutCartBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

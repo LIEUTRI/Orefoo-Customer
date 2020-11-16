@@ -100,7 +100,7 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
         final SettingsClient client = LocationServices.getSettingsClient(Objects.requireNonNull(getActivity()));
@@ -187,12 +187,14 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
                             public void onSuccess(Location location) {
                                 if (location != null) {
                                     showLocationDetails(location.getLatitude(), location.getLongitude(), recyclerView);
+                                } else {
+                                    Toast.makeText(getActivity(), "Cannot get location, try again", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }).addOnFailureListener(getActivity(), new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.i(TAG, "error: "+e.getMessage());
+                        Toast.makeText(getActivity(), "Cannot get location, try again. error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
                 return true;
@@ -207,17 +209,6 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
         map.clear();
         map.addMarker(new MarkerOptions().position(latLng).title(title).icon(bitmapDescriptorFromVector(getActivity(), R.drawable.ic_mark_location)));
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
-
-        CalculateDistanceTime distance_task = new CalculateDistanceTime(getActivity());
-        distance_task.getDirectionsUrl(HomeFragment.currentLocation, new LatLng(latitude,longitude));
-        distance_task.setLoadListener(new CalculateDistanceTime.taskCompleteListener() {
-            @Override
-            public void taskCompleted(String[] distance) {
-                Log.i("Distance" , distance[0]+"");
-                Log.i("Distance" , distance[1]+"");
-                Toast.makeText(getActivity(), "Distance: "+distance[0]+"\nTime: "+distance[1], Toast.LENGTH_LONG).show();
-            }
-        });
     }
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
@@ -242,15 +233,7 @@ public class MapsPickLocationFragment extends Fragment implements OnMapReadyCall
 
             markLocation(lat, lng, address.getFeatureName());
         } catch (IOException e) {
-            Log.i(TAG, "error: "+e.getMessage());
+            Toast.makeText(getActivity(), "Check internet connection", Toast.LENGTH_SHORT).show();
         }
-
-//        float[] result = new float[1];
-//        Location.distanceBetween(10.036200, 105.788033, 9.760829, 105.605348, result);
-//        float distanceInMeter = result[0];
-//        float distanceInKm = distanceInMeter/1000;
-//        DecimalFormat decimalFormat = new DecimalFormat("####");
-//        int distanceInDec = Integer.parseInt(decimalFormat.format(distanceInKm));
-//        Log.i("Distance", distanceInMeter+"m\n"+distanceInKm+"Km\n"+distanceInDec+"Km");
     }
 }

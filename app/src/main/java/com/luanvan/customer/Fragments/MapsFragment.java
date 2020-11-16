@@ -138,22 +138,26 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public void onComplete(Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path));
-                    ref.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            double latitude = dataSnapshot.child("latitude").getValue(Double.class);
-                            double longitude = dataSnapshot.child("longitude").getValue(Double.class);
-                            updateLocation(latitude, longitude);
-                            Log.i("location", latitude+","+longitude);
-                        }
+                    try{
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path));
+                        ref.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                double latitude = dataSnapshot.child("latitude").getValue(Double.class);
+                                double longitude = dataSnapshot.child("longitude").getValue(Double.class);
+                                updateLocation(latitude, longitude);
+                                Log.i("location", latitude+","+longitude);
+                            }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-                    Log.i(TAG, "Logged in successfully");
+                            }
+                        });
+                        Log.i(TAG, "Logged in successfully");
+                    } catch (IllegalStateException e){
+                        Log.i("IllegalStateException", e.getMessage());
+                    }
                 } else {
                     Log.d(TAG, "Firebase authentication failed");
                 }

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/extra_light_gray"
+    tools:context=".EditAddressActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layoutAppBar">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/edit_address"
+            app:titleTextColor="#FFFFFF"
+            app:navigationIcon="@drawable/ic_arrow_back_ios_24"/>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutAppBar"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true"
+        android:id="@+id/cardViewAddress">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/address"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/tvAddressTitle"
+                android:layout_marginBottom="10dp"
+                app:drawableEndCompat="@drawable/ic_location_on_24" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvAddress"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:layout_below="@+id/tvAddressTitle"
+                app:drawableEndCompat="@drawable/ic_arrow_right" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etAddressDetail1"
+                android:layout_below="@id/tvAddress"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:hint="@string/hint_building_floor_number"
+                android:background="@color/transparent"
+                android:inputType="text" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/cardViewAddress"
+        android:layout_margin="10dp"
+        app:cardCornerRadius="5dp"
+        app:cardUseCompatPadding="true">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/contact_info"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-light"
+                android:id="@+id/tvContactTitle"
+                android:layout_marginBottom="10dp"
+                app:drawableEndCompat="@drawable/ic_contacts_24" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etContactName"
+                android:layout_below="@id/tvContactTitle"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:hint="@string/name"
+                android:background="@color/transparent"
+                android:inputType="text" />
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etContactPhone"
+                android:layout_below="@id/etContactName"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:hint="@string/phonenumber"
+                android:background="@color/transparent"
+                android:inputType="phone" />
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="@string/save"
+        android:layout_margin="10dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:background="@drawable/bg_btn_filled"
+        android:textColor="#FFFFFF"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="18sp"
+        android:id="@+id/tvSave"/>
+</RelativeLayout>

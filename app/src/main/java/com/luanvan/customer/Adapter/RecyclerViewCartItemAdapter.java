@@ -110,7 +110,7 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
                     new DeleteCartItemTask().execute(cartItem.getId()+"");
                     removeAt(position);
                     // finish activity
-                    if (activity.getClass().getSimpleName().equals("CheckoutActivity")){
+                    if (list.size()==0 && activity.getClass().getSimpleName().equals("CheckoutActivity")){
                         activity.finish();
                     }
                 }
@@ -123,7 +123,7 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
         if ("CheckoutActivity".equals(context.getClass().getSimpleName())) {
             CheckoutActivity.totalPriceVictuals += price - discount;
             CheckoutActivity.tvTotal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals) + "đ");
-            CheckoutActivity.tvTotalFinal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals-CheckoutActivity.shippingFee) + "đ");
+            CheckoutActivity.tvTotalFinal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals+CheckoutActivity.shippingFee) + "đ");
             CheckoutActivity.portion += 1;
             CheckoutActivity.tvTotalVictuals.setText(activity.getResources().getString(R.string.sum)+" ("+CheckoutActivity.portion+" "+activity.getResources().getString(R.string.portion)+")");
         } else {
@@ -138,7 +138,7 @@ public class RecyclerViewCartItemAdapter extends RecyclerView.Adapter<RecyclerVi
         if ("CheckoutActivity".equals(context.getClass().getSimpleName())) {
             CheckoutActivity.totalPriceVictuals -= price - discount;
             CheckoutActivity.tvTotal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals) + "đ");
-            CheckoutActivity.tvTotalFinal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals-CheckoutActivity.shippingFee) + "đ");
+            CheckoutActivity.tvTotalFinal.setText(String.format("%,.0f", CheckoutActivity.totalPriceVictuals+CheckoutActivity.shippingFee) + "đ");
             CheckoutActivity.portion -= 1;
             CheckoutActivity.tvTotalVictuals.setText(activity.getResources().getString(R.string.sum)+" ("+CheckoutActivity.portion+" "+activity.getResources().getString(R.string.portion)+")");
         } else {
