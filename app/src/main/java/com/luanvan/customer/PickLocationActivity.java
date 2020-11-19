@@ -24,6 +24,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -61,10 +62,12 @@ import java.util.Locale;
 
 public class PickLocationActivity extends AppCompatActivity {
 
-    MaterialToolbar toolbar;
-    TextInputEditText etSearch;
-    RecyclerView recyclerView;
-    List<UserLocation> listUserLocation = new ArrayList<>();
+    private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
+    private MaterialToolbar toolbar;
+    private TextInputEditText etSearch;
+    private RecyclerView recyclerView;
+    private List<UserLocation> listUserLocation = new ArrayList<>();
     private MapsPickLocationFragment mapsFragment;
     private SearchLocation task;
     private String currentAddress = "";
@@ -76,6 +79,13 @@ public class PickLocationActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbarAddress);
         etSearch = findViewById(R.id.etSearch);
         recyclerView = findViewById(R.id.recyclerView);
+        layoutProgressBar = findViewById(R.id.layoutProgressBar);
+
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        layoutProgressBar.addView(progressBar, params);
+        progressBar.setVisibility(View.INVISIBLE);
 
         showMaps();
 
@@ -92,10 +102,7 @@ public class PickLocationActivity extends AppCompatActivity {
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (ConnectionStateMonitor.networkState != NetworkState.STATE_AVAILABLE) return;
@@ -105,11 +112,8 @@ public class PickLocationActivity extends AppCompatActivity {
                     task.execute();
                 }
             }
-
             @Override
-            public void afterTextChanged(Editable s) {
-
-            }
+            public void afterTextChanged(Editable s) { }
         });
 
     }
@@ -132,6 +136,11 @@ public class PickLocationActivity extends AppCompatActivity {
             this.address = address;
         }
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         @Override
         protected List<Address> doInBackground(List<Address>... lists) {
@@ -149,6 +158,9 @@ public class PickLocationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(List<Address> addresses) {
             super.onPostExecute(addresses);
+
+            progressBar.setVisibility(View.INVISIBLE);
+
             if (addresses != null && addresses.size() > 0) {
                 listUserLocation.clear();
                 for (Address address : addresses) {

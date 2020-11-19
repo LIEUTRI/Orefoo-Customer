@@ -63,6 +63,7 @@ public class RecyclerViewVictualAdapter extends RecyclerView.Adapter<RecyclerVie
             public void onClick(View v) {
                 if (!activity.getClass().getSimpleName().equals("TrackShipperActivity")){
                     AddItemDialog addItemDialog = new AddItemDialog(activity, R.style.CartDialog, victual.getImageUrl(), victual.getName(), (price-discount), price, victual.getId(), victual.getQuantity(), victual.getCartItemId());
+                    addItemDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                     addItemDialog.show();
                 }
             }

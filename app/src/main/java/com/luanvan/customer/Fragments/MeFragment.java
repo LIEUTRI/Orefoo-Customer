@@ -47,6 +47,7 @@ public class MeFragment extends Fragment {
     private MaterialButton btnLogin, btnSignup;
     private TextView tvPayment, tvAddress, tvManagerProfile, tvLogout;
     private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
     private LinearLayout layoutNotLogin, layoutLogin;
     private TextView tvUsername, tvName;
     private String token = "";
@@ -60,7 +61,7 @@ public class MeFragment extends Fragment {
     String dayOfBirth = "";
     String gender = "";
     String email = "";
-    private ProgressBar progressBar;
+
     public MeFragment() { }
 
     @Override
@@ -103,7 +104,7 @@ public class MeFragment extends Fragment {
             username = getUsername(token);
             sharedPreferences = getActivity().getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
             consumerID = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
-            new GetUserDataTask().get(consumerID);
+            new GetUserDataTask().execute();
         } else {
             layoutNotLogin.setVisibility(View.VISIBLE);
         }
@@ -178,11 +179,7 @@ public class MeFragment extends Fragment {
 
     @SuppressLint("StaticFieldLeak")
     private class GetUserDataTask extends AsyncTask<String, String, String> {
-        private int consumerId;
-        public void get(int consumerId){
-            this.consumerId = consumerId;
-            execute();
-        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -214,7 +211,7 @@ public class MeFragment extends Fragment {
 
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line).append("\n");
-                    Log.d("Response: ", "> " + line);
+                    Log.d("ResponseGetUserData: ", "> " + line);
                 }
                 return buffer.toString();
             } catch (SocketTimeoutException e) {
@@ -272,9 +269,9 @@ public class MeFragment extends Fragment {
     @Override
     public void onResume() {
         if (getActivity()==null || tvName == null) return;
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE);
-        tvName.setText(sharedPreferences.getString(Shared.KEY_LAST_NAME, "")+" "+sharedPreferences.getString(Shared.KEY_FIRST_NAME, ""));
-        tvUsername.setText(sharedPreferences.getString(Shared.KEY_USERNAME, ""));
+
+        new GetUserDataTask().execute();
+
         super.onResume();
     }
 }

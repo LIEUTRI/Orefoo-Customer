@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.facebook.CallbackManager;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
@@ -137,11 +138,12 @@ public class LoginActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
             //http post
             try {
-                URL url = new URL(loginURL);
+                URL url = new URL( RequestUrl.LOGIN );
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("username", username);
                 jsonObject.put("password", password);
+                jsonObject.put("role", new JSONObject().put("name", "consumer"));
                 String data = jsonObject.toString();
 
                 connection = (HttpURLConnection) url.openConnection();
@@ -218,7 +220,6 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    finish();
                     startActivity(intent);
                 } else if (statusCode == 403){
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.incorrect_username_password), Toast.LENGTH_LONG).show();

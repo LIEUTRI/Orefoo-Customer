@@ -545,7 +545,9 @@ public class AddItemDialog extends Dialog {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new CartDialog(activity, R.style.CartDialog).show();
+                        CartDialog cartDialog = new CartDialog(activity, R.style.CartDialog);
+                        cartDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                        cartDialog.show();
                     }
                 }
         );

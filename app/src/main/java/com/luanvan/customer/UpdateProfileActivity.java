@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,8 +12,10 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -38,14 +41,23 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class UpdateProfileActivity extends AppCompatActivity {
 
-    private EditText etUsername, etPhoneNumber, etFirstName, etLastName, etEmail, etGender, etDay, etMonth, etYear;
+    private EditText etUsername, etPhoneNumber, etFirstName, etLastName, etEmail, etGender, etDOB;
     private MaterialButton btnSave;
     private MaterialToolbar toolbar;
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
+
+    private Calendar calendar = null;
+    private DatePickerDialog.OnDateSetListener onDateSetListener = null;
 
     String username = "";
     String firstName = "";
@@ -55,6 +67,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
     String gender = "";
     String email = "";
     int consumerID = -1;
+
+    public final String TAG = "UpdateProfileActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,9 +80,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         etLastName = findViewById(R.id.etLastName);
         etEmail = findViewById(R.id.etEmail);
         etGender = findViewById(R.id.etGender);
-        etDay = findViewById(R.id.etDay);
-        etMonth = findViewById(R.id.etMonth);
-        etYear = findViewById(R.id.etYear);
+        etDOB = findViewById(R.id.etDOB);
         btnSave = findViewById(R.id.btnSave);
         toolbar = findViewById(R.id.toolbar);
         layoutProgressBar = findViewById(R.id.layoutProgressBar);
@@ -94,15 +106,31 @@ public class UpdateProfileActivity extends AppCompatActivity {
         email = getIntent().getStringExtra("email");
         gender = getIntent().getStringExtra("gender");
         dayOfBirth = getIntent().getStringExtra("dayOfBirth");
-        String day = "";
-        String month = "";
-        String year ="";
-        if (!dayOfBirth.equals("empty")){
-            day = dayOfBirth.substring(dayOfBirth.lastIndexOf("-")+1);
-            month = dayOfBirth.substring(dayOfBirth.indexOf("-")+1, dayOfBirth.lastIndexOf("-"));
-            year = dayOfBirth.substring(0,4);
-            dayOfBirth = year+"-"+month+"-"+day;
+
+        /////////////////////////////////////////////////////////////////////////
+        calendar = Calendar.getInstance();
+
+        String dateFormat = "yyyy-MM-dd";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
+        try {
+            calendar.setTime(simpleDateFormat.parse(dayOfBirth));
+            updateUIDate(calendar.getTime());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, month);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateUIDate(calendar.getTime());
+
+                dayOfBirth = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(calendar.getTime());
+            }
+        };
+        /////////////////////////////////////////////////////////////////////////
 
         etUsername.setText(username);
         etPhoneNumber.setText(phoneNumber.equals("empty") ? "":phoneNumber);
@@ -110,9 +138,6 @@ public class UpdateProfileActivity extends AppCompatActivity {
         etLastName.setText(lastName.equals("empty") ? "":lastName);
         etEmail.setText(email.equals("empty") ? "":email);
         etGender.setText(gender.equals("empty") ? "":gender);
-        etDay.setText(day);
-        etMonth.setText(month);
-        etYear.setText(year);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, MODE_PRIVATE);
         final String token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -120,23 +145,20 @@ public class UpdateProfileActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences(Shared.CONSUMER, MODE_PRIVATE);
         consumerID = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
 
+        etDOB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(UpdateProfileActivity.this, onDateSetListener,
+                        calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 phoneNumber = etPhoneNumber.getText().toString();
                 firstName = etFirstName.getText().toString();
                 lastName = etLastName.getText().toString();
-                String day = etDay.getText().toString();
-                String month = etMonth.getText().toString();
-                String year = etYear.getText().toString();
-                if ((day.length() == 1) || month.length()==1 || year.length()>0&&year.length()<4){
-                    Toast.makeText(UpdateProfileActivity.this, getResources().getString(R.string.date_invalid), Toast.LENGTH_LONG).show();
-                    return;
-                } else if (day.length()==0 && month.length()==0 && year.length()==0) {
-                    dayOfBirth = "";
-                } else {
-                    dayOfBirth = etYear.getText().toString()+"-"+etMonth.getText().toString()+"-"+etDay.getText().toString();
-                }
                 gender = etGender.getText().toString();
                 email = etEmail.getText().toString();
 
@@ -151,6 +173,12 @@ public class UpdateProfileActivity extends AppCompatActivity {
         JWT jwt = new JWT(token.replace(TOKEN_PREFIX,""));
         Claim claim = jwt.getClaim("userId");
         return claim.asInt();
+    }
+
+    private void updateUIDate(Date date) {
+        String dateFormat = "dd/MM/yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.ENGLISH);
+        etDOB.setText(simpleDateFormat.format(date));
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -175,7 +203,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("firstName", strings[1]);
                 jsonObject.put("lastName", strings[2]);
-                if (!strings[3].equals("empty")) jsonObject.put("dayOfBirth", strings[3]);
+                jsonObject.put("dayOfBirth", strings[3]);
                 jsonObject.put("gender", strings[4]);
                 jsonObject.put("phoneNumber", strings[5]);
                 jsonObject.put("email", strings[6]);

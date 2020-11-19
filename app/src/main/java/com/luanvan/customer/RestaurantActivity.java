@@ -7,18 +7,35 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.luanvan.customer.Fragments.CommentFragment;
 import com.luanvan.customer.Fragments.MenuFragment;
 import com.luanvan.customer.Fragments.RestaurantInfoFragment;
@@ -37,14 +54,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.Hashtable;
 
 public class RestaurantActivity extends AppCompatActivity {
 
     private TextView tvMenu, tvComment, tvInfo;
     private TextView tvName, tvAddress;
     private TextView tvDistance, tvTime;
-    private AppBarLayout appBarLayout;
     private AlertDialog dialogDistance;
+    private ImageView ivBranchBackground;
+    private ImageView ivQRBranch;
 
     private String name;
     private String phone;
@@ -67,7 +86,8 @@ public class RestaurantActivity extends AppCompatActivity {
         tvAddress = findViewById(R.id.tvAddress);
         tvDistance = findViewById(R.id.tvDistance);
         tvTime = findViewById(R.id.tvTime);
-        appBarLayout = findViewById(R.id.layoutAppBar);
+        ivBranchBackground = findViewById(R.id.ivBranchBackground);
+        ivQRBranch = findViewById(R.id.ivQRBranch);
 
         name = getIntent().getStringExtra("name");
         phone = getIntent().getStringExtra("phone");
@@ -80,6 +100,36 @@ public class RestaurantActivity extends AppCompatActivity {
         latitude = getIntent().getDoubleExtra("lat", 0);
         longitude = getIntent().getDoubleExtra("lng", 0);
 
+        // data for QR code
+        JSONObject jsonQR = new JSONObject();
+        try {
+            jsonQR.put("task", "showbranch");
+            JSONObject jsonData = new JSONObject();
+            jsonData.put("id", id);
+            jsonData.put("name", name);
+            jsonData.put("phone", phone);
+            jsonData.put("imageURL", imgURL);
+            jsonData.put("openTime", openTime);
+            jsonData.put("closeTime", closeTime);
+            jsonData.put("address", address);
+            jsonData.put("isSell", true);
+            jsonData.put("lat", latitude);
+            jsonData.put("lng", longitude);
+            jsonQR.put("data", jsonData);
+
+            ivQRBranch.setImageBitmap(generateQRCodeBitmap(jsonQR.toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.drawable.bg_chagio)
+                .error(R.drawable.bg_chagio);
+        Glide.with(this).load(imgURL).apply(options).into(ivBranchBackground);
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         SharedPreferences.Editor editor = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
         editor.putString(Shared.KEY_BRANCH_NAME, name);
         editor.putString(Shared.KEY_LATITUDE, latitude+"");
@@ -123,6 +173,12 @@ public class RestaurantActivity extends AppCompatActivity {
                 transaction.commit();
             }
         });
+        ivQRBranch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showImageDialog();
+            }
+        });
 
         // consumer location
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
@@ -158,6 +214,55 @@ public class RestaurantActivity extends AppCompatActivity {
 
         tvName.setText(name);
         tvAddress.setText(address);
+    }
+
+    private void showImageDialog(){
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+
+            }
+        });
+
+        ImageView image = new ImageView(this);
+        image.setBackground(ivQRBranch.getDrawable());
+
+        int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9);
+        dialog.addContentView(image, new RelativeLayout.LayoutParams(width, width));
+        dialog.show();
+    }
+
+    private Bitmap generateQRCodeBitmap(String data){
+        Hashtable<EncodeHintType, String> hashtable = new Hashtable<>();
+        hashtable.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+        QRCodeWriter writer = new QRCodeWriter();
+        try {
+            BitMatrix bitMatrix = writer.encode(data, BarcodeFormat.QR_CODE, (int) DPtoPX(120), (int) DPtoPX(120), hashtable);
+            int width = bitMatrix.getWidth();
+            int height = bitMatrix.getHeight();
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+            for (int x=0; x<width; x++){
+                for (int y=0; y<height; y++){
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK:Color.WHITE);
+                }
+            }
+            return bitmap;
+        } catch (WriterException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public float DPtoPX(float dip){
+        return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dip,
+                getResources().getDisplayMetrics()
+        );
     }
 
     private void showDialogDistance(Context context){

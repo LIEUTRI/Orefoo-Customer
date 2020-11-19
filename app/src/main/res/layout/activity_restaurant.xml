@@ -12,23 +12,40 @@
         android:layout_height="200dp"
         android:id="@+id/layoutAppBar"
         app:liftOnScroll="true"
-        android:background="@drawable/bg_chagio">
-        <com.google.android.material.appbar.CollapsingToolbarLayout
+        >
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
-            app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
-            <com.google.android.material.appbar.MaterialToolbar
+            android:layout_height="match_parent">
+            <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/transparent"
-                app:layout_collapseMode="pin"
-                app:navigationIcon="@drawable/ic_arrow_back_ios_24"
-                app:menu="@menu/top_appbar_restaurant">
-            </com.google.android.material.appbar.MaterialToolbar>
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+                android:layout_height="match_parent"
+                android:id="@+id/ivBranchBackground"
+                android:background="@drawable/bg_chagio" />
 
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:collapsedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Collapsed"
+                app:expandedTitleTextAppearance="@style/TextAppearance.App.CollapsingToolbar.Expanded"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/transparent"
+                    app:layout_collapseMode="pin"
+                    app:navigationIcon="@drawable/ic_arrow_back_ios_24"
+                    app:menu="@menu/top_appbar_restaurant" />
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+            <ImageView
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:id="@+id/ivQRBranch"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"/>
+        </RelativeLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout

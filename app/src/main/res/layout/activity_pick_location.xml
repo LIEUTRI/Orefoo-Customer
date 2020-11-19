@@ -24,6 +24,7 @@
   <RelativeLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:id="@+id/layoutProgressBar"
       app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -50,7 +51,7 @@
         android:layout_below="@+id/layoutSearchbar"
         android:padding="10dp"
         android:id="@+id/recyclerView"
-        android:background="@android:color/darker_gray" />
+        android:background="#FFFFFF" />
     <fragment
         android:name="com.luanvan.customer.Fragments.MapsPickLocationFragment"
         android:layout_width="match_parent"

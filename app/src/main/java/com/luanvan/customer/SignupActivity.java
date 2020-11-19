@@ -15,6 +15,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.luanvan.customer.components.RequestUrl;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,7 +38,6 @@ public class SignupActivity extends AppCompatActivity {
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
 
-    public final String signupURL = "https://orefoo.herokuapp.com/user/consumer";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +90,7 @@ public class SignupActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
             //http post
             try {
-                URL url = new URL(signupURL);
+                URL url = new URL( RequestUrl.SIGNUP );
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("username", strings[0]);

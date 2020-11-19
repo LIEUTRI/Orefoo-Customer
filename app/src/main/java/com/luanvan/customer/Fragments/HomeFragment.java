@@ -14,6 +14,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -28,6 +29,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -56,6 +58,7 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.luanvan.customer.BranchActivity;
 import com.luanvan.customer.PickLocationActivity;
+import com.luanvan.customer.QRScannerActivity;
 import com.luanvan.customer.R;
 import com.luanvan.customer.RestaurantActivity;
 import com.luanvan.customer.SearchActivity;
@@ -86,6 +89,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import me.dm7.barcodescanner.zxing.ZXingScannerView;
+
+import static android.app.Activity.RESULT_OK;
+
 public class HomeFragment extends Fragment {
 
     private TextView tvSearch;
@@ -98,6 +105,8 @@ public class HomeFragment extends Fragment {
     private TextView tvItemName1, tvItemName2, tvItemName3, tvItemName4, tvItemName5;
     private TextView tvKm1, tvKm2, tvKm3, tvKm4, tvKm5;
     private ImageView ivItem1, ivItem2, ivItem3, ivItem4, ivItem5;
+
+    private ImageButton ibQRScan;
 
     private int consumerID;
     private int userId;
@@ -156,6 +165,7 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.btnCart);
         tvSizeOfCart = view.findViewById(R.id.tvSizeOfCart);
         tvSeeAllSuggest = view.findViewById(R.id.tvSeeAllSuggest);
+        ibQRScan = view.findViewById(R.id.ibQRScan);
     }
 
     @Override
@@ -321,7 +331,23 @@ public class HomeFragment extends Fragment {
         btnCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CartDialog(Objects.requireNonNull(getActivity()), R.style.CartDialog).show();
+                CartDialog cartDialog = new CartDialog(Objects.requireNonNull(getActivity()), R.style.CartDialog);
+                cartDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                cartDialog.show();
+            }
+        });
+
+        ibQRScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, RequestsCode.REQUEST_CAMERA_PERMISSION);
+                    Toast.makeText(getActivity(), "camera permission denied", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                Intent intentQRScanner = new Intent(getActivity(), QRScannerActivity.class);
+                startActivityForResult(intentQRScanner, RequestsCode.REQUEST_QR_SCAN);
             }
         });
     }
@@ -346,7 +372,7 @@ public class HomeFragment extends Fragment {
 
         switch (requestCode) {
             case RequestsCode.REQUEST_ADDRESS:
-                if (resultCode == Activity.RESULT_OK && data != null) {
+                if (resultCode == RESULT_OK && data != null) {
                     tvAddress.setText(data.getStringExtra("ADDRESS"));
                     // update location
                     if (token.contains("Bearer")) {
@@ -373,8 +399,37 @@ public class HomeFragment extends Fragment {
                 break;
             case RequestsCode.REQUEST_LOCATION:
                 Log.i("HomeFragment", "REQUEST_LOCATION");
-                if (resultCode == Activity.RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     createLocationRequest();
+                }
+                break;
+
+            case RequestsCode.REQUEST_QR_SCAN:
+                if (resultCode == RESULT_OK && data != null) {
+                    String dataScanned = data.getStringExtra(Shared.KEY_QR_CODE);
+                    assert dataScanned != null;
+                    Log.i("dataScanned", dataScanned);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(dataScanned);
+                        if (jsonObject.getString("task").equals("showbranch")){
+                            JSONObject jsonBranch = jsonObject.getJSONObject("data");
+                            Intent intent = new Intent(getActivity(), RestaurantActivity.class);
+                            intent.putExtra("id", jsonBranch.getInt("id"));
+                            intent.putExtra("name", jsonBranch.getString("name"));
+                            intent.putExtra("phone", jsonBranch.getString("phone"));
+                            intent.putExtra("address", jsonBranch.getString("address"));
+                            intent.putExtra("imgURL", jsonBranch.getString("imageURL"));
+                            intent.putExtra("openTime", jsonBranch.getString("openTime"));
+                            intent.putExtra("closeTime", jsonBranch.getString("closeTime"));
+                            intent.putExtra("isSell", jsonBranch.getBoolean("isSell"));
+                            intent.putExtra("lat", jsonBranch.getDouble("lat"));
+                            intent.putExtra("lng", jsonBranch.getDouble("lng"));
+                            startActivity(intent);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
         }
@@ -386,6 +441,9 @@ public class HomeFragment extends Fragment {
         if (requestCode == RequestsCode.REQUEST_LOCATION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             createLocationRequest();
             Log.i("HomeFragment", "onRequestPermissionsResult");
+        } else if (requestCode == RequestsCode.REQUEST_CAMERA_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            Intent intentQRScanner = new Intent(getActivity(), QRScannerActivity.class);
+            startActivityForResult(intentQRScanner, RequestsCode.REQUEST_QR_SCAN);
         }
     }
 

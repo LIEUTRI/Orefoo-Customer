@@ -84,7 +84,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/empty"
+                            android:text="@string/no_update"
                             android:layout_centerVertical="true"
                             android:id="@+id/tvUsername"
                             android:textSize="18sp" />
@@ -106,7 +106,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/empty"
+                            android:text="@string/no_update"
                             android:layout_centerVertical="true"
                             android:id="@+id/tvPhoneNumber"
                             android:textSize="18sp" />
@@ -128,7 +128,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/empty"
+                            android:text="@string/no_update"
                             android:layout_centerVertical="true"
                             android:id="@+id/tvName"
                             android:textSize="18sp" />
@@ -150,7 +150,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/empty"
+                            android:text="@string/no_update"
                             android:layout_centerVertical="true"
                             android:id="@+id/tvEmail"
                             android:textSize="18sp" />
@@ -172,7 +172,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/empty"
+                            android:text="@string/no_update"
                             android:layout_centerVertical="true"
                             android:id="@+id/tvGender"
                             android:textSize="18sp" />
@@ -194,9 +194,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignParentEnd="true"
-                            android:text="@string/empty"
+                            android:text="@string/no_update"
                             android:layout_centerVertical="true"
                             android:id="@+id/tvDoB"
+                            android:focusable="false"
                             android:textSize="18sp" />
                     </RelativeLayout>
                 </LinearLayout>

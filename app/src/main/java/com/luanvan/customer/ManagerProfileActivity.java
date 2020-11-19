@@ -5,12 +5,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.TextView;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.luanvan.customer.components.RequestsCode;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class ManagerProfileActivity extends AppCompatActivity {
 
@@ -18,14 +26,14 @@ public class ManagerProfileActivity extends AppCompatActivity {
     private TextView tvUsername, tvPhoneNumber, tvName, tvEmail, tvGender, tvDoB;
     private MaterialToolbar toolbar;
 
-    String username = "";
-    String firstName = "";
-    String lastName = "";
-    String phoneNumber = "";
-    String dayOfBirth = "";
-    String gender = "";
-    String email = "";
-    int consumerID;
+    private String username = "";
+    private String firstName = "";
+    private String lastName = "";
+    private String phoneNumber = "";
+    private String dayOfBirth = "";
+    private String gender = "";
+    private String email = "";
+    private int consumerID;
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +63,7 @@ public class ManagerProfileActivity extends AppCompatActivity {
         tvName.setText(lastName+" "+firstName);
         tvEmail.setText(email);
         tvGender.setText(gender);
-        tvDoB.setText(dayOfBirth);
+        updateDate(dayOfBirth);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +91,16 @@ public class ManagerProfileActivity extends AppCompatActivity {
         });
     }
 
+    private void updateDate(String date){
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).parse(date));
+            tvDoB.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(calendar.getTime()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -101,7 +119,7 @@ public class ManagerProfileActivity extends AppCompatActivity {
             tvName.setText(lastName+" "+firstName);
             tvEmail.setText(email);
             tvGender.setText(gender);
-            tvDoB.setText(dayOfBirth);
+            updateDate(dayOfBirth);
         }
     }
 }

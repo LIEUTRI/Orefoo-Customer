@@ -70,7 +70,7 @@
                         android:layout_toEndOf="@+id/username"
                         android:gravity="end"
                         android:paddingEnd="10dp"
-                        android:hint="@string/empty"
+                        android:hint="@string/no_update"
                         android:layout_centerVertical="true"
                         android:id="@+id/etUsername"
                         android:textSize="18sp"
@@ -99,7 +99,7 @@
                         android:layout_toEndOf="@+id/phoneNumber"
                         android:gravity="end"
                         android:paddingEnd="10dp"
-                        android:hint="@string/empty"
+                        android:hint="@string/no_update"
                         android:layout_centerVertical="true"
                         android:id="@+id/etPhoneNumber"
                         android:textSize="18sp"
@@ -128,7 +128,7 @@
                         android:layout_toEndOf="@+id/firstName"
                         android:gravity="end"
                         android:paddingEnd="10dp"
-                        android:hint="@string/empty"
+                        android:hint="@string/no_update"
                         android:layout_centerVertical="true"
                         android:id="@+id/etFirstName"
                         android:textSize="18sp"
@@ -157,7 +157,7 @@
                         android:layout_toEndOf="@+id/lastName"
                         android:gravity="end"
                         android:paddingEnd="10dp"
-                        android:hint="@string/empty"
+                        android:hint="@string/no_update"
                         android:layout_centerVertical="true"
                         android:id="@+id/etLastName"
                         android:textSize="18sp"
@@ -186,7 +186,7 @@
                         android:layout_toEndOf="@+id/email"
                         android:gravity="end"
                         android:paddingEnd="10dp"
-                        android:hint="@string/empty"
+                        android:hint="@string/no_update"
                         android:layout_centerVertical="true"
                         android:id="@+id/etEmail"
                         android:textSize="18sp"
@@ -215,7 +215,7 @@
                         android:layout_toEndOf="@+id/gender"
                         android:gravity="end"
                         android:paddingEnd="10dp"
-                        android:hint="@string/empty"
+                        android:hint="@string/no_update"
                         android:layout_centerVertical="true"
                         android:id="@+id/etGender"
                         android:textSize="18sp"
@@ -237,65 +237,22 @@
                         android:textColor="#000000"
                         android:layout_alignParentStart="true"
                         android:id="@+id/dob"/>
-                    <LinearLayout
+                    <EditText
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:layout_alignParentEnd="true"
-                        android:layout_toStartOf="@+id/dob"
+                        android:layout_toEndOf="@+id/dob"
                         android:gravity="end"
-                        android:paddingEnd="10dp">
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:hint="dd"
-                            android:maxLength="2"
-                            android:id="@+id/etDay"
-                            android:textSize="18sp"
-                            android:inputType="numberDecimal"
-                            android:textColor="@color/gray"
-                            android:lines="1"
-                            android:background="@color/transparent"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="/"
-                            android:textSize="18sp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="4dp"/>
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:hint="mm"
-                            android:maxLength="2"
-                            android:id="@+id/etMonth"
-                            android:textSize="18sp"
-                            android:inputType="numberDecimal"
-                            android:textColor="@color/gray"
-                            android:lines="1"
-                            android:background="@color/transparent"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="/"
-                            android:textSize="18sp"
-                            android:layout_marginStart="4dp"
-                            android:layout_marginEnd="4dp"/>
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:hint="yyyy"
-                            android:maxLength="4"
-                            android:id="@+id/etYear"
-                            android:textSize="18sp"
-                            android:inputType="numberDecimal"
-                            android:textColor="@color/gray"
-                            android:lines="1"
-                            android:background="@color/transparent"/>
-                    </LinearLayout>
+                        android:paddingEnd="10dp"
+                        android:hint="@string/no_update"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/etDOB"
+                        android:textSize="18sp"
+                        android:focusable="false"
+                        android:inputType="text"
+                        android:textColor="@color/gray"
+                        android:lines="1"
+                        android:background="@color/transparent"/>
                 </RelativeLayout>
             </LinearLayout>
 

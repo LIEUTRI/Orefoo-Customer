@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -157,7 +158,9 @@ public class MenuFragment extends Fragment {
         layoutCartBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CartDialog(Objects.requireNonNull(getActivity()), R.style.CartDialog).show();
+                CartDialog cartDialog = new CartDialog(Objects.requireNonNull(getActivity()), R.style.CartDialog);
+                cartDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                cartDialog.show();
             }
         });
     }

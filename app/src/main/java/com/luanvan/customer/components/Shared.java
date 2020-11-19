@@ -19,4 +19,5 @@ public class Shared {
     public static final String KEY_CART_ITEM = "cartItem";
     public static final String KEY_BRANCH_NAME = "branchName";
     public static final String KEY_BRANCH_DISTANCE = "distance";
+    public static final String KEY_QR_CODE = "QR_CODE";
 }
