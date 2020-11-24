@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="5dp"
+    android:paddingEnd="5dp"
     android:background="#FFFFFF">
 
     <ImageView
@@ -34,7 +35,7 @@
         android:layout_toEndOf="@id/ivBranch"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:drawablePadding="5dp"
         app:drawableStartCompat="@drawable/ic_access_time_24" />
     <TextView
@@ -45,8 +46,33 @@
         android:layout_toEndOf="@id/ivBranch"
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
-        android:textSize="16sp"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-condensed-light"
         android:drawablePadding="5dp"
         android:textColor="#000000"
+        android:gravity="bottom"
         app:drawableStartCompat="@drawable/ic_fastfood_24" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvStatus"
+        android:layout_below="@id/tvTime"
+        android:layout_toEndOf="@id/tvVictualsSize"
+        android:layout_toStartOf="@id/ivStatus"
+        android:layout_alignTop="@id/ivStatus"
+        android:layout_alignBottom="@id/ivStatus"
+        android:gravity="end|center_vertical"
+        android:text="@string/success"
+        android:textStyle="italic"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:textSize="14sp"
+        android:textColor="@color/colorPrimaryDark" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tvTime"
+        android:src="@drawable/ic_done_all_24"
+        android:id="@+id/ivStatus"/>
 </RelativeLayout>

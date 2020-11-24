@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.zxing.common.StringUtils;
 import com.luanvan.customer.Adapter.RecyclerViewCartItemAdapter;
 import com.luanvan.customer.Fragments.HomeFragment;
 import com.luanvan.customer.components.CartItem;
@@ -42,9 +43,11 @@ import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 
 public class CheckoutActivity extends AppCompatActivity {
@@ -59,6 +62,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextView tvEditAddress;
 
     private String token;
+    private int consumerId;
     private int cartId;
     private String branchName;
     private String consumerAddress;
@@ -136,16 +140,15 @@ public class CheckoutActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.MINUTE, (int)(5 * distance + 15));
-        String dateTime = calendar.getTime().toString();
-        tvDeliveryTime.setText(dateTime);
+        tvDeliveryTime.setText(formatTime(calendar.getTime(), new Locale("vi", "VN")));
+
+        Log.i("CheckoutActivity", "datetime: " + formatTime(new Date(), new Locale("vi", "VN")));
 
         sharedPreferences = getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE);
-        int consumerId = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
+        consumerId = sharedPreferences.getInt(Shared.KEY_CONSUMER_ID, -1);
 
         sharedPreferences = getSharedPreferences(Shared.CART, Context.MODE_PRIVATE);
         cartId = sharedPreferences.getInt(Shared.KEY_CART_ID, -1);
-
-        new GetCartTask().execute(consumerId+"");
 
         btnConfirmOrder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,6 +185,19 @@ public class CheckoutActivity extends AppCompatActivity {
             tvPhone.setText(data.getStringExtra(Shared.KEY_PHONE));
             tvAddress.setText(data.getStringExtra(Shared.KEY_ADDRESS));
         }
+    }
+
+    public static String formatTime(Date time, Locale locale){
+        String timeFormat = "HH:mm EEEE, d MMMM, y";
+
+        SimpleDateFormat formatter;
+
+        try {
+            formatter = new SimpleDateFormat(timeFormat, locale);
+        } catch(Exception e) {
+            formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", locale);
+        }
+        return formatter.format(time);
     }
 
     public static double round(double value, int places){
@@ -261,6 +277,7 @@ public class CheckoutActivity extends AppCompatActivity {
 
             totalPriceVictuals = 0.0;
             int quantity = 0;
+            cartItems.clear();
             try {
                 JSONObject jsonObject = new JSONObject(s);
                 double totalPrice = jsonObject.getDouble("totalPrice");
@@ -450,6 +467,8 @@ public class CheckoutActivity extends AppCompatActivity {
             switch (resultCode) {
                 case ResultsCode.SUCCESS:
                     Log.i("result", "post distance success");
+                    new GetCartTask().execute(consumerId+"");
+
                     break;
                 case ResultsCode.FAILED:
                     Toast.makeText(CheckoutActivity.this, "Cannot send distance to server", Toast.LENGTH_LONG).show();
@@ -467,8 +486,6 @@ public class CheckoutActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        SharedPreferences sharedPreferences = getSharedPreferences(Shared.CART, Context.MODE_PRIVATE);
-//        cartId = sharedPreferences.getInt(Shared.KEY_CART_ID, -1);
         Log.i("CheckoutActivity", "cartId: "+cartId);
 
         // send branch's distance to server for calculate shipping fee

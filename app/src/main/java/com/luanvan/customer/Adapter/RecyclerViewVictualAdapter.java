@@ -44,7 +44,12 @@ public class RecyclerViewVictualAdapter extends RecyclerView.Adapter<RecyclerVie
         final double price = Double.parseDouble(victual.getPrice().equals("null") ? "0":victual.getPrice());
         final double discount = Double.parseDouble(victual.getDiscountPrice().equals("null") ? "0":victual.getDiscountPrice());
         holder.tvName.setText(victual.getName());
-        holder.tvQuantity.setText(victual.getQuantity()==0 ? "":"x"+victual.getQuantity());
+        if (victual.getQuantity()==0){
+            holder.tvQuantity.setVisibility(View.INVISIBLE);
+        } else {
+            holder.tvQuantity.setText("x"+victual.getQuantity());
+            holder.tvQuantity.setVisibility(View.VISIBLE);
+        }
 
         String priceTotal = String.format("%,.0f", (price-discount))+"đ";
         holder.tvPrice.setText(priceTotal);
@@ -74,7 +79,6 @@ public class RecyclerViewVictualAdapter extends RecyclerView.Adapter<RecyclerVie
         public TextView tvName;
         public TextView tvPrice;
         public TextView tvPriceOrigin;
-        public ImageButton btnAdd, btnRemove;
         public TextView tvQuantity;
         public ImageView ivVictual;
 
@@ -84,8 +88,6 @@ public class RecyclerViewVictualAdapter extends RecyclerView.Adapter<RecyclerVie
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvPriceOrigin = itemView.findViewById(R.id.tvPriceOrigin);
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
-            btnAdd = itemView.findViewById(R.id.btnAdd);
-            btnRemove = itemView.findViewById(R.id.btnRemove);
             ivVictual = itemView.findViewById(R.id.ivVictual);
         }
     }

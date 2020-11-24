@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -48,12 +49,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.luanvan.customer.R;
+import com.luanvan.customer.components.Shared;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback{
 
     public final String TAG = "MapsFragment";
     private GoogleMap map;
     private boolean moveCamera = true;
+    private int shipperId;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,6 +68,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        shipperId = getActivity().getIntent().getIntExtra("shipperId", -1);
+
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -139,7 +145,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
             public void onComplete(Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     try{
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path));
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path)).child("shipper" + shipperId);
                         ref.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -174,6 +180,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        if (context == null) return null;
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
         vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
         Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
@@ -185,6 +192,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-        trackShipperLocation();
+        if (shipperId != -1)
+            trackShipperLocation();
+        else Toast.makeText(getActivity(), "shipper not found", Toast.LENGTH_SHORT).show();
     }
 }

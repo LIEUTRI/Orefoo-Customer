@@ -63,6 +63,7 @@
                                 android:layout_height="wrap_content"
                                 android:id="@+id/tvTotal"
                                 android:text="0đ"
+                                android:textStyle="bold"
                                 android:textSize="20sp"
                                 android:textColor="#000000" />
                             <TextView

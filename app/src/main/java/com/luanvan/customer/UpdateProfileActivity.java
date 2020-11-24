@@ -27,6 +27,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.RequestsCode;
+import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
@@ -59,14 +60,14 @@ public class UpdateProfileActivity extends AppCompatActivity {
     private Calendar calendar = null;
     private DatePickerDialog.OnDateSetListener onDateSetListener = null;
 
-    String username = "";
-    String firstName = "";
-    String lastName = "";
-    String phoneNumber = "";
-    String dayOfBirth = "";
-    String gender = "";
-    String email = "";
-    int consumerID = -1;
+    private String username = "";
+    private String firstName = "";
+    private String lastName = "";
+    private String phoneNumber = "";
+    private String dayOfBirth = "";
+    private String gender = "";
+    private String email = "";
+    private int consumerID = -1;
 
     public final String TAG = "UpdateProfileActivity";
     @Override
@@ -156,6 +157,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
+
                 phoneNumber = etPhoneNumber.getText().toString();
                 firstName = etFirstName.getText().toString();
                 lastName = etLastName.getText().toString();
@@ -183,8 +186,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
     private class UpdateProfileTask extends AsyncTask<String,String,String> {
-
-        OutputStream os;
+        private OutputStream os;
 
         @Override
         protected void onPreExecute() {
@@ -245,7 +247,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 return buffer.toString();
 
             } catch (SocketTimeoutException e) {
-                Toast.makeText(UpdateProfileActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
+                return ResultsCode.SOCKET_TIMEOUT+"";
             } catch (IOException | JSONException e){
                 e.printStackTrace();
             } finally {
@@ -285,22 +287,24 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 editor.putString("lastName", lastName);
                 editor.putString("username", username);
                 editor.apply();
+            } else if (s.equals(ResultsCode.SOCKET_TIMEOUT+"")){
+                Toast.makeText(UpdateProfileActivity.this, getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
             } else {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     JSONObject apierror = jsonObject.getJSONObject("apierror");
                     if (apierror.getString("status").equals("CONFLICT")){
                         if (apierror.getString("debugMessage").contains("phone_number")){
-                            Toast.makeText(UpdateProfileActivity.this, getResources().getString(R.string.conflict_phone), Toast.LENGTH_LONG).show();
+                            Toast.makeText(UpdateProfileActivity.this, getString(R.string.conflict_phone), Toast.LENGTH_LONG).show();
                         } else if (apierror.getString("debugMessage").contains("email")){
-                            Toast.makeText(UpdateProfileActivity.this, getResources().getString(R.string.conflict_email), Toast.LENGTH_LONG).show();
+                            Toast.makeText(UpdateProfileActivity.this, getString(R.string.conflict_email), Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        Toast.makeText(UpdateProfileActivity.this, getResources().getString(R.string.update_failed), Toast.LENGTH_LONG).show();
+                        Toast.makeText(UpdateProfileActivity.this, getString(R.string.update_failed), Toast.LENGTH_LONG).show();
                     }
                     setResult(Activity.RESULT_CANCELED);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    Toast.makeText(UpdateProfileActivity.this, getString(R.string.update_failed)+" error: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }

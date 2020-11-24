@@ -25,7 +25,7 @@
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_above="@+id/layoutPayment"
             android:id="@+id/layoutNestedScrollView">
             <LinearLayout
@@ -36,6 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#FFFFFF"
+                    android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:orientation="vertical">
                     <RelativeLayout
@@ -48,7 +49,8 @@
                             android:textColor="#000000"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:padding="10dp"
+                            android:paddingTop="10dp"
+                            android:paddingBottom="10dp"
                             android:id="@+id/tvDelivery"/>
                         <TextView
                             android:layout_width="wrap_content"
@@ -69,22 +71,20 @@
                         android:id="@+id/tvConsumerName"
                         android:text="@string/name"
                         android:textSize="20sp"
+                        android:textStyle="bold"
                         android:fontFamily="sans-serif-condensed-light"
                         android:drawablePadding="5dp"
                         android:textColor="#000000"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
                         app:drawableStartCompat="@drawable/ic_person_24" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/tvPhoneNumber"
                         android:text="@string/phonenumber"
+                        android:textStyle="bold"
                         android:textSize="20sp"
                         android:fontFamily="sans-serif-condensed-light"
                         android:textColor="#000000"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
                         android:drawablePadding="5dp"
                         app:drawableStartCompat="@drawable/ic_phone_24" />
                     <TextView
@@ -93,10 +93,9 @@
                         android:id="@+id/tvAddress"
                         android:text="@string/address"
                         android:textSize="18sp"
+                        android:textStyle="bold"
                         android:fontFamily="sans-serif-condensed-light"
                         android:textColor="#000000"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
                         android:layout_marginBottom="10dp"
                         android:drawablePadding="5dp"
                         app:drawableStartCompat="@drawable/ic_location_on_24" />
@@ -104,9 +103,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/tvDeliveryTime"
-                        android:padding="10dp"
+                        android:paddingTop="10dp"
+                        android:textColor="@color/pink"
+                        android:paddingBottom="10dp"
                         android:drawablePadding="5dp"
                         android:gravity="center_vertical"
+                        android:background="@drawable/bg_top_border"
                         app:drawableStartCompat="@drawable/ic_access_time_24" />
                 </LinearLayout>
 
@@ -144,6 +146,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:background="#FFFFFF"
+                    android:paddingStart="10dp"
                     android:paddingEnd="10dp"
                     android:layout_marginTop="15dp">
                     <RelativeLayout

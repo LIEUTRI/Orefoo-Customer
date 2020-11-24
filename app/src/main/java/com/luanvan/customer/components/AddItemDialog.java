@@ -196,33 +196,6 @@ public class AddItemDialog extends Dialog {
                         }
 
                         cancel();
-
-//                        CalculateDistanceTime distance_task = new CalculateDistanceTime(activity);
-//                        distance_task.getDirectionsUrl(consumerLatLng, branchLatLng);
-//                        distance_task.setLoadListener(new CalculateDistanceTime.taskCompleteListener() {
-//                            @Override
-//                            public void taskCompleted(String[] distance) {
-//                                progressBar.setVisibility(View.INVISIBLE);
-//                                cancel();
-//                                if (distance.length < 1) {
-//                                    Toast.makeText(activity, "cannot calculate distance, try again", Toast.LENGTH_LONG).show();
-//                                    return;
-//                                }
-//                                if (Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" "))) > 10.0){
-//                                    showDialogDistance();
-//                                } else {
-//                                    // add victuals to cart
-//                                    new AddToCartTask().execute(json.toString());
-//
-//                                    // save & send branch's distance to server for calculate shipping fee
-//                                    double km = Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" ")));
-//                                    SharedPreferences.Editor editor = activity.getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
-//                                    editor.putString(Shared.KEY_BRANCH_DISTANCE, km+"");
-//                                    editor.apply();
-//                                    new DistanceTask().postDistance(cartId, km);
-//                                }
-//                            }
-//                        });
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

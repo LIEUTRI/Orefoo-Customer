@@ -23,9 +23,12 @@ import com.luanvan.customer.components.Shared;
 import com.luanvan.customer.components.Victual;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class RecyclerViewHistoryAdapter extends RecyclerView.Adapter<RecyclerViewHistoryAdapter.ViewHolder>{
     private List<Order> list;
@@ -63,15 +66,36 @@ public class RecyclerViewHistoryAdapter extends RecyclerView.Adapter<RecyclerVie
         Timestamp timestamp = Timestamp.valueOf(order.getTime().substring(0, order.getTime().indexOf("+")).replace("T", " "));
         calendar.setTime(timestamp);
         calendar.add(Calendar.HOUR_OF_DAY, 7);
-        holder.tvTime.setText(activity.getResources().getString(R.string.order_at)+calendar.getTime().toString().substring(0, calendar.getTime().toString().indexOf("GMT")-1));
+        holder.tvTime.setText(activity.getResources().getString(R.string.order_at)+"\n"+formatTime(calendar.getTime(), new Locale("vi", "VN")));
 
         holder.tvVictualsSize.setText(order.getOrderItems().size()+" "+activity.getResources().getString(R.string.dish));
+
+        switch (order.getOrderStatus()) {
+            case "success":
+                holder.tvStatus.setText(activity.getString(R.string.success));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_done_all_24));
+                break;
+            case "consumer_canceled":
+                holder.tvStatus.setText(activity.getString(R.string.consumer_canceled));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_cancel_24));
+                break;
+            case "merchant_canceled":
+                holder.tvStatus.setText(activity.getString(R.string.merchant_canceled));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_cancel_24));
+                break;
+            case "shipper_canceled":
+                holder.tvStatus.setText(activity.getString(R.string.shipper_canceled));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_cancel_24));
+                break;
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView tvBranchName;
         public TextView tvTime;
         public TextView tvVictualsSize;
+        public TextView tvStatus;
+        public ImageView ivStatus;
         public ImageView ivBranch;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,10 +103,25 @@ public class RecyclerViewHistoryAdapter extends RecyclerView.Adapter<RecyclerVie
             tvBranchName = itemView.findViewById(R.id.tvBranchName);
             tvTime = itemView.findViewById(R.id.tvTime);
             tvVictualsSize = itemView.findViewById(R.id.tvVictualsSize);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
+            ivStatus = itemView.findViewById(R.id.ivStatus);
         }
     }
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public static String formatTime(Date time, Locale locale){
+        String timeFormat = "HH:mm dd MMMM, yyyy";
+
+        SimpleDateFormat formatter;
+
+        try {
+            formatter = new SimpleDateFormat(timeFormat, locale);
+        } catch(Exception e) {
+            formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", locale);
+        }
+        return formatter.format(time);
     }
 }

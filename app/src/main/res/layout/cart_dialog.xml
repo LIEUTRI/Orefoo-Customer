@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:text="0đ"
             android:textSize="20sp"
+            android:textStyle="bold"
             android:textColor="#000000"
             android:layout_toEndOf="@+id/ivCart"
             android:id="@+id/tvTotal"/>

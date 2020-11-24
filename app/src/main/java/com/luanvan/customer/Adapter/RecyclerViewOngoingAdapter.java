@@ -48,17 +48,20 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerViewOngoingAdapter.ViewHolder>{
     private List<Order> list;
     private Activity activity;
     private String token;
+    public final String TAG = "OngoingAdapter";
     public RecyclerViewOngoingAdapter(Activity activity, List<Order> list){
         this.activity = activity;
         this.list = list;
@@ -86,12 +89,44 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
         Glide.with(activity).load(order.getBranch().getImageUrl()).apply(options).into(holder.ivBranch);
 
         holder.tvBranchName.setText(order.getBranch().getName());
+
         Calendar calendar = Calendar.getInstance();
         Timestamp timestamp = Timestamp.valueOf(order.getTime().substring(0, order.getTime().indexOf("+")).replace("T", " "));
         calendar.setTime(timestamp);
         calendar.add(Calendar.HOUR_OF_DAY, 7);
-        holder.tvTime.setText(activity.getResources().getString(R.string.order_at)+calendar.getTime().toString().substring(0, calendar.getTime().toString().indexOf("GMT")-1));
+        holder.tvTime.setText(activity.getResources().getString(R.string.order_at)+"\n"+formatTime(calendar.getTime(), new Locale("vi", "VN")));
+
         holder.tvVictualsSize.setText(order.getOrderItems().size()+" "+activity.getResources().getString(R.string.dish));
+        switch (order.getOrderStatus()) {
+            case "ordered":
+                holder.tvStatus.setText(activity.getString(R.string.ordered));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_hourglass_top_24));
+                break;
+            case "accepted":
+                holder.tvStatus.setText(activity.getString(R.string.accepted));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_done_24));
+                break;
+            case "picked":
+                holder.tvStatus.setText(activity.getString(R.string.picked));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_pedal_bike_24));
+                break;
+            case "success":
+                holder.tvStatus.setText(activity.getString(R.string.success));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_done_all_24));
+                break;
+            case "consumer_canceled":
+                holder.tvStatus.setText(activity.getString(R.string.consumer_canceled));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_cancel_24));
+                break;
+            case "merchant_canceled":
+                holder.tvStatus.setText(activity.getString(R.string.merchant_canceled));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_cancel_24));
+                break;
+            case "shipper_canceled":
+                holder.tvStatus.setText(activity.getString(R.string.shipper_canceled));
+                holder.ivStatus.setImageDrawable(activity.getDrawable(R.drawable.ic_cancel_24));
+                break;
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +138,7 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
                 }
                 Intent intent = new Intent(activity, TrackShipperActivity.class);
                 intent.putExtra("victuals", victuals);
+                intent.putExtra("shipperId", order.getShipper());
                 activity.startActivity(intent);
             }
         });
@@ -112,6 +148,8 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
         public TextView tvBranchName;
         public TextView tvTime;
         public TextView tvVictualsSize;
+        public TextView tvStatus;
+        public ImageView ivStatus;
         public ImageView ivBranch;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -119,10 +157,25 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
             tvBranchName = itemView.findViewById(R.id.tvBranchName);
             tvTime = itemView.findViewById(R.id.tvTime);
             tvVictualsSize = itemView.findViewById(R.id.tvVictualsSize);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
+            ivStatus = itemView.findViewById(R.id.ivStatus);
         }
     }
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public static String formatTime(Date time, Locale locale){
+        String timeFormat = "HH:mm dd MMMM, yyyy";
+
+        SimpleDateFormat formatter;
+
+        try {
+            formatter = new SimpleDateFormat(timeFormat, locale);
+        } catch(Exception e) {
+            formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", locale);
+        }
+        return formatter.format(time);
     }
 }

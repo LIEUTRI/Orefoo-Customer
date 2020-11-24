@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/name"
                 android:textSize="22sp"
-                android:textColor="#000000"
+                android:textColor="@color/light_blue"
                 android:textStyle="bold"
                 android:id="@+id/tvName"/>
             <TextView
@@ -105,31 +105,13 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="Menu"
-                android:gravity="center"
+                android:gravity="start"
                 android:id="@+id/tvMenu"
                 android:textColor="#000000"
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-condensed"
                 android:clickable="true"
                 android:focusable="true" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="@string/comment"
-                android:gravity="center"
-                android:id="@+id/tvComment"
-                android:textColor="#000000"
-                android:clickable="true"
-                android:focusable="true"/>
-            <TextView
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="@string/info"
-                android:gravity="center"
-                android:id="@+id/tvInfo"
-                android:textColor="#000000"
-                android:clickable="true"
-                android:focusable="true"/>
         </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"

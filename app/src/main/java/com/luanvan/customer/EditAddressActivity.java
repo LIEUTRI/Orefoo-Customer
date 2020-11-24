@@ -1,5 +1,6 @@
 package com.luanvan.customer;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
@@ -7,15 +8,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 
@@ -38,6 +44,9 @@ public class EditAddressActivity extends AppCompatActivity {
     private EditText etAddressDetail;
     private EditText etContactName, etContactPhone;
 
+    private RelativeLayout layoutProgressBar;
+    private ProgressBar progressBar;
+
     private double consumerLat,consumerLng;
     private String consumerAddress;
     private int consumerID;
@@ -53,6 +62,7 @@ public class EditAddressActivity extends AppCompatActivity {
         etAddressDetail = findViewById(R.id.etAddressDetail1);
         etContactName = findViewById(R.id.etContactName);
         etContactPhone= findViewById(R.id.etContactPhone);
+        layoutProgressBar = findViewById(R.id.layoutProgressBar);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -70,9 +80,26 @@ public class EditAddressActivity extends AppCompatActivity {
         etContactName.setText(consumerName);
         etContactPhone.setText(consumerPhone);
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+        layoutProgressBar.addView(progressBar, params);
+        progressBar.setVisibility(View.INVISIBLE);
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+        tvAddress.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditAddressActivity.this, PickLocationActivity.class);
+                startActivityForResult(intent, RequestsCode.REQUEST_ADDRESS);
+            }
+        });
+
         tvSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBar.setVisibility(View.VISIBLE);
                 saveInfo();
             }
         });
@@ -86,7 +113,7 @@ public class EditAddressActivity extends AppCompatActivity {
         consumerName = etContactName.getText().toString();
         consumerPhone = etContactPhone.getText().toString();
 
-        new UpdateLocationTask(EditAddressActivity.this, consumerLat, consumerLng, consumerAddress, consumerID).execute();
+        new UpdateLocationTask(consumerLat, consumerLng, consumerAddress, consumerID).execute();
 
         SharedPreferences.Editor editor = getSharedPreferences(Shared.CONSUMER, MODE_PRIVATE).edit();
         editor.putString(Shared.KEY_LATITUDE, consumerLat+"");
@@ -100,7 +127,6 @@ public class EditAddressActivity extends AppCompatActivity {
 
     @SuppressLint("StaticFieldLeak")
     class UpdateLocationTask extends AsyncTask<String,String,String> {
-        private Context context;
         private OutputStream os;
         private InputStream is;
         private double latitude, longitude;
@@ -109,12 +135,17 @@ public class EditAddressActivity extends AppCompatActivity {
         private int resultCode;
         private final String locationURL = "https://orefoo.herokuapp.com/consumer-location?consumer-id=";
 
-        public UpdateLocationTask(Context context, double latitude, double longitude, String address, int consumerID){
-            this.context = context;
+        public UpdateLocationTask(double latitude, double longitude, String address, int consumerID){
             this.latitude = latitude;
             this.longitude = longitude;
             this.address = address;
             this.consumerID = consumerID;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -182,6 +213,9 @@ public class EditAddressActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+
+            progressBar.setVisibility(View.INVISIBLE);
+
             if (s==null) return;
 
             switch (resultCode){
@@ -200,6 +234,18 @@ public class EditAddressActivity extends AppCompatActivity {
                 default:
                     Toast.makeText(EditAddressActivity.this, "error", Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RequestsCode.REQUEST_ADDRESS && resultCode == Activity.RESULT_OK && data != null){
+            consumerAddress = data.getStringExtra(Shared.KEY_ADDRESS);
+            tvAddress.setText(consumerAddress);
+            consumerLat = data.getDoubleExtra(Shared.KEY_LATITUDE, 0);
+            consumerLng = data.getDoubleExtra(Shared.KEY_LONGITUDE, 0);
         }
     }
 }

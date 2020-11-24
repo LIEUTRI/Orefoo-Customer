@@ -8,4 +8,6 @@
     <color name="extra_light_gray">#E1ECECEC</color>
     <color name="light_red">#EBF32222</color>
     <color name="gray">#777777</color>
+    <color name="light_blue">#00A1F8</color>
+    <color name="pink">#E600FF</color>
 </resources>

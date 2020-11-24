@@ -179,7 +179,7 @@ public class MenuFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (id != -1){
+        if (id > 0){
             new GetVictuals().execute();
         }
     }
@@ -387,7 +387,8 @@ public class MenuFragment extends Fragment {
                 case ResultsCode.DIFFERENCE_BRANCH:
                     break;
                 case ResultsCode.FAILED:
-                    Log.i("result", "get failed");
+                    Log.i("result", "get failed (cart have no items)");
+                    CloseBottomSheet();
                     break;
                 case ResultsCode.SOCKET_TIMEOUT:
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();

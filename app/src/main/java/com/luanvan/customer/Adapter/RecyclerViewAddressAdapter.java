@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.luanvan.customer.R;
+import com.luanvan.customer.components.Shared;
 import com.luanvan.customer.components.UserLocation;
 
 import java.util.List;
@@ -39,9 +40,9 @@ public class RecyclerViewAddressAdapter extends RecyclerView.Adapter<RecyclerVie
             @Override
             public void onClick(View v) {
                 final Intent data = new Intent();
-                data.putExtra("ADDRESS", userLocation.getLocationAddress());
-                data.putExtra("latitude", userLocation.getLatitude());
-                data.putExtra("longitude", userLocation.getLongitude());
+                data.putExtra(Shared.KEY_ADDRESS, userLocation.getLocationAddress());
+                data.putExtra(Shared.KEY_LATITUDE, userLocation.getLatitude());
+                data.putExtra(Shared.KEY_LONGITUDE, userLocation.getLongitude());
                 activity.setResult(Activity.RESULT_OK, data);
                 activity.finish();
             }

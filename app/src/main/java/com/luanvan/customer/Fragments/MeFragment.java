@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.button.MaterialButton;
 import com.luanvan.customer.LoginActivity;
 import com.luanvan.customer.ManagerProfileActivity;
@@ -43,6 +45,8 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MeFragment extends Fragment {
     private MaterialButton btnLogin, btnSignup;
     private TextView tvPayment, tvAddress, tvManagerProfile, tvLogout;
@@ -50,17 +54,18 @@ public class MeFragment extends Fragment {
     private ProgressBar progressBar;
     private LinearLayout layoutNotLogin, layoutLogin;
     private TextView tvUsername, tvName;
+    private CircleImageView ivProfile, ivChangePhoto;
     private String token = "";
     private int consumerID = -1;
     private int userId;
-
-    String username = "";
-    String firstName = "";
-    String lastName = "";
-    String phoneNumber = "";
-    String dayOfBirth = "";
-    String gender = "";
-    String email = "";
+    private String username = "";
+    private String firstName = "";
+    private String lastName = "";
+    private String phoneNumber = "";
+    private String dayOfBirth = "";
+    private String gender = "";
+    private String email = "";
+    private String profileImage = "";
 
     public MeFragment() { }
 
@@ -83,6 +88,8 @@ public class MeFragment extends Fragment {
         layoutLogin = view.findViewById(R.id.layoutLogin);
         tvUsername = view.findViewById(R.id.tvUsername);
         tvName = view.findViewById(R.id.tvName);
+        ivProfile = view.findViewById(R.id.ivProfile);
+        ivChangePhoto = view.findViewById(R.id.ivChangePhoto);
     }
 
     @SuppressLint("SetTextI18n")
@@ -108,6 +115,9 @@ public class MeFragment extends Fragment {
         } else {
             layoutNotLogin.setVisibility(View.VISIBLE);
         }
+
+        ///////////////////////////////////////////////////////////////
+
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,6 +163,12 @@ public class MeFragment extends Fragment {
 
                 layoutLogin.setVisibility(View.INVISIBLE);
                 layoutNotLogin.setVisibility(View.VISIBLE);
+
+                progressBar.setVisibility(View.INVISIBLE);
+
+                Intent i = new Intent(getActivity(), LoginActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
             }
         });
     }
@@ -253,6 +269,16 @@ public class MeFragment extends Fragment {
 
                 tvUsername.setText(username);
                 tvName.setText(firstName.equals("empty")&&lastName.equals("empty") ? "(empty)":lastName+" "+firstName);
+
+                RequestOptions options = new RequestOptions()
+                        .centerCrop()
+                        .placeholder(R.drawable.ic_person_24)
+                        .error(R.drawable.ic_person_24);
+                Glide.with(getActivity()).load(profileImage).apply(options).into(ivProfile);
+
+                ivChangePhoto.setImageResource(R.drawable.ic_edit_20);
+                ivChangePhoto.setCircleBackgroundColorResource(R.color.colorPrimary);
+                ivChangePhoto.setPadding(5,5,5,5);
 
                 SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE).edit();
                 editor.putString(Shared.KEY_FIRST_NAME, firstName);

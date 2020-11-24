@@ -57,6 +57,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.luanvan.customer.BranchActivity;
+import com.luanvan.customer.LoginActivity;
 import com.luanvan.customer.PickLocationActivity;
 import com.luanvan.customer.QRScannerActivity;
 import com.luanvan.customer.R;
@@ -64,6 +65,7 @@ import com.luanvan.customer.RestaurantActivity;
 import com.luanvan.customer.SearchActivity;
 import com.luanvan.customer.components.Branch;
 import com.luanvan.customer.components.CartDialog;
+import com.luanvan.customer.components.Debug;
 import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.ResultsCode;
@@ -116,7 +118,7 @@ public class HomeFragment extends Fragment {
     private int cartId;
     private ArrayList<Branch> branches = new ArrayList<>();
 
-    private String addressLine = "";
+    private String addressLine;
 
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
@@ -128,8 +130,8 @@ public class HomeFragment extends Fragment {
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
 
-    public HomeFragment() {
-    }
+    public final String TAG = "HomeFragment";
+    public HomeFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -177,11 +179,15 @@ public class HomeFragment extends Fragment {
 
         sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
-        Log.i("HomeFragment", token);
+        Log.i(TAG, token);
 
         if (token.contains("Bearer")) {
             username = getUsername(token);
             userId = getUserId(token);
+        } else {
+            getActivity().finish();
+            startActivity(new Intent(getActivity(), LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK));
+            return;
         }
 
         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -373,11 +379,11 @@ public class HomeFragment extends Fragment {
         switch (requestCode) {
             case RequestsCode.REQUEST_ADDRESS:
                 if (resultCode == RESULT_OK && data != null) {
-                    tvAddress.setText(data.getStringExtra("ADDRESS"));
+                    tvAddress.setText(data.getStringExtra(Shared.KEY_ADDRESS));
                     // update location
                     if (token.contains("Bearer")) {
-                        double lat = data.getDoubleExtra("latitude", 0);
-                        double lng = data.getDoubleExtra("longitude", 0);
+                        double lat = data.getDoubleExtra(Shared.KEY_LATITUDE, 0);
+                        double lng = data.getDoubleExtra(Shared.KEY_LONGITUDE, 0);
 
                         // update current location
                         mLocation.setLatitude(lat);
@@ -408,6 +414,7 @@ public class HomeFragment extends Fragment {
                 if (resultCode == RESULT_OK && data != null) {
                     String dataScanned = data.getStringExtra(Shared.KEY_QR_CODE);
                     assert dataScanned != null;
+
                     Log.i("dataScanned", dataScanned);
 
                     try {
@@ -428,7 +435,15 @@ public class HomeFragment extends Fragment {
                             startActivity(intent);
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Toast.makeText(getActivity(), getString(R.string.invalid_qr_code), Toast.LENGTH_LONG).show();
+                        if (dataScanned.contains("http")){
+                            try {
+                                Uri uri = Uri.parse(dataScanned);
+                                startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                            } catch (Exception ex){
+                                ex.printStackTrace();
+                            }
+                        }
                     }
                 }
                 break;
@@ -609,7 +624,7 @@ public class HomeFragment extends Fragment {
 
         @Override
         protected String doInBackground(String... strings) {
-            String addressLine = getActivity().getResources().getString(R.string.choose_delivery_location);
+            addressLine = getActivity().getString(R.string.choose_delivery_location);
 
             Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
             try {
@@ -635,7 +650,6 @@ public class HomeFragment extends Fragment {
 
             tvAddress.setText(s);
 
-            // save location
             if (token.contains("Bearer")) {
                 new ConsumerTask().execute();
             }
@@ -651,6 +665,7 @@ public class HomeFragment extends Fragment {
     @SuppressLint("StaticFieldLeak")
     class ConsumerTask extends AsyncTask<String, String, String> {
         private InputStream is;
+        private int resultCode;
         @Override
         protected String doInBackground(String... strings) {
 
@@ -667,8 +682,10 @@ public class HomeFragment extends Fragment {
                 int statusCode = connection.getResponseCode();
                 Log.i("statusCode", ""+statusCode);
                 if (statusCode >= 200 && statusCode < 400){
+                    resultCode = ResultsCode.SUCCESS;
                     is = connection.getInputStream();
                 } else {
+                    resultCode = ResultsCode.FAILED;
                     is = connection.getErrorStream();
                 }
 
@@ -684,9 +701,9 @@ public class HomeFragment extends Fragment {
 
                 return buffer.toString();
             } catch (SocketTimeoutException e) {
-                Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
+                resultCode = ResultsCode.SOCKET_TIMEOUT;
             } catch (IOException e){
-                e.printStackTrace();
+                resultCode = ResultsCode.FAILED;
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -705,37 +722,49 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (s == null) return;
 
-            try {
-                JSONObject consumer = new JSONObject(s);
-                consumerID = consumer.getInt("id");
-                consumerLocation = consumer.getString("consumerLocation");
-                if (consumerLocation.equals("null")){
-                    new SaveLocationTask(getActivity(), mLocation.getLatitude(), mLocation.getLongitude(), addressLine, consumerID).execute();
-                } else {
-                    new UpdateLocationTask(getActivity(), mLocation.getLatitude(), mLocation.getLongitude(), addressLine, consumerID).execute();
-                }
+            switch (resultCode) {
+                case ResultsCode.SUCCESS:
+                    try {
+                        JSONObject consumer = new JSONObject(s);
+                        consumerID = consumer.getInt("id");
+                        consumerLocation = consumer.getString("consumerLocation");
+                        if (consumerLocation.equals("null")) {
+                            new SaveLocationTask(getActivity(), mLocation.getLatitude(), mLocation.getLongitude(), addressLine, consumerID).execute();
+                        } else {
+                            new UpdateLocationTask(getActivity(), mLocation.getLatitude(), mLocation.getLongitude(), addressLine, consumerID).execute();
+                        }
 
-                // get cartId
-                new GetCartTask().execute(token, consumerID+"");
+                        // get cartId
+                        new GetCartTask().execute(token, consumerID + "");
 
-                // store some consumer info
-                SharedPreferences.Editor editor = Objects.requireNonNull(getActivity()).getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE).edit();
-                editor.putInt(Shared.KEY_CONSUMER_ID, consumerID);
-                editor.putString(Shared.KEY_USERNAME, username);
-                editor.putString(Shared.KEY_FIRST_NAME, consumer.getString("firstName"));
-                editor.putString(Shared.KEY_LAST_NAME, consumer.getString("lastName"));
-                editor.putString(Shared.KEY_PHONE, consumer.getString("phoneNumber"));
-                if (!consumerLocation.equals("null")){
-                    JSONObject jsonLocation = new JSONObject(consumerLocation);
-                    editor.putString(Shared.KEY_ADDRESS, jsonLocation.getString("address"));
-                    editor.putString(Shared.KEY_LATITUDE, jsonLocation.getDouble("latitude")+"");
-                    editor.putString(Shared.KEY_LONGITUDE, jsonLocation.getDouble("longitude")+"");
-                }
-                editor.apply();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                        // store some consumer info
+                        SharedPreferences.Editor editor = Objects.requireNonNull(getActivity()).getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE).edit();
+                        editor.putInt(Shared.KEY_CONSUMER_ID, consumerID);
+                        editor.putString(Shared.KEY_USERNAME, username);
+                        editor.putString(Shared.KEY_FIRST_NAME, consumer.getString("firstName"));
+                        editor.putString(Shared.KEY_LAST_NAME, consumer.getString("lastName"));
+                        editor.putString(Shared.KEY_PHONE, consumer.getString("phoneNumber"));
+                        if (!consumerLocation.equals("null")) {
+                            JSONObject jsonLocation = new JSONObject(consumerLocation);
+                            editor.putString(Shared.KEY_ADDRESS, jsonLocation.getString("address"));
+                            editor.putString(Shared.KEY_LATITUDE, jsonLocation.getDouble("latitude") + "");
+                            editor.putString(Shared.KEY_LONGITUDE, jsonLocation.getDouble("longitude") + "");
+                        }
+                        editor.apply();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    break;
+
+                case ResultsCode.SOCKET_TIMEOUT:
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
+                    break;
+
+                case ResultsCode.FAILED:
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error), Toast.LENGTH_LONG).show();
+                    break;
             }
         }
     }
@@ -909,7 +938,6 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (s==null) return;
         }
     }
 
@@ -1273,12 +1301,13 @@ public class HomeFragment extends Fragment {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s == null) return;
-            SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.CART, Context.MODE_PRIVATE).edit();
+
             try {
+                SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.CART, Context.MODE_PRIVATE).edit();
                 JSONObject jsonObject = new JSONObject(s);
                 editor.putInt(Shared.KEY_CART_ID, jsonObject.getInt("id"));
                 editor.apply();
-            } catch (JSONException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

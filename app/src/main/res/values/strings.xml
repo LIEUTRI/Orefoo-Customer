@@ -113,4 +113,12 @@
     <string name="contact_info">Thông tin liên hệ</string>
     <string name="change_branch">Đổi cửa hàng</string>
     <string name="no_update">Chưa cập nhật</string>
+    <string name="invalid_qr_code">Không phải QR của Orefoo</string>
+    <string name="accepted">Shipper đã nhận đơn</string>
+    <string name="picked">Đang giao</string>
+    <string name="success">Đã giao</string>
+    <string name="ordered">Đang chờ Shipper</string>
+    <string name="consumer_canceled">Bạn đã hủy đơn</string>
+    <string name="merchant_canceled">Cửa hàng đã hủy đơn</string>
+    <string name="shipper_canceled">Shipper đã hủy đơn</string>
 </resources>

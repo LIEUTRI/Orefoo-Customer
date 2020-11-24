@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".QRScannerActivity"></activity>
+        <activity android:name=".QRScannerActivity"/>
         <activity android:name=".EditAddressActivity" />
         <activity
             android:name=".BranchActivity"
@@ -30,7 +30,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".UpdateProfileActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
         <activity
             android:name=".ManagerProfileActivity"
             android:screenOrientation="portrait" />

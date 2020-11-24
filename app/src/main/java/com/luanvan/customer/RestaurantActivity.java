@@ -54,11 +54,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Hashtable;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 public class RestaurantActivity extends AppCompatActivity {
 
-    private TextView tvMenu, tvComment, tvInfo;
+    private TextView tvMenu;
     private TextView tvName, tvAddress;
     private TextView tvDistance, tvTime;
     private AlertDialog dialogDistance;
@@ -80,8 +88,6 @@ public class RestaurantActivity extends AppCompatActivity {
         setContentView(R.layout.activity_restaurant);
 
         tvMenu = findViewById(R.id.tvMenu);
-        tvComment = findViewById(R.id.tvComment);
-        tvInfo = findViewById(R.id.tvInfo);
         tvName = findViewById(R.id.tvName);
         tvAddress = findViewById(R.id.tvAddress);
         tvDistance = findViewById(R.id.tvDistance);
@@ -123,6 +129,10 @@ public class RestaurantActivity extends AppCompatActivity {
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .placeholder(R.drawable.bg_chagio)
@@ -153,26 +163,7 @@ public class RestaurantActivity extends AppCompatActivity {
                 transaction.commit();
             }
         });
-        tvComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment fragment = new CommentFragment();
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction transaction = fm.beginTransaction();
-                transaction.replace(R.id.fragment_restaurant_container, fragment);
-                transaction.commit();
-            }
-        });
-        tvInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment fragment = new RestaurantInfoFragment();
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction transaction = fm.beginTransaction();
-                transaction.replace(R.id.fragment_restaurant_container, fragment);
-                transaction.commit();
-            }
-        });
+
         ivQRBranch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,6 +192,7 @@ public class RestaurantActivity extends AppCompatActivity {
 
                     double km = Double.parseDouble(distance[0].substring(0,distance[0].indexOf(" ")));
                     if (km <= 10.0){
+                        tooFar = false;
                         SharedPreferences.Editor editor = getSharedPreferences(Shared.BRANCH, Context.MODE_PRIVATE).edit();
                         editor.putString(Shared.KEY_BRANCH_DISTANCE, km+"");
                         editor.apply();
@@ -223,12 +215,11 @@ public class RestaurantActivity extends AppCompatActivity {
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-
             }
         });
 
         ImageView image = new ImageView(this);
-        image.setBackground(ivQRBranch.getDrawable());
+        image.setImageDrawable(ivQRBranch.getDrawable());
 
         int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9);
         dialog.addContentView(image, new RelativeLayout.LayoutParams(width, width));

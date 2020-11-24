@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
-    android:paddingBottom="10dp">
+    android:background="@drawable/bg_bottom_border"
+    android:layout_marginBottom="5dp">
 
     <ImageView
         android:layout_width="100dp"
@@ -55,7 +55,7 @@
         android:id="@+id/btnRemove"
         android:layout_alignTop="@id/btnAdd"
         android:layout_alignBottom="@+id/btnAdd"
-        android:layout_toStartOf="@+id/tvAmount"/>
+        android:layout_toStartOf="@+id/tvAmount" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,7 +68,8 @@
         android:layout_toStartOf="@+id/btnAdd"
         android:layout_alignBottom="@+id/ivVictual"
         android:layout_alignTop="@+id/btnAdd"
-        android:gravity="center"/>
+        android:gravity="center"
+        android:layout_marginBottom="5dp"/>
     <ImageButton
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -76,5 +77,6 @@
         android:layout_alignBottom="@+id/ivVictual"
         android:layout_alignParentEnd="true"
         android:id="@+id/btnAdd"
-        android:layout_marginEnd="20dp"/>
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="5dp"/>
 </RelativeLayout>
