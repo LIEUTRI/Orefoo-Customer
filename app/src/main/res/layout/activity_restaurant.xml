@@ -71,6 +71,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tvAddress"
                 android:drawablePadding="5dp"
+                android:fontFamily="sans-serif-condensed"
+                android:textColor="#000000"
                 android:text="@string/address"
                 app:drawableStartCompat="@drawable/ic_location_on_18" />
             <RelativeLayout

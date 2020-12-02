@@ -8,4 +8,6 @@ public class RequestsCode {
     public static final int REQUEST_UPDATE_ADDRESS = 5;
     public static final int REQUEST_CAMERA_PERMISSION = 6;
     public static final int REQUEST_QR_SCAN = 7;
+    public static final int REQUEST_PICK_PROFILE_IMAGE = 8;
+    public static final int REQUEST_PERMISSION_TO_PICK_PROFILE_IMAGE = 9;
 }

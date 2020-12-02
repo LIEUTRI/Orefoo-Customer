@@ -62,7 +62,6 @@
         android:layout_alignTop="@id/ivStatus"
         android:layout_alignBottom="@id/ivStatus"
         android:gravity="end|center_vertical"
-        android:text="@string/success"
         android:textStyle="italic"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
@@ -73,6 +72,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/tvTime"
-        android:src="@drawable/ic_done_all_24"
         android:id="@+id/ivStatus"/>
 </RelativeLayout>

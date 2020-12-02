@@ -22,6 +22,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.luanvan.customer.Adapter.ViewPagerFragmentAdapter;
 import com.luanvan.customer.Fragments.HomeFragment;
 import com.luanvan.customer.Fragments.MeFragment;
@@ -40,6 +44,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -120,6 +125,8 @@ public class MainActivity extends AppCompatActivity {
 
         ConnectionStateMonitor monitor = new ConnectionStateMonitor();
         monitor.enable(this);
+
+        loginToFirebase();
     }
 
     private void setTextViewDrawableColor(TextView textView, int color){
@@ -175,6 +182,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    private void loginToFirebase() {
+        String email = getString(R.string.orefoo_email);
+        String password = getString(R.string.orefoo_password);
+
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    Log.i("MainActivity", "Logged in successfully");
+                } else {
+                    Log.d("MainActivity", "Firebase authentication failed");
+                }
+            }
+        });
     }
 
     @Override

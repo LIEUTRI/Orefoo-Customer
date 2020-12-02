@@ -102,6 +102,7 @@ public class HomeFragment extends Fragment {
     private FloatingActionButton btnCart;
     private TextView tvSizeOfCart;
     private TextView tvSeeAllSuggest;
+    private TextView tvMainMeal, tvSnacks, tvDrinks, tvTraSua, tvBurgers;
 
     private MaterialCardView cvItem1, cvItem2, cvItem3, cvItem4, cvItem5;
     private TextView tvItemName1, tvItemName2, tvItemName3, tvItemName4, tvItemName5;
@@ -168,6 +169,11 @@ public class HomeFragment extends Fragment {
         tvSizeOfCart = view.findViewById(R.id.tvSizeOfCart);
         tvSeeAllSuggest = view.findViewById(R.id.tvSeeAllSuggest);
         ibQRScan = view.findViewById(R.id.ibQRScan);
+        tvMainMeal = view.findViewById(R.id.tvMainMeal);
+        tvSnacks = view.findViewById(R.id.tvSnacks);
+        tvDrinks = view.findViewById(R.id.tvDrinks);
+        tvTraSua = view.findViewById(R.id.tvTraSua);
+        tvBurgers = view.findViewById(R.id.tvBurgers);
     }
 
     @Override
@@ -312,6 +318,49 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        tvMainMeal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 8);
+                startActivity(intent);
+            }
+        });
+        tvSnacks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 9);
+                startActivity(intent);
+            }
+        });
+        tvDrinks.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 10);
+                startActivity(intent);
+            }
+        });
+        tvTraSua.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 1);
+                startActivity(intent);
+            }
+        });
+        tvBurgers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 7);
+                startActivity(intent);
+            }
+        });
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -414,7 +463,6 @@ public class HomeFragment extends Fragment {
                 if (resultCode == RESULT_OK && data != null) {
                     String dataScanned = data.getStringExtra(Shared.KEY_QR_CODE);
                     assert dataScanned != null;
-
                     Log.i("dataScanned", dataScanned);
 
                     try {
@@ -434,15 +482,17 @@ public class HomeFragment extends Fragment {
                             intent.putExtra("lng", jsonBranch.getDouble("lng"));
                             startActivity(intent);
                         }
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         Toast.makeText(getActivity(), getString(R.string.invalid_qr_code), Toast.LENGTH_LONG).show();
-                        if (dataScanned.contains("http")){
-                            try {
-                                Uri uri = Uri.parse(dataScanned);
-                                startActivity(new Intent(Intent.ACTION_VIEW, uri));
-                            } catch (Exception ex){
-                                ex.printStackTrace();
+
+                        try {
+                            if (!dataScanned.startsWith("http://") && !dataScanned.startsWith("https://")){
+                                dataScanned = "http://" + dataScanned;
                             }
+                            Uri uri = Uri.parse(dataScanned);
+                            startActivity(new Intent(Intent.ACTION_VIEW, uri));
+                        } catch (Exception ex){
+                            Toast.makeText(getActivity(), getString(R.string.cannot_open_link)+"\nerror: "+ex.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -1201,8 +1251,6 @@ public class HomeFragment extends Fragment {
             progressBar.setVisibility(View.INVISIBLE);
 
             String sizeCart = "0";
-
-            if (s == null) return;
 
             switch (resultCode) {
                 case ResultsCode.SUCCESS:

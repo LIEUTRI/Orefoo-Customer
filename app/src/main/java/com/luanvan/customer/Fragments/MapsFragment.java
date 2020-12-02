@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -51,12 +52,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.luanvan.customer.R;
 import com.luanvan.customer.components.Shared;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback{
+import java.util.Objects;
+
+public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     public final String TAG = "MapsFragment";
     private GoogleMap map;
-    private boolean moveCamera = true;
     private int shipperId;
+
+    private ImageButton ibShipper;
+
+    private LatLng shipperLocation;
+
+    private FusedLocationProviderClient fusedLocationClient;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -80,11 +89,18 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            Toast.makeText(getActivity(), "Location: "+location.getLatitude()+","+location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
         createLocationRequest();
+
+        ibShipper.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateLocation(shipperLocation.latitude, shipperLocation.longitude, true);
+            }
+        });
     }
 
     @Override
@@ -94,6 +110,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+        ibShipper = view.findViewById(R.id.ibShipper);
     }
 
     protected void createLocationRequest() {
@@ -137,45 +155,36 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
     }
 
     private void trackShipperLocation() {
-        String email = getString(R.string.test_email);
-        String password = getString(R.string.test_password);
+        try {
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path)).child("shipper" + shipperId);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    double latitude = dataSnapshot.child("latitude").getValue(Double.class);
+                    double longitude = dataSnapshot.child("longitude").getValue(Double.class);
+                    updateLocation(latitude, longitude, false);
+                    Log.i("location", latitude + "," + longitude);
 
-        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    try{
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference(getString(R.string.firebase_path)).child("shipper" + shipperId);
-                        ref.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                double latitude = dataSnapshot.child("latitude").getValue(Double.class);
-                                double longitude = dataSnapshot.child("longitude").getValue(Double.class);
-                                updateLocation(latitude, longitude);
-                                Log.i("location", latitude+","+longitude);
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                        Log.i(TAG, "Logged in successfully");
-                    } catch (IllegalStateException e){
-                        Log.i("IllegalStateException", e.getMessage());
-                    }
-                } else {
-                    Log.d(TAG, "Firebase authentication failed");
+                    shipperLocation = new LatLng(latitude, longitude);
                 }
-            }
-        });
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+            Log.i(TAG, "Logged in successfully");
+        } catch (IllegalStateException e) {
+            Log.i("IllegalStateException", e.getMessage());
+        }
     }
-    private void updateLocation(double latitude, double longitude){
+
+    private void updateLocation(double latitude, double longitude, boolean moveCamera) {
         LatLng shipper = new LatLng(latitude, longitude);
         map.clear();
         map.addMarker(new MarkerOptions().position(shipper).title("Shipper here").icon(bitmapDescriptorFromVector(getActivity(), R.drawable.ic_marker_motorcycle)));
-        if (moveCamera){
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(shipper, 12.0f));
+        if (moveCamera) {
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(shipper, 15.0f));
         }
     }
 
@@ -192,6 +201,44 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getActivity()));
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        map.setMyLocationEnabled(true);
+
+        map.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if (location != null) {
+                                    LatLng consumerLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                                    map.clear();
+                                    map.addMarker(new MarkerOptions().position(consumerLocation).title("You")
+                                            .icon(bitmapDescriptorFromVector(getActivity(), R.drawable.ic_place_24)));
+                                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(consumerLocation, 15.0f));
+                                } else {
+                                    Toast.makeText(getActivity(), "Cannot get location, try again", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).addOnFailureListener(getActivity(), new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Cannot get location, try again. error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return true;
+            }
+        });
+
         if (shipperId != -1)
             trackShipperLocation();
         else Toast.makeText(getActivity(), "shipper not found", Toast.LENGTH_SHORT).show();

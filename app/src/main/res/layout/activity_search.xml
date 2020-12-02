@@ -1,43 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutSearch"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SearchActivity"
     android:background="@color/extra_light_gray"
-    android:id="@+id/layoutSearch">
+    tools:context=".SearchActivity">
 
-  <RelativeLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:id="@+id/layoutSearchbar">
-    <ImageButton
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/layoutSearchbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/ibBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="5dp"
+            android:background="@color/transparent"
+            android:contentDescription="Back button"
+            android:padding="10dp"
+            android:src="@drawable/ic_arrow_back"
+            android:tint="#000000" />
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_toEndOf="@+id/ibBack"
+            android:background="@drawable/bg_searchbar"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="5dp"
+            android:hint="@string/searchbar"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textSize="16sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutProgressBar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_arrow_back"
-        android:padding="10dp"
-        android:background="@color/transparent"
-        android:tint="#000000"
-        android:id="@+id/ibBack"
-        android:contentDescription="Back button"
-        android:layout_marginTop="5dp"
-        android:layout_centerVertical="true"/>
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/searchbar"
-        android:drawableStart="@drawable/ic_search"
-        android:drawablePadding="5dp"
-        android:id="@+id/etSearch"
-        android:layout_alignParentEnd="true"
-        android:textSize="16sp"
-        android:background="@drawable/bg_searchbar"
-        android:padding="8dp"
-        android:layout_margin="5dp"
-        android:inputType="text"
-        android:layout_toEndOf="@+id/ibBack"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_centerVertical="true" />
-  </RelativeLayout>
+        android:layout_below="@id/layoutSearchbar"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
 </RelativeLayout>

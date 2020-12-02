@@ -139,6 +139,9 @@ public class RecyclerViewOngoingAdapter extends RecyclerView.Adapter<RecyclerVie
                 Intent intent = new Intent(activity, TrackShipperActivity.class);
                 intent.putExtra("victuals", victuals);
                 intent.putExtra("shipperId", order.getShipper());
+                intent.putExtra("totalPay", order.getTotalPay());
+                intent.putExtra("victualsPrice", order.getVictualsPrice());
+                intent.putExtra("shippingFee", order.getShippingFee());
                 activity.startActivity(intent);
             }
         });

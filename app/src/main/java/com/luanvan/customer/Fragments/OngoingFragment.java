@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -49,6 +50,8 @@ public class OngoingFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ArrayList<Order> orders = new ArrayList<>();
+    private SwipeRefreshLayout layoutRefresh;
+
     private String token = "";
     private int consumerId;
 
@@ -82,6 +85,13 @@ public class OngoingFragment extends Fragment {
         progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleSmall);
         layoutProgressBar.addView(progressBar, params);
 
+        layoutRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new OrderTask().get(consumerId);
+            }
+        });
+
         new OrderTask().get(consumerId);
     }
 
@@ -91,6 +101,7 @@ public class OngoingFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recyclerView);
         layoutProgressBar = view.findViewById(R.id.layoutProgressBar);
+        layoutRefresh = view.findViewById(R.id.layoutRefresh);
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -172,6 +183,7 @@ public class OngoingFragment extends Fragment {
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             progressBar.setVisibility(View.INVISIBLE);
+            layoutRefresh.setRefreshing(false);
             if (s == null) return;
 
             switch (resultCode) {

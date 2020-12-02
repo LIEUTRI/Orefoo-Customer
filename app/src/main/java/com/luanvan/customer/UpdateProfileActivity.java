@@ -282,10 +282,10 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 intent.putExtra("dayOfBirth", dayOfBirth);
                 setResult(Activity.RESULT_OK, intent);
 
-                SharedPreferences.Editor editor = getSharedPreferences(Shared.PROFILE, Context.MODE_PRIVATE).edit();
-                editor.putString("firstName", firstName);
-                editor.putString("lastName", lastName);
-                editor.putString("username", username);
+                SharedPreferences.Editor editor = getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE).edit();
+                editor.putString(Shared.KEY_FIRST_NAME, firstName);
+                editor.putString(Shared.KEY_LAST_NAME, lastName);
+                editor.putString(Shared.KEY_PHONE, phoneNumber);
                 editor.apply();
             } else if (s.equals(ResultsCode.SOCKET_TIMEOUT+"")){
                 Toast.makeText(UpdateProfileActivity.this, getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();

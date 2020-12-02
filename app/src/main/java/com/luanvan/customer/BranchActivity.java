@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.luanvan.customer.Adapter.RecyclerViewBranchAdapter;
 import com.luanvan.customer.components.Branch;
+import com.luanvan.customer.components.RequestUrl;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 import com.luanvan.customer.components.SortPlaces;
@@ -80,14 +81,18 @@ public class BranchActivity extends AppCompatActivity {
         progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
         layoutProgressBar.addView(progressBar, params);
 
-        new GetBranch().get(1);
+        int categoryId = getIntent().getIntExtra("categoryId", -1);
+
+        if (categoryId != -1){
+            new GetBranchByCategoryTask().execute(categoryId+"");
+        } else
+            new GetBranch().get(1);
     }
 
     @SuppressLint("StaticFieldLeak")
     class GetBranch extends AsyncTask<String,String,String> {
         private InputStream is;
         private int resultCode;
-        private final String branchURL = "https://orefoo.herokuapp.com/branch?page=";
 
         private int page;
         public void get(int page){
@@ -107,7 +112,7 @@ public class BranchActivity extends AppCompatActivity {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(branchURL + page);
+                URL url = new URL(RequestUrl.BRANCH + "?page=" + page);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Authorization", token);
@@ -159,8 +164,6 @@ public class BranchActivity extends AppCompatActivity {
 
             progressBar.setVisibility(View.INVISIBLE);
 
-            if (s == null) return;
-
             switch (resultCode) {
                 case ResultsCode.SUCCESS:
                     try {
@@ -196,6 +199,119 @@ public class BranchActivity extends AppCompatActivity {
                     break;
                 case ResultsCode.IO_EXCEPTION:
                     Toast.makeText(BranchActivity.this, getResources().getString(R.string.io_exception), Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    class GetBranchByCategoryTask extends AsyncTask<String,String,String> {
+        private InputStream is;
+        private int resultCode;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            HttpURLConnection connection = null;
+            BufferedReader reader = null;
+
+            try {
+                URL url = new URL(RequestUrl.BRANCH + "/category/" + strings[0]);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Authorization", token);
+                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
+                connection.connect();
+
+                int statusCode = connection.getResponseCode();
+                Log.i("statusCode", statusCode + "");
+
+                if (statusCode >= 200 && statusCode < 400) {
+                    is = connection.getInputStream();
+                    resultCode = ResultsCode.SUCCESS;
+                } else {
+                    is = connection.getErrorStream();
+                    if (statusCode == 406) {
+                        resultCode = ResultsCode.DIFFERENCE_BRANCH;
+                    } else resultCode = ResultsCode.FAILED;
+                }
+
+                reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder buffer = new StringBuilder();
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line).append("\n");
+                    Log.d("ResponseBranch: ", "> " + line);
+                }
+
+                return buffer.toString();
+            } catch (SocketTimeoutException e) {
+                resultCode = ResultsCode.SOCKET_TIMEOUT;
+            } catch (IOException e) {
+                resultCode = ResultsCode.IO_EXCEPTION;
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                try {
+                    if (reader != null) {
+                        reader.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+
+        @SuppressLint("SetTextI18n")
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            progressBar.setVisibility(View.INVISIBLE);
+
+            switch (resultCode) {
+                case ResultsCode.SUCCESS:
+                    Log.i("result", "get cart item success");
+                    try {
+                        branches.clear();
+                        // add branches
+                        JSONArray jsonArray = new JSONArray(s);
+                        for (int i = 0; i < Math.min(jsonArray.length(), 50); i++){
+                            final JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            branches.add(new Branch(jsonObject.getInt("id"), jsonObject.getString("name"), jsonObject.getString("phoneNumber"),
+                                    jsonObject.getString("imageUrl"), jsonObject.getString("openingTime"), jsonObject.getString("closingTime"),
+                                    jsonObject.getString("address"), new LatLng(jsonObject.getDouble("latitude"), jsonObject.getDouble("longitude")),
+                                    jsonObject.getBoolean("isSell"), jsonObject.getInt("merchant"), jsonObject.getString("branchStatus")));
+                        }
+
+                        // sort branch following distance
+                        if (currentLocation != null) Collections.sort(branches, new SortPlaces(currentLocation));
+                        else {
+                            Toast.makeText(BranchActivity.this, "Cannot get current location, try again", Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        // show branch
+                        recyclerView.setAdapter(new RecyclerViewBranchAdapter(BranchActivity.this, branches));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case ResultsCode.FAILED:
+                    Log.i("result", "get failed");
+                    break;
+                case ResultsCode.SOCKET_TIMEOUT:
+                    Toast.makeText(BranchActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_SHORT).show();
+                    break;
+                case ResultsCode.IO_EXCEPTION:
+                    Toast.makeText(BranchActivity.this, "IO Exception", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
