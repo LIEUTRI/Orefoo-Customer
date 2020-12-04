@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.luanvan.customer.components.RequestsCode;
 import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
@@ -43,6 +44,7 @@ public class EditAddressActivity extends AppCompatActivity {
     private TextView tvAddress;
     private EditText etAddressDetail;
     private EditText etContactName, etContactPhone;
+    private MaterialToolbar toolbar;
 
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
@@ -63,6 +65,7 @@ public class EditAddressActivity extends AppCompatActivity {
         etContactName = findViewById(R.id.etContactName);
         etContactPhone= findViewById(R.id.etContactPhone);
         layoutProgressBar = findViewById(R.id.layoutProgressBar);
+        toolbar = findViewById(R.id.toolbar);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -103,6 +106,13 @@ public class EditAddressActivity extends AppCompatActivity {
                 saveInfo();
             }
         });
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
     }
 
     private void saveInfo(){

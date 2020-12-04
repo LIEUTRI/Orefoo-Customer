@@ -19,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.zxing.common.StringUtils;
 import com.luanvan.customer.Adapter.RecyclerViewCartItemAdapter;
 import com.luanvan.customer.Fragments.HomeFragment;
@@ -60,6 +61,7 @@ public class CheckoutActivity extends AppCompatActivity {
     private TextView btnConfirmOrder;
     private RecyclerView recyclerView;
     private TextView tvEditAddress;
+    private MaterialToolbar toolbar;
 
     private String token;
     private int consumerId;
@@ -108,6 +110,7 @@ public class CheckoutActivity extends AppCompatActivity {
         tvDeliveryTime = findViewById(R.id.tvDeliveryTime);
         tvDeliveryFee = findViewById(R.id.tvDeliveryFee);
         tvEditAddress = findViewById(R.id.tvEditAddress);
+        toolbar = findViewById(R.id.toolbar);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
@@ -172,6 +175,13 @@ public class CheckoutActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivityForResult(new Intent(CheckoutActivity.this, EditAddressActivity.class), RequestsCode.REQUEST_UPDATE_ADDRESS);
+            }
+        });
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

@@ -2,6 +2,7 @@ package com.luanvan.customer;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.luanvan.customer.components.RequestUrl;
 
 import org.json.JSONException;
@@ -37,6 +39,7 @@ public class SignupActivity extends AppCompatActivity {
     private TextView tvBackToLogin;
     private RelativeLayout layoutProgressBar;
     private ProgressBar progressBar;
+    private MaterialToolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +48,27 @@ public class SignupActivity extends AppCompatActivity {
 
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnSignup = findViewById(R.id.btn_signup);
         tvBackToLogin = findViewById(R.id.tvBackToLogin);
         layoutProgressBar = findViewById(R.id.layoutProgressBar);
+        toolbar = findViewById(R.id.toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!etPassword.getText().toString().equals(etConfirmPassword.getText().toString())){
+                    Toast.makeText(SignupActivity.this, getString(R.string.password_not_match), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 SignupTask signupTask = new SignupTask();
                 signupTask.execute(etUsername.getText().toString(), etPassword.getText().toString());
             }
@@ -72,6 +89,7 @@ public class SignupActivity extends AppCompatActivity {
         progressBar.setVisibility(View.INVISIBLE);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class SignupTask extends AsyncTask<String,String,String> {
 
         OutputStream os;

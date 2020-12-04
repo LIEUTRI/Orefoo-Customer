@@ -34,7 +34,7 @@
                     android:background="@color/transparent"
                     app:layout_collapseMode="pin"
                     app:navigationIcon="@drawable/ic_arrow_back_ios_24"
-                    app:menu="@menu/top_appbar_restaurant" />
+                    android:id="@+id/toolbar"/>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
 
             <ImageView

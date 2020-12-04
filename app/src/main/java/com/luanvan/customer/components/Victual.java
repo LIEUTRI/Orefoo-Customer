@@ -1,5 +1,7 @@
 package com.luanvan.customer.components;
 
+import org.json.JSONArray;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -15,7 +17,7 @@ public class Victual implements Serializable {
     private String branch;
     private int quantity;
     private int cartItemId;
-    private ArrayList<Integer> victualsCategories;
+    private JSONArray categories;
     public Victual(){ }
     public Victual(String name, String imageUrl, int quantity, String price, String discount){
         this.name = name;
@@ -24,7 +26,7 @@ public class Victual implements Serializable {
         this.price = price;
         this.discountPrice = discount;
     }
-    public Victual(String id, String name, String price, String discountPrice, String createdAt, String updatedAt, String imageUrl, Boolean isSell, String branch, ArrayList<Integer> victualsCategories, int quantity, int cartItemId){
+    public Victual(String id, String name, String price, String discountPrice, String createdAt, String updatedAt, String imageUrl, Boolean isSell, String branch, JSONArray categories, int quantity, int cartItemId){
         this.id = id;
         this.name = name;
         this.price = price;
@@ -34,7 +36,7 @@ public class Victual implements Serializable {
         this.imageUrl = imageUrl;
         this.isSell = isSell;
         this.branch = branch;
-        this.victualsCategories = victualsCategories;
+        this.categories = categories;
         this.quantity = quantity;
         this.cartItemId = cartItemId;
     }
@@ -83,8 +85,8 @@ public class Victual implements Serializable {
         return branch;
     }
 
-    public ArrayList<Integer> getVictualsCategories() {
-        return victualsCategories;
+    public JSONArray getVictualsCategories() {
+        return categories;
     }
 
     public void setId(String id) {
@@ -121,10 +123,6 @@ public class Victual implements Serializable {
 
     public void setBranch(String branch) {
         this.branch = branch;
-    }
-
-    public void setVictualsCategories(ArrayList<Integer> victualsCategories) {
-        this.victualsCategories = victualsCategories;
     }
 
     public void setQuantity(int quantity) {

@@ -58,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         btnLogin = findViewById(R.id.btn_login);
-        btnFBLogin = findViewById(R.id.fb_login);
         toolbar = findViewById(R.id.toolbarLogin);
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);

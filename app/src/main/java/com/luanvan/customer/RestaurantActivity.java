@@ -31,6 +31,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -72,6 +73,7 @@ public class RestaurantActivity extends AppCompatActivity {
     private AlertDialog dialogDistance;
     private ImageView ivBranchBackground;
     private ImageView ivQRBranch;
+    private MaterialToolbar toolbar;
 
     private String name;
     private String phone;
@@ -94,6 +96,7 @@ public class RestaurantActivity extends AppCompatActivity {
         tvTime = findViewById(R.id.tvTime);
         ivBranchBackground = findViewById(R.id.ivBranchBackground);
         ivQRBranch = findViewById(R.id.ivQRBranch);
+        toolbar = findViewById(R.id.toolbar);
 
         name = getIntent().getStringExtra("name");
         phone = getIntent().getStringExtra("phone");
@@ -153,6 +156,12 @@ public class RestaurantActivity extends AppCompatActivity {
         transaction.replace(R.id.fragment_restaurant_container, fragment);
         transaction.commit();
 
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         tvMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

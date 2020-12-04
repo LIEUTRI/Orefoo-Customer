@@ -15,7 +15,8 @@
             android:layout_height="wrap_content"
             app:title="@string/confirm_order"
             app:titleTextColor="#FFFFFF"
-            app:navigationIcon="@drawable/ic_arrow_back_ios_24"/>
+            app:navigationIcon="@drawable/ic_arrow_back_ios_24"
+            android:id="@+id/toolbar"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout

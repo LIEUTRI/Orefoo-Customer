@@ -28,7 +28,7 @@
     <string name="drinks">Đồ uống</string>
     <string name="trasua">Trà sữa</string>
     <string name="burgers">Burger</string>
-    <string name="titleNearby">GẦN ĐÂY</string>
+    <string name="titleNearby">GẦN BẠN</string>
     <string name="titleFavourite">YÊU THÍCH</string>
     <string name="ongoing">Đang đến</string>
     <string name="history">Lịch sử</string>
@@ -123,4 +123,5 @@
     <string name="shipper_canceled">Shipper đã hủy đơn</string>
     <string name="cannot_open_link">Không thể mở liên kết.</string>
     <string name="pick_image_intent_text">Chọn ảnh</string>
+    <string name="password_not_match">Mật khẩu không khớp</string>
 </resources>

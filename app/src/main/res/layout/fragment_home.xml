@@ -81,62 +81,20 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <HorizontalScrollView
+            <com.daimajia.slider.library.SliderLayout
+                android:id="@+id/slider"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:id="@+id/layout_cardViews">
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="start">
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="230dp"
-                        android:layout_height="140dp"
-                        app:cardCornerRadius="5dp"
-                        app:cardUseCompatPadding="true"
-                        android:id="@+id/cardView1"
-                        android:layout_marginEnd="8dp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_banhmi"/>
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="230dp"
-                        android:layout_height="140dp"
-                        android:id="@+id/cardView2"
-                        app:cardCornerRadius="5dp"
-                        app:cardUseCompatPadding="true"
-                        android:layout_marginEnd="8dp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_chagio"/>
-                    </com.google.android.material.card.MaterialCardView>
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="230dp"
-                        android:layout_height="140dp"
-                        android:id="@+id/cardView3"
-                        app:cardCornerRadius="5dp"
-                        app:cardUseCompatPadding="true"
-                        android:layout_marginEnd="8dp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_chagio"/>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-            </HorizontalScrollView>
+                android:layout_height="200dp"
+                android:layout_alignStart="@id/cardViewSuggest"
+                android:layout_alignEnd="@id/cardViewSuggest"
+                android:layout_marginTop="10dp"/>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/cardViewSuggest"
-                android:layout_below="@+id/layout_cardViews"
+                android:layout_below="@+id/slider"
                 app:cardCornerRadius="5dp"
-                app:cardUseCompatPadding="true"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -148,7 +106,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:text="@string/titleSuggest"
+                            android:text="@string/titleNearby"
                             android:padding="8dp"
                             android:gravity="center_vertical"
                             android:layout_alignParentStart="true"
@@ -395,7 +353,6 @@
                 android:id="@+id/cardViewCategories"
                 android:layout_below="@+id/cardViewSuggest"
                 app:cardCornerRadius="5dp"
-                app:cardUseCompatPadding="true"
                 android:layout_marginTop="10dp">
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -489,105 +446,55 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/cardViewNearby"
-                android:layout_below="@+id/cardViewCategories"
-                app:cardCornerRadius="5dp"
-                app:cardUseCompatPadding="true"
-                android:layout_marginTop="10dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="@string/titleNearby"
-                            android:padding="8dp"
-                            android:gravity="center_vertical"
-                            android:layout_alignParentStart="true"
-                            android:layout_toStartOf="@+id/tvSeeAllNearby"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:id="@+id/tvSeeAllNearby"
-                            android:text="@string/seemore"
-                            android:fontFamily="sans-serif-condensed"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:layout_alignParentEnd="true"
-                            android:paddingEnd="5dp"/>
-                    </RelativeLayout>
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/scrollViewNearby">
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:id="@+id/layoutNearby">
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/cardViewNearby"-->
+<!--                android:layout_below="@+id/cardViewCategories"-->
+<!--                app:cardCornerRadius="5dp"-->
+<!--                app:cardUseCompatPadding="true"-->
+<!--                android:layout_marginTop="10dp">-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+<!--                    <RelativeLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="60dp">-->
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:text="@string/titleNearby"-->
+<!--                            android:padding="8dp"-->
+<!--                            android:gravity="center_vertical"-->
+<!--                            android:layout_alignParentStart="true"-->
+<!--                            android:layout_toStartOf="@+id/tvSeeAllNearby"-->
+<!--                            android:textAppearance="?attr/textAppearanceHeadline6" />-->
+<!--                        <TextView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:gravity="center"-->
+<!--                            android:id="@+id/tvSeeAllNearby"-->
+<!--                            android:text="@string/seemore"-->
+<!--                            android:fontFamily="sans-serif-condensed"-->
+<!--                            android:textColor="@color/colorPrimaryDark"-->
+<!--                            android:layout_alignParentEnd="true"-->
+<!--                            android:paddingEnd="5dp"/>-->
+<!--                    </RelativeLayout>-->
+<!--                    <HorizontalScrollView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:id="@+id/scrollViewNearby">-->
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:orientation="horizontal"-->
+<!--                            android:id="@+id/layoutNearby">-->
 
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/cardViewFavourite"
-                android:layout_below="@+id/cardViewNearby"
-                app:cardCornerRadius="5dp"
-                app:cardUseCompatPadding="true"
-                android:layout_marginTop="10dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="@string/titleFavourite"
-                            android:padding="8dp"
-                            android:gravity="center_vertical"
-                            android:layout_alignParentStart="true"
-                            android:layout_toStartOf="@+id/tvSeeAllFavourite"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:id="@+id/tvSeeAllFavourite"
-                            android:text="@string/seemore"
-                            android:fontFamily="sans-serif-condensed"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:layout_alignParentEnd="true"
-                            android:paddingEnd="5dp"/>
-                    </RelativeLayout>
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/scrollViewFavourite">
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:id="@+id/layoutFavourite">
-
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+<!--                        </LinearLayout>-->
+<!--                    </HorizontalScrollView>-->
+<!--                </LinearLayout>-->
+<!--            </com.google.android.material.card.MaterialCardView>-->
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 

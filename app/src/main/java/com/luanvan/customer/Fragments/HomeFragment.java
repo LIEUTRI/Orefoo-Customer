@@ -29,8 +29,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,6 +42,11 @@ import com.auth0.android.jwt.Claim;
 import com.auth0.android.jwt.JWT;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -57,6 +64,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.luanvan.customer.BranchActivity;
+import com.luanvan.customer.CategoryActivity;
 import com.luanvan.customer.LoginActivity;
 import com.luanvan.customer.PickLocationActivity;
 import com.luanvan.customer.QRScannerActivity;
@@ -87,6 +95,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -95,13 +104,13 @@ import me.dm7.barcodescanner.zxing.ZXingScannerView;
 
 import static android.app.Activity.RESULT_OK;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
 
     private TextView tvSearch;
     private TextView tvAddress;
     private FloatingActionButton btnCart;
     private TextView tvSizeOfCart;
-    private TextView tvSeeAllSuggest;
+    private TextView tvSeeAllSuggest, tvSeeAllCategories;
     private TextView tvMainMeal, tvSnacks, tvDrinks, tvTraSua, tvBurgers;
 
     private MaterialCardView cvItem1, cvItem2, cvItem3, cvItem4, cvItem5;
@@ -110,6 +119,8 @@ public class HomeFragment extends Fragment {
     private ImageView ivItem1, ivItem2, ivItem3, ivItem4, ivItem5;
 
     private ImageButton ibQRScan;
+
+    private SliderLayout sliderLayout;
 
     private int consumerID;
     private int userId;
@@ -168,12 +179,14 @@ public class HomeFragment extends Fragment {
         btnCart = view.findViewById(R.id.btnCart);
         tvSizeOfCart = view.findViewById(R.id.tvSizeOfCart);
         tvSeeAllSuggest = view.findViewById(R.id.tvSeeAllSuggest);
+        tvSeeAllCategories = view.findViewById(R.id.tvSeeAllCategories);
         ibQRScan = view.findViewById(R.id.ibQRScan);
         tvMainMeal = view.findViewById(R.id.tvMainMeal);
         tvSnacks = view.findViewById(R.id.tvSnacks);
         tvDrinks = view.findViewById(R.id.tvDrinks);
         tvTraSua = view.findViewById(R.id.tvTraSua);
         tvBurgers = view.findViewById(R.id.tvBurgers);
+        sliderLayout = view.findViewById(R.id.slider);
     }
 
     @Override
@@ -186,6 +199,36 @@ public class HomeFragment extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE);
         token = sharedPreferences.getString(Shared.KEY_BEARER, "");
         Log.i(TAG, token);
+
+        ///////////////////////////////
+
+        HashMap<String,String> url_maps = new HashMap<>();
+        url_maps.put("Ăn sáng", "https://firebasestorage.googleapis.com/v0/b/shipper-lieutri.appspot.com/o/images%2Fslide_1.jpg?alt=media&token=5270107a-c241-4525-a757-4e141aaebc3f");
+        url_maps.put("Ăn vặt", "https://firebasestorage.googleapis.com/v0/b/shipper-lieutri.appspot.com/o/images%2Fslide_2.jpg?alt=media&token=3dc83a87-60a1-4bdb-bdab-09cc5d92befc");
+        url_maps.put("Trà sữa", "https://firebasestorage.googleapis.com/v0/b/shipper-lieutri.appspot.com/o/images%2Fslide_3.jpg?alt=media&token=57a5ff4f-f544-47c1-a297-6511442c34ad");
+
+        for(String name : url_maps.keySet()){
+            TextSliderView textSliderView = new TextSliderView(getActivity());
+            // initialize a SliderLayout
+            textSliderView
+                    .description(name)
+                    .image(url_maps.get(name))
+                    .setScaleType(BaseSliderView.ScaleType.Fit)
+                    .setOnSliderClickListener(this);
+
+            //add your extra information
+            textSliderView.bundle(new Bundle());
+            textSliderView.getBundle()
+                    .putString("extra",name);
+
+            sliderLayout.addSlider(textSliderView);
+        }
+        sliderLayout.setPresetTransformer(SliderLayout.Transformer.Accordion);
+        sliderLayout.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        sliderLayout.setCustomAnimation(new DescriptionAnimation());
+        sliderLayout.setDuration(4000);
+        sliderLayout.addOnPageChangeListener(this);
+        ///////////////////////////////
 
         if (token.contains("Bearer")) {
             username = getUsername(token);
@@ -218,6 +261,12 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getActivity(), BranchActivity.class));
+            }
+        });
+        tvSeeAllCategories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), CategoryActivity.class));
             }
         });
 
@@ -617,8 +666,11 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onSuccess(Location location) {
                         Log.i("HomeFragment", "getLastLocation SUCCESS");
-                        mLocation = location;
-                        updateUI();
+                        if (location != null){
+                            Log.i("HomeFragment", "Location: "+location.getLatitude()+","+location.getLongitude());
+                            mLocation = location;
+                            updateUI();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -655,12 +707,55 @@ public class HomeFragment extends Fragment {
 
     private void updateUI(){
         if (mLocation != null) {
-            Log.i("HomeFragment", "Location: "+mLocation.getLatitude()+","+mLocation.getLongitude());
+
             // show suggest branch
             new GetBranch().execute();
 
             new LocationTask().execute();
         }
+    }
+
+    @Override
+    public void onSliderClick(BaseSliderView slider) {
+        Log.d(TAG, "-->onSliderClick | "+slider.getBundle().get("extra"));
+        Intent intent = null;
+        switch (slider.getBundle().get("extra").toString()){
+            case "Ăn sáng":
+                intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 8);
+                startActivity(intent);
+                break;
+
+            case "Ăn vặt":
+                intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 9);
+                startActivity(intent);
+                break;
+
+            case "Trà sữa":
+                intent = new Intent(getActivity(), BranchActivity.class);
+                intent.putExtra("categoryId", 1);
+                startActivity(intent);
+                break;
+        }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onStop() {
+        sliderLayout.stopAutoCycle();
+        super.onStop();
     }
 
     @SuppressLint("StaticFieldLeak")

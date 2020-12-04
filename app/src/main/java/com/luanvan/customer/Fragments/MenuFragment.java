@@ -257,15 +257,11 @@ public class MenuFragment extends Fragment {
                 JSONArray jsonArray = new JSONArray(s);
                 for (int i=0; i<jsonArray.length(); i++){
                     JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    JSONArray jsonVictuals = jsonObject.getJSONArray("victualsCategories");
-                    ArrayList<Integer> victualsCategories = new ArrayList<>();
-                    for (int index=0; index<jsonVictuals.length(); index++){
-                        victualsCategories.add(jsonVictuals.getInt(index));
-                    }
+                    JSONArray categories = jsonObject.getJSONArray("categories");
 
                     victuals.add(new Victual(jsonObject.getString("id"), jsonObject.getString("name"), jsonObject.getString("price"),
                             jsonObject.getString("discount"), jsonObject.getString("createdAt"), jsonObject.getString("updatedAt"),
-                            jsonObject.getString("imageUrl"), jsonObject.getBoolean("isSell"), jsonObject.getString("branch"), victualsCategories,0,-1));
+                            jsonObject.getString("imageUrl"), jsonObject.getBoolean("isSell"), jsonObject.getString("branch"), categories,0,-1));
 
                     new CartItemTask().getAllItem(cartId);
                 }
