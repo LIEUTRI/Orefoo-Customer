@@ -9,4 +9,5 @@ public class RequestUrl {
     public static final String SIGNUP = "https://orefoo.herokuapp.com/user/consumer";
     public static final String BRANCH = "https://orefoo.herokuapp.com/branch";
     public static final String CATEGORY = "https://orefoo.herokuapp.com/category";
+    public static final String USER = "https://orefoo.herokuapp.com/user/";
 }

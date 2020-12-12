@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivBranchBackground"
-                android:background="@drawable/bg_chagio" />
+                android:background="@color/colorPrimaryDark" />
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:layout_width="match_parent"

@@ -19,7 +19,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CategoryActivity"></activity>
+        <activity android:name=".ChangePasswordActivity"></activity>
+        <activity android:name=".CategoryActivity" />
         <activity android:name=".QRScannerActivity" />
         <activity android:name=".EditAddressActivity" />
         <activity

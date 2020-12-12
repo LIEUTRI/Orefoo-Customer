@@ -20,6 +20,7 @@ import com.facebook.CallbackManager;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.luanvan.customer.components.RequestUrl;
+import com.luanvan.customer.components.ResultsCode;
 import com.luanvan.customer.components.Shared;
 
 import org.json.JSONException;
@@ -51,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
     String username;
     String password;
 
-    private String loginURL = "https://orefoo.herokuapp.com/login";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,8 +122,8 @@ public class LoginActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     private class LoginTask extends AsyncTask<String,String,String> {
 
-        OutputStream os;
-        InputStream is;
+        private OutputStream os;
+        private InputStream is;
         JSONObject json = new JSONObject();
 
         @Override
@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             HttpURLConnection connection = null;
+            BufferedReader reader = null;
             //http post
             try {
                 URL url = new URL( RequestUrl.LOGIN );
@@ -148,6 +149,7 @@ public class LoginActivity extends AppCompatActivity {
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json;charset=utf-8");
+                connection.setRequestProperty("Accept", "application/json;charset=utf-8");
                 connection.setRequestProperty("Authorization", "application/json;charset=utf-8");
                 connection.setDoOutput(true);
                 connection.setReadTimeout(10000);
@@ -161,32 +163,28 @@ public class LoginActivity extends AppCompatActivity {
 
                 int statusCode = connection.getResponseCode();
                 Log.i("statusCode", statusCode+"");
-                if (statusCode >= 200 && statusCode < 400){
-                    is = connection.getInputStream();
-                } else {
-                    is = connection.getErrorStream();
-                }
 
                 json = new JSONObject();
                 json.put("status", statusCode);
 
                 if (statusCode == HttpURLConnection.HTTP_OK){
                     json.put("token", connection.getHeaderField("Authorization"));
-                    return json.toString();
-                } else if (statusCode == 403){
-                    return json.toString();
                 }
-                return null;
-
+                return json.toString();
             } catch (SocketTimeoutException e) {
                 try {
-                    json.put("status", 0);
+                    json.put("status", ResultsCode.SOCKET_TIMEOUT);
                     return json.toString();
                 } catch (JSONException ex) {
                     ex.printStackTrace();
                 }
             } catch (IOException | JSONException e){
-                e.printStackTrace();
+                try {
+                    json.put("status", ResultsCode.FAILED);
+                    return json.toString();
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
             } finally {
                 try {
                     if (os!=null) os.close();
@@ -206,8 +204,6 @@ public class LoginActivity extends AppCompatActivity {
 
             progressBar.setVisibility(View.INVISIBLE);
 
-            if (s == null) return;
-
             try {
                 JSONObject jsonObject = new JSONObject(s);
                 int statusCode = jsonObject.getInt("status");
@@ -220,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
-                } else if (statusCode == 403){
+                } else if (statusCode == 422){
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.incorrect_username_password), Toast.LENGTH_LONG).show();
                 } else if(statusCode == 0){
                     Toast.makeText(LoginActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
@@ -250,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
             //http post
             try {
-                URL url = new URL(loginURL);
+                URL url = new URL(RequestUrl.LOGIN);
 
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("authToken", token);
@@ -330,7 +326,7 @@ public class LoginActivity extends AppCompatActivity {
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(loginURL);
+                URL url = new URL(RequestUrl.LOGIN);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Accept", "application/json;charset=utf-8");

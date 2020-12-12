@@ -141,6 +141,7 @@
                     android:drawablePadding="10dp"
                     app:drawableStartCompat="@drawable/ic_edit"
                     app:drawableEndCompat="@drawable/ic_arrow_right"
+                    android:enabled="false"
                     android:id="@+id/tvManagerProfile"/>
 
                 <TextView

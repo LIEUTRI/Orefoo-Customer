@@ -24,6 +24,7 @@ public class ManagerProfileActivity extends AppCompatActivity {
 
     private TextView tvEdit;
     private TextView tvUsername, tvPhoneNumber, tvName, tvEmail, tvGender, tvDoB;
+    private TextView tvPassword;
     private MaterialToolbar toolbar;
 
     private String username = "";
@@ -47,6 +48,7 @@ public class ManagerProfileActivity extends AppCompatActivity {
         tvEmail = findViewById(R.id.tvEmail);
         tvGender = findViewById(R.id.tvGender);
         tvDoB = findViewById(R.id.tvDoB);
+        tvPassword = findViewById(R.id.tvPassword);
         toolbar = findViewById(R.id.toolbar);
 
         username = getIntent().getStringExtra("username");
@@ -87,6 +89,13 @@ public class ManagerProfileActivity extends AppCompatActivity {
                 intent.putExtra("consumerID", consumerID);
 
                 startActivityForResult(intent, RequestsCode.REQUEST_UPDATE);
+            }
+        });
+
+        tvPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ManagerProfileActivity.this, ChangePasswordActivity.class));
             }
         });
     }

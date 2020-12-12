@@ -124,4 +124,13 @@
     <string name="cannot_open_link">Không thể mở liên kết.</string>
     <string name="pick_image_intent_text">Chọn ảnh</string>
     <string name="password_not_match">Mật khẩu không khớp</string>
+    <string name="change_password">Đổi mật khẩu</string>
+    <string name="old_password">Mật khẩu cũ</string>
+    <string name="new_password">Mật khẩu mới</string>
+    <string name="confirm_new_password">Xác nhận mật khẩu mới</string>
+    <string name="change">Thay đổi</string>
+    <string name="change_password_success">Đổi mật khẩu thành công</string>
+    <string name="change_password_failed">Đổi mật khẩu thất bại</string>
+    <string name="must_fill">Không được để trống</string>
+    <string name="old_password_incorrect">Mật khẩu cũ chưa chính xác</string>
 </resources>

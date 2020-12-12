@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -161,6 +162,7 @@ public class MeFragment extends Fragment {
         storageRef = storage.getReference();
         ///////////////////////////////////////////////////////////////
 
+        tvManagerProfile.setTextColor(getActivity().getColor(R.color.light_gray));
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,6 +312,10 @@ public class MeFragment extends Fragment {
             layoutLogin.setVisibility(View.VISIBLE);
 
             if (result == null) return;
+
+            tvManagerProfile.setEnabled(true);
+            tvManagerProfile.setTextColor(Color.BLACK);
+
             try {
                 JSONObject consumer = new JSONObject(result);
                 firstName = consumer.getString("firstName").equals("null") ? "empty":consumer.getString("firstName");
