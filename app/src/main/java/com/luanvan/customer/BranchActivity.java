@@ -1,5 +1,6 @@
 package com.luanvan.customer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,6 +50,8 @@ public class BranchActivity extends AppCompatActivity {
     private ArrayList<Branch> branches = new ArrayList<>();
     private String token;
     private LatLng currentLocation;
+
+    private int curPage = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +89,18 @@ public class BranchActivity extends AppCompatActivity {
         if (categoryId != -1){
             new GetBranchByCategoryTask().execute(categoryId+"");
         } else
-            new GetBranch().get(1);
+            new GetBranch().get(curPage);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                if (!recyclerView.canScrollVertically(1)){
+                    curPage++;
+                    new GetBranch().get(curPage);
+                    Log.d("test", "curPage: " + curPage);
+                }
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -125,7 +139,7 @@ public class BranchActivity extends AppCompatActivity {
                     resultCode = ResultsCode.SUCCESS;
                     is = connection.getInputStream();
                 } else {
-                    resultCode = ResultsCode.FAILED;
+                    resultCode = statusCode;
                     is = connection.getErrorStream();
                 }
 
@@ -167,10 +181,15 @@ public class BranchActivity extends AppCompatActivity {
             switch (resultCode) {
                 case ResultsCode.SUCCESS:
                     try {
-                        branches.clear();
-                        // add branches
+//                        branches.clear();
                         JSONArray jsonArray = new JSONArray(s);
-                        for (int i = 0; i < Math.min(jsonArray.length(), 5); i++){
+
+                        if (jsonArray.length() == 0){
+                            Toast.makeText(BranchActivity.this, "Không còn quán ăn để hiển thị", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+
+                        for (int i = 0; i < Math.min(jsonArray.length(), 10); i++){
                             final JSONObject jsonObject = jsonArray.getJSONObject(i);
                             branches.add(new Branch(jsonObject.getInt("id"), jsonObject.getString("name"), jsonObject.getString("phoneNumber"),
                                     jsonObject.getString("imageUrl"), jsonObject.getString("openingTime"), jsonObject.getString("closingTime"),
@@ -194,12 +213,14 @@ public class BranchActivity extends AppCompatActivity {
                 case ResultsCode.SOCKET_TIMEOUT:
                     Toast.makeText(BranchActivity.this, getResources().getString(R.string.socket_timeout), Toast.LENGTH_LONG).show();
                     break;
-                case ResultsCode.FAILED:
-                    Toast.makeText(BranchActivity.this, getResources().getString(R.string.error), Toast.LENGTH_LONG).show();
+                case 404:
+                    Toast.makeText(BranchActivity.this, "Không còn quán ăn để hiển thị", Toast.LENGTH_SHORT).show();
                     break;
                 case ResultsCode.IO_EXCEPTION:
                     Toast.makeText(BranchActivity.this, getResources().getString(R.string.io_exception), Toast.LENGTH_LONG).show();
                     break;
+                default:
+                    Toast.makeText(BranchActivity.this, getResources().getString(R.string.error), Toast.LENGTH_LONG).show();
             }
         }
     }

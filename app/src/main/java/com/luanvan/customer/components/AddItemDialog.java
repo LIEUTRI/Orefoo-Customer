@@ -101,7 +101,7 @@ public class AddItemDialog extends Dialog {
         layoutProgressBar = findViewById(R.id.layoutProgressBar);
 
         totalPrice = price;
-        totalPrice = priceOrigin;
+
         String add = activity.getResources().getString(R.string.add)+" "+String.format("%,.0f", price)+"đ";
         btnAddItem.setText(add);
 

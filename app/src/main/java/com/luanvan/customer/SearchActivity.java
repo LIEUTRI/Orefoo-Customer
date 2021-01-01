@@ -115,6 +115,7 @@ public class SearchActivity extends AppCompatActivity {
                     if (task != null) task.cancel(true);
                     task = new SearchBranchTask();
                     task.execute(s.toString());
+                    Log.d("SearchActivity", "searching for "+s);
                 }
             }
 

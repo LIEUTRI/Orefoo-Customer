@@ -1117,7 +1117,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                     resultCode = ResultsCode.SUCCESS;
                     is = connection.getInputStream();
                 } else {
-                    resultCode = ResultsCode.FAILED;
+                    resultCode = statusCode;
                     is = connection.getErrorStream();
                 }
 
@@ -1224,6 +1224,12 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                     break;
                 case ResultsCode.IO_EXCEPTION:
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.io_exception), Toast.LENGTH_SHORT).show();
+                    break;
+                case 422:
+                    Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.token_expired), Toast.LENGTH_LONG).show();
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences(Shared.TOKEN, Context.MODE_PRIVATE).edit();
+                    editor.remove(Shared.KEY_BEARER);
+                    editor.apply();
                     break;
                 default:
                     Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.error), Toast.LENGTH_SHORT).show();
