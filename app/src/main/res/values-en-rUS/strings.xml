@@ -113,4 +113,16 @@
     <string name="shipper_canceled">Shipper was canceled orders</string>
     <string name="cannot_open_link">Cannnot open the link</string>
     <string name="pick_image_intent_text">Choose photos</string>
+    <string name="password_not_match">Password not match</string>
+    <string name="change_password">Change password</string>
+    <string name="old_password">Old password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_new_password">Confirm new password</string>
+    <string name="change">Change</string>
+    <string name="change_password_success">Password changed</string>
+    <string name="change_password_failed">Change password failed</string>
+    <string name="must_fill">Cannot be empty</string>
+    <string name="old_password_incorrect">Old password incorrect</string>
+    <string name="not_open_for_sale">NOT OPENING</string>
+    <string name="temp_close">TEMPORARY CLOSING</string>
 </resources>

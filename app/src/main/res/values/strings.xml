@@ -133,5 +133,7 @@
     <string name="change_password_failed">Đổi mật khẩu thất bại</string>
     <string name="must_fill">Không được để trống</string>
     <string name="old_password_incorrect">Mật khẩu cũ chưa chính xác</string>
-    <string name="token_expired">Token expired, Login again!</string>
+    <string name="token_expired" translatable="false">Token expired, Login again!</string>
+    <string name="not_open_for_sale">CHƯA MỞ BÁN</string>
+    <string name="temp_close">TẠM ĐÓNG</string>
 </resources>

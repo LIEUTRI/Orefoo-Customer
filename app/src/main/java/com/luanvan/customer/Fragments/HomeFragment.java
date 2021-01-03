@@ -94,6 +94,7 @@ import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -117,6 +118,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
     private TextView tvItemName1, tvItemName2, tvItemName3, tvItemName4, tvItemName5;
     private TextView tvKm1, tvKm2, tvKm3, tvKm4, tvKm5;
     private ImageView ivItem1, ivItem2, ivItem3, ivItem4, ivItem5;
+    private TextView tvIsSell1, tvIsSell2, tvIsSell3, tvIsSell4, tvIsSell5;
 
     private ImageButton ibQRScan;
 
@@ -175,6 +177,11 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         cvItem3 = view.findViewById(R.id.cardViewItem3);
         cvItem4 = view.findViewById(R.id.cardViewItem4);
         cvItem5 = view.findViewById(R.id.cardViewItem5);
+        tvIsSell1 = view.findViewById(R.id.tvIsSell1);
+        tvIsSell2 = view.findViewById(R.id.tvIsSell2);
+        tvIsSell3 = view.findViewById(R.id.tvIsSell3);
+        tvIsSell4 = view.findViewById(R.id.tvIsSell4);
+        tvIsSell5 = view.findViewById(R.id.tvIsSell5);
         layoutProgressBar = view.findViewById(R.id.layoutProgressBar);
         btnCart = view.findViewById(R.id.btnCart);
         tvSizeOfCart = view.findViewById(R.id.tvSizeOfCart);
@@ -269,12 +276,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                 startActivity(new Intent(getActivity(), CategoryActivity.class));
             }
         });
-
-        cvItem1.setClickable(false);
-        cvItem2.setClickable(false);
-        cvItem3.setClickable(false);
-        cvItem4.setClickable(false);
-        cvItem5.setClickable(false);
+        
         cvItem1.setEnabled(false);
         cvItem2.setEnabled(false);
         cvItem3.setEnabled(false);
@@ -607,53 +609,6 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
             return;
         }
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-    }
-
-    private void showCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        Log.i("HomeFragment", "showCurrentLocation started");
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-                            mLocation = location;
-//                            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            Log.i("HomeFragment", "showCurrentLocation SUCCESS " + location.getLatitude() + "," + location.getLongitude());
-                            // show suggest branch
-                            new GetBranch().execute();
-
-                            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-                            try {
-                                List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                                Address address = addresses.get(0);
-                                addressLine = address.getAddressLine(0);
-                                tvAddress.setText(addressLine);
-
-                                // save location to DB
-                                if (token.contains("Bearer")) {
-                                    new ConsumerTask().execute();
-                                }
-                            } catch (IOException e) {
-                                Log.i("HomeFragment", "errorGeocoder: " + e.getMessage());
-                            }
-                        }
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), "Cannot get your location, try again later", Toast.LENGTH_LONG).show();
-                Log.i("HomeFragment", "error: " + e.getMessage());
-            }
-        }).addOnCanceledListener(new OnCanceledListener() {
-            @Override
-            public void onCanceled() {
-                Toast.makeText(getActivity(), "error: cancel", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void getLastLocation() {
@@ -1090,7 +1045,6 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
     class GetBranch extends AsyncTask<String,String,String> {
         private InputStream is;
         private int resultCode;
-        private final String branchURL = "https://orefoo.herokuapp.com/branch?page=1";
 
         @Override
         protected void onPreExecute() {
@@ -1104,7 +1058,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
             BufferedReader reader = null;
 
             try {
-                URL url = new URL(branchURL);
+                URL url = new URL(RequestUrl.BRANCH + "?page=1");
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Authorization", token);
@@ -1160,11 +1114,6 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
 
             switch (resultCode){
                 case ResultsCode.SUCCESS:
-                    cvItem1.setEnabled(true);
-                    cvItem2.setEnabled(true);
-                    cvItem3.setEnabled(true);
-                    cvItem4.setEnabled(true);
-                    cvItem5.setEnabled(true);
 
                     try {
                         branches.clear();
@@ -1190,28 +1139,28 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                         for (int index = 0; index<(Math.min(jsonArray.length(), 5)); index++){
                             switch (index){
                                 case 0:
-                                    updateUIBranchSuggest(getActivity(), ivItem1, tvItemName1, tvKm1,
-                                            branches.get(0).getImageUrl(), branches.get(0).getName(), GetDistanceInKmString(currentLocation, branches.get(0).getLatLng()));
+                                    updateUIBranchSuggest(getActivity(), ivItem1, tvItemName1, tvKm1, tvIsSell1,
+                                            branches.get(0).getImageUrl(), branches.get(0).getName(), GetDistanceInKmString(currentLocation, branches.get(0).getLatLng()), branches.get(0).isSell(), isOpening(branches.get(0).getOpeningTime(), branches.get(0).getClosingTime()));
                                     break;
 
                                 case 1:
-                                    updateUIBranchSuggest(getActivity(), ivItem2, tvItemName2, tvKm2,
-                                            branches.get(1).getImageUrl(), branches.get(1).getName(), GetDistanceInKmString(currentLocation, branches.get(1).getLatLng()));
+                                    updateUIBranchSuggest(getActivity(), ivItem2, tvItemName2, tvKm2, tvIsSell2,
+                                            branches.get(1).getImageUrl(), branches.get(1).getName(), GetDistanceInKmString(currentLocation, branches.get(1).getLatLng()), branches.get(1).isSell(), isOpening(branches.get(1).getOpeningTime(), branches.get(1).getClosingTime()));
                                     break;
 
                                 case 2:
-                                    updateUIBranchSuggest(getActivity(), ivItem3, tvItemName3, tvKm3,
-                                            branches.get(2).getImageUrl(), branches.get(2).getName(), GetDistanceInKmString(currentLocation, branches.get(2).getLatLng()));
+                                    updateUIBranchSuggest(getActivity(), ivItem3, tvItemName3, tvKm3, tvIsSell3,
+                                            branches.get(2).getImageUrl(), branches.get(2).getName(), GetDistanceInKmString(currentLocation, branches.get(2).getLatLng()), branches.get(2).isSell(), isOpening(branches.get(2).getOpeningTime(), branches.get(2).getClosingTime()));
                                     break;
 
                                 case 3:
-                                    updateUIBranchSuggest(getActivity(), ivItem4, tvItemName4, tvKm4,
-                                            branches.get(3).getImageUrl(), branches.get(3).getName(), GetDistanceInKmString(currentLocation, branches.get(3).getLatLng()));
+                                    updateUIBranchSuggest(getActivity(), ivItem4, tvItemName4, tvKm4, tvIsSell4,
+                                            branches.get(3).getImageUrl(), branches.get(3).getName(), GetDistanceInKmString(currentLocation, branches.get(3).getLatLng()), branches.get(3).isSell(), isOpening(branches.get(3).getOpeningTime(), branches.get(3).getClosingTime()));
                                     break;
 
                                 case 4:
-                                    updateUIBranchSuggest(getActivity(), ivItem5, tvItemName5, tvKm5,
-                                            branches.get(4).getImageUrl(), branches.get(4).getName(), GetDistanceInKmString(currentLocation, branches.get(4).getLatLng()));
+                                    updateUIBranchSuggest(getActivity(), ivItem5, tvItemName5, tvKm5, tvIsSell5,
+                                            branches.get(4).getImageUrl(), branches.get(4).getName(), GetDistanceInKmString(currentLocation, branches.get(4).getLatLng()), branches.get(4).isSell(), isOpening(branches.get(4).getOpeningTime(), branches.get(4).getClosingTime()));
                                     break;
                             }
                         }
@@ -1237,7 +1186,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         }
     }
 
-    private void updateUIBranchSuggest(Context context, ImageView branchImage, TextView branchName, TextView branchDistance, String imageUrl, String name, String distance){
+    private void updateUIBranchSuggest(Context context, ImageView branchImage, TextView branchName, TextView branchDistance, TextView tvIsSell, String imageUrl, String name, String distance, boolean isSell, boolean isOpening){
         // Branch image
         RequestOptions options = new RequestOptions()
                 .centerCrop()
@@ -1250,6 +1199,49 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
 
         // Distance from Branch to Consumer location
         branchDistance.setText(distance);
+
+        // is sell
+        if (isSell) {
+            tvIsSell.setVisibility(View.INVISIBLE);
+        } else {
+            tvIsSell.setText(getString(R.string.not_open_for_sale));
+            tvIsSell.setVisibility(View.VISIBLE);
+        }
+
+        // is opening
+        if (!isSell) return;
+        if (isOpening){
+            tvIsSell.setVisibility(View.INVISIBLE);
+
+            cvItem1.setEnabled(true);
+            cvItem2.setEnabled(true);
+            cvItem3.setEnabled(true);
+            cvItem4.setEnabled(true);
+            cvItem5.setEnabled(true);
+        } else {
+            tvIsSell.setText(getString(R.string.temp_close));
+            tvIsSell.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public boolean isOpening(String openingTime, String closingTime){
+        String[] from = openingTime.split(":");
+        String[] until = closingTime.split(":");
+
+        Calendar fromTime = Calendar.getInstance();
+        fromTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(from[0]));
+        fromTime.set(Calendar.MINUTE, Integer.parseInt(from[1]));
+        Log.d(TAG, "from: "+fromTime.getTime().toString());
+
+        Calendar toTime = Calendar.getInstance();
+        toTime.set(Calendar.HOUR_OF_DAY, Integer.parseInt(until[0]));
+        toTime.set(Calendar.MINUTE, Integer.parseInt(until[1]));
+        Log.d(TAG, "until: "+toTime.getTime().toString());
+
+        Calendar currentTime = Calendar.getInstance();
+        Log.d(TAG, "current: "+currentTime.getTime().toString());
+
+        return !(currentTime.before(fromTime) || currentTime.after(toTime));
     }
 
     public double rad(double x){

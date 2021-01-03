@@ -172,6 +172,16 @@
                                             android:drawablePadding="5dp"
                                             app:drawableStartCompat="@drawable/ic_location_on_18" />
                                     </LinearLayout>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#65000000"
+                                        android:text="@string/not_open_for_sale"
+                                        android:textSize="15sp"
+                                        android:gravity="center"
+                                        android:textColor="#FFFFFF"
+                                        android:id="@+id/tvIsSell1"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -214,6 +224,16 @@
                                             android:drawablePadding="5dp"
                                             app:drawableStartCompat="@drawable/ic_location_on_18" />
                                     </LinearLayout>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#65000000"
+                                        android:text="@string/not_open_for_sale"
+                                        android:textSize="15sp"
+                                        android:gravity="center"
+                                        android:textColor="#FFFFFF"
+                                        android:id="@+id/tvIsSell2"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -256,6 +276,16 @@
                                             android:drawablePadding="5dp"
                                             app:drawableStartCompat="@drawable/ic_location_on_18" />
                                     </LinearLayout>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#65000000"
+                                        android:text="@string/not_open_for_sale"
+                                        android:textSize="15sp"
+                                        android:gravity="center"
+                                        android:textColor="#FFFFFF"
+                                        android:id="@+id/tvIsSell3"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -298,6 +328,16 @@
                                             android:drawablePadding="5dp"
                                             app:drawableStartCompat="@drawable/ic_location_on_18" />
                                     </LinearLayout>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#65000000"
+                                        android:text="@string/not_open_for_sale"
+                                        android:textSize="15sp"
+                                        android:gravity="center"
+                                        android:textColor="#FFFFFF"
+                                        android:id="@+id/tvIsSell4"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -340,6 +380,16 @@
                                             android:drawablePadding="5dp"
                                             app:drawableStartCompat="@drawable/ic_location_on_18" />
                                     </LinearLayout>
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        android:background="#65000000"
+                                        android:text="@string/not_open_for_sale"
+                                        android:textSize="15sp"
+                                        android:gravity="center"
+                                        android:textColor="#FFFFFF"
+                                        android:id="@+id/tvIsSell5"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
