@@ -181,7 +181,9 @@
                                         android:textSize="15sp"
                                         android:gravity="center"
                                         android:textColor="#FFFFFF"
-                                        android:id="@+id/tvIsSell1"/>
+                                        android:id="@+id/tvIsSell1"
+                                        android:visibility="invisible"
+                                        android:clickable="false"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -233,7 +235,9 @@
                                         android:textSize="15sp"
                                         android:gravity="center"
                                         android:textColor="#FFFFFF"
-                                        android:id="@+id/tvIsSell2"/>
+                                        android:id="@+id/tvIsSell2"
+                                        android:visibility="invisible"
+                                        android:clickable="false"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -285,7 +289,9 @@
                                         android:textSize="15sp"
                                         android:gravity="center"
                                         android:textColor="#FFFFFF"
-                                        android:id="@+id/tvIsSell3"/>
+                                        android:id="@+id/tvIsSell3"
+                                        android:visibility="invisible"
+                                        android:clickable="false"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -337,7 +343,9 @@
                                         android:textSize="15sp"
                                         android:gravity="center"
                                         android:textColor="#FFFFFF"
-                                        android:id="@+id/tvIsSell4"/>
+                                        android:id="@+id/tvIsSell4"
+                                        android:visibility="invisible"
+                                        android:clickable="false"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
 
@@ -389,7 +397,9 @@
                                         android:textSize="15sp"
                                         android:gravity="center"
                                         android:textColor="#FFFFFF"
-                                        android:id="@+id/tvIsSell5"/>
+                                        android:id="@+id/tvIsSell5"
+                                        android:visibility="invisible"
+                                        android:clickable="false"/>
                                 </RelativeLayout>
                             </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>

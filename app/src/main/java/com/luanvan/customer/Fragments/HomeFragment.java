@@ -283,6 +283,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         cvItem4.setEnabled(false);
         cvItem5.setEnabled(false);
 
+
         cvItem1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1186,6 +1187,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     private void updateUIBranchSuggest(Context context, ImageView branchImage, TextView branchName, TextView branchDistance, TextView tvIsSell, String imageUrl, String name, String distance, boolean isSell, boolean isOpening){
         // Branch image
         RequestOptions options = new RequestOptions()
@@ -1213,11 +1215,23 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
         if (isOpening){
             tvIsSell.setVisibility(View.INVISIBLE);
 
-            cvItem1.setEnabled(true);
-            cvItem2.setEnabled(true);
-            cvItem3.setEnabled(true);
-            cvItem4.setEnabled(true);
-            cvItem5.setEnabled(true);
+            switch (tvIsSell.getId()){
+                case R.id.tvIsSell1:
+                    cvItem1.setEnabled(true);
+                    break;
+                case R.id.tvIsSell2:
+                    cvItem2.setEnabled(true);
+                    break;
+                case R.id.tvIsSell3:
+                    cvItem3.setEnabled(true);
+                    break;
+                case R.id.tvIsSell4:
+                    cvItem4.setEnabled(true);
+                    break;
+                case R.id.tvIsSell5:
+                    cvItem5.setEnabled(true);
+                    break;
+            }
         } else {
             tvIsSell.setText(getString(R.string.temp_close));
             tvIsSell.setVisibility(View.VISIBLE);
