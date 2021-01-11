@@ -276,13 +276,12 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                 startActivity(new Intent(getActivity(), CategoryActivity.class));
             }
         });
-        
+
         cvItem1.setEnabled(false);
         cvItem2.setEnabled(false);
         cvItem3.setEnabled(false);
         cvItem4.setEnabled(false);
         cvItem5.setEnabled(false);
-
 
         cvItem1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -487,13 +486,15 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                         double lng = data.getDoubleExtra(Shared.KEY_LONGITUDE, 0);
 
                         // update current location
+                        if (mLocation == null) mLocation = new Location("");
+
                         mLocation.setLatitude(lat);
                         mLocation.setLongitude(lng);
 
                         // show suggest branch for current location
                         new GetBranch().execute();
 
-                        String address = data.getStringExtra("ADDRESS");
+                        String address = data.getStringExtra(Shared.KEY_ADDRESS);
                         new UpdateLocationTask(getActivity(), lat, lng, address, consumerID).execute();
                         // store consumer address info
                         SharedPreferences.Editor editor = Objects.requireNonNull(getActivity()).getSharedPreferences(Shared.CONSUMER, Context.MODE_PRIVATE).edit();
@@ -987,6 +988,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
                 jsonObject.put("longitude", longitude);
                 jsonObject.put("address", address);
                 String data = jsonObject.toString();
+                Log.d("test", "update location: "+data);
 
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("PATCH");
@@ -1358,6 +1360,7 @@ public class HomeFragment extends Fragment implements BaseSliderView.OnSliderCli
             progressBar.setVisibility(View.INVISIBLE);
 
             String sizeCart = "0";
+            tvSizeOfCart.setText(sizeCart);
 
             switch (resultCode) {
                 case ResultsCode.SUCCESS:

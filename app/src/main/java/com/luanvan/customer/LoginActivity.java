@@ -87,30 +87,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         /////////////////////////////////////////////////////
-//        // Initialize Facebook Login button
-//        callbackManager = CallbackManager.Factory.create();
-//        fbLoginButton.setReadPermissions(Arrays.asList("email","public_profile"));
-//
-//        // Callback registration
-//        fbLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-//            @Override
-//            public void onSuccess(LoginResult loginResult) {
-//                Log.i("token", loginResult.getAccessToken().getToken()+"");
-//                token = loginResult.getAccessToken().getToken();
-//                GetTokenTask sendData = new GetTokenTask();
-//                sendData.execute();
-//            }
-//
-//            @Override
-//            public void onCancel() {
-//                // App code
-//            }
-//
-//            @Override
-//            public void onError(FacebookException exception) {
-//                Log.d("TAG", "onError: "+exception.getMessage());
-//            }
-//        });
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

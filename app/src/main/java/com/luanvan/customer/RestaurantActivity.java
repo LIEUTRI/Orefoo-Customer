@@ -104,7 +104,7 @@ public class RestaurantActivity extends AppCompatActivity {
         openTime = getIntent().getStringExtra("openTime");
         closeTime = getIntent().getStringExtra("closeTime");
         address = getIntent().getStringExtra("address");
-        isSell = getIntent().getBooleanExtra("isSell", true);
+        isSell = getIntent().getBooleanExtra("isSell", false);
         id = getIntent().getIntExtra("id", -1);
         latitude = getIntent().getDoubleExtra("lat", 0);
         longitude = getIntent().getDoubleExtra("lng", 0);
